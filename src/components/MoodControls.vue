@@ -62,11 +62,11 @@ onUnmounted(() => {
       >
         Погладить
       </button>
-      <label v-if="!inTelegram" class="slider">
-        <span>Настроение: {{ mood }}</span>
-        <input type="range" min="-100" max="100" :value="mood" @input="handleSlider" />
-      </label>
     </template>
+    <label v-if="!inTelegram" class="slider">
+      <span>Настроение: {{ Math.round(mood) }}</span>
+      <input type="range" min="-100" max="100" :value="mood" @input="handleSlider" />
+    </label>
   </section>
 </template>
 

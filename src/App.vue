@@ -66,9 +66,9 @@ const themeStyle = computed(() => ({
 }))
 
 function handleVisibility(): void {
+  now.value = Date.now()
+  commitTransitions()
   if (document.visibilityState === 'hidden') {
-    now.value = Date.now()
-    commitTransitions()
     void saveState(state.value)
   }
 }
