@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { getWebApp, isTelegram, mockUser, type TelegramThemeParams } from './telegram'
+import UserCard from './components/UserCard.vue'
 
 const webApp = getWebApp()
 const inTelegram = isTelegram()
@@ -42,7 +43,7 @@ onUnmounted(() => {
       реальные данные пользователя, открой мини-приложение из бота.
     </div>
     <main class="content">
-      <h1 class="title">Telegram Mini App Demo</h1>
+      <UserCard :user="user" />
     </main>
   </div>
 </template>
@@ -85,8 +86,4 @@ body {
   gap: 16px;
 }
 
-.title {
-  margin: 0;
-  font-size: 20px;
-}
 </style>
