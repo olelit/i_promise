@@ -24,8 +24,9 @@ builds) the current SVG character is used automatically.
 
 ## Architecture
 
-- `src/webgl.ts`: `isWebglAvailable(): boolean` — tries to create a
-  `webgl2`/`webgl` context on a throwaway canvas, guarded by try/catch.
+- `src/webgl.ts`: `isWebglAvailable(): boolean` — creates a `webgl2` context on a
+  throwaway canvas (three r186 requires WebGL2), releases it via
+  `WEBGL_lose_context`, guarded by try/catch.
 - `src/three/character.ts`: `createCharacter(): Character` — builds the model
   from primitives and returns the group plus references to the animated parts
   (mouth, eyes, brows, blush materials, back details). Pure three.js code, no

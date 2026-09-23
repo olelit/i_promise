@@ -45,7 +45,12 @@ If `npm run typecheck` later reports missing types for `three`, also run
 export function isWebglAvailable(): boolean {
   try {
     const canvas = document.createElement('canvas')
-    return Boolean(canvas.getContext('webgl2') ?? canvas.getContext('webgl'))
+    const context = canvas.getContext('webgl2')
+    if (!context) {
+      return false
+    }
+    context.getExtension('WEBGL_lose_context')?.loseContext()
+    return true
   } catch {
     return false
   }
