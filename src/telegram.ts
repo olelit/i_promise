@@ -90,3 +90,8 @@ export const mockUser: TelegramWebAppUser = {
 export function getWebApp(): TelegramWebApp | undefined {
   return window.Telegram?.WebApp
 }
+
+export function isTelegram(): boolean {
+  const webApp = getWebApp()
+  return webApp !== undefined && (webApp.initData !== '' || webApp.platform !== 'unknown')
+}

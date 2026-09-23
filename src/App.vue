@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
-import { getWebApp, mockUser, type TelegramThemeParams } from './telegram'
+import { getWebApp, isTelegram, mockUser, type TelegramThemeParams } from './telegram'
 
 const webApp = getWebApp()
-const isTelegram = webApp !== undefined
+const inTelegram = isTelegram()
 const user = webApp?.initDataUnsafe.user ?? mockUser
 const theme = ref<TelegramThemeParams>({})
 
@@ -37,7 +37,7 @@ onUnmounted(() => {
 
 <template>
   <div class="app" :style="themeStyle">
-    <div v-if="!isTelegram" class="banner">
+    <div v-if="!inTelegram" class="banner">
       Приложение открыто не в Telegram: показаны тестовые данные. Чтобы увидеть
       реальные данные пользователя, открой мини-приложение из бота.
     </div>
