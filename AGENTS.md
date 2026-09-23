@@ -2,11 +2,13 @@
 
 ## Project
 
-Telegram Mini App demo: Vue 3 + Vite + TypeScript, no backend.
+Tamagotchi Telegram Mini App: Vue 3 + Vite + TypeScript, no backend. A single
+parameter — mood (see README for mechanics).
 
 The Telegram WebApp API is loaded via the script tag in `index.html`
 (https://telegram.org/js/telegram-web-app.js) — do NOT add it as an npm
 dependency. All Telegram API access must go through `src/telegram.ts`.
+All persistence must go through `src/storage.ts`.
 
 ## Commits
 
@@ -23,8 +25,11 @@ dependency. All Telegram API access must go through `src/telegram.ts`.
 ## Conventions
 
 - Vue 3 SFCs with `<script setup lang="ts">`.
-- Colors in components come only from the Telegram theme CSS custom
-  properties (`--tg-bg`, `--tg-text`, `--tg-hint`, `--tg-button`,
-  `--tg-button-text`, `--tg-secondary-bg`) defined in `src/App.vue`.
-- No backend or network calls; the app must work when opened outside
-  Telegram (shows a banner and mock data).
+- UI chrome colors come only from the Telegram theme CSS custom properties
+  (`--tg-bg`, `--tg-text`, `--tg-hint`, `--tg-button`, `--tg-button-text`,
+  `--tg-secondary-bg`) defined in `src/App.vue`. The character palette in
+  `Tamagotchi.vue` is intentionally fixed.
+- Game logic lives in `src/tamagotchi.ts` as pure functions; components stay
+  presentational.
+- No backend or network calls; outside Telegram the app runs in browser mode
+  (localStorage + dev controls).
