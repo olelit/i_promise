@@ -22,7 +22,7 @@ const exitStyle = computed(() => ({
 }))
 
 const crouchStyle = computed(() => ({
-  transform: `translateY(${crouch.value * 12}px) scaleY(${1 - crouch.value * 0.15})`,
+  transform: `translateY(${crouch.value * 4}px) scaleY(${1 - crouch.value * 0.15})`,
 }))
 </script>
 

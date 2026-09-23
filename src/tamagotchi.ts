@@ -15,7 +15,6 @@ export const TICK_MS = 60_000
 export const FEED_GAIN = 20
 export const FEED_CAP = 20
 export const FEED_COOLDOWN_MS = 24 * 3_600_000
-export const PET_GAIN = 20
 
 const HOUR_MS = 3_600_000
 
@@ -67,15 +66,6 @@ export function feed(state: TamagotchiState, now: number): TamagotchiState {
     lastSeen: now,
     awayUntil: state.awayUntil,
     lastFedAt: now,
-  }
-}
-
-export function pet(state: TamagotchiState, now: number): TamagotchiState {
-  return {
-    mood: Math.min(MOOD_MAX, state.mood + PET_GAIN),
-    lastSeen: now,
-    awayUntil: state.awayUntil,
-    lastFedAt: state.lastFedAt,
   }
 }
 

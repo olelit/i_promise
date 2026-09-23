@@ -1,49 +1,17 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, watchEffect } from 'vue'
-import { getWebApp, isTelegram } from '../telegram'
-import { formatRemaining, MOOD_MAX } from '../tamagotchi'
+import { computed } from 'vue'
+import { formatRemaining } from '../tamagotchi'
 
-const props = defineProps<{ mood: number; remainingMs: number | null }>()
-const emit = defineEmits<{ pet: []; setMood: [mood: number] }>()
+const props = defineProps<{ remainingMs: number | null; nextFeedMs: number | null }>()
+const emit = defineEmits<{ feed: [] }>()
 
-const webApp = getWebApp()
-const inTelegram = isTelegram()
+const feedLabel = computed(() =>
+  props.nextFeedMs === null ? 'ПОКОРМИТЬ' : `Покормить через ${formatRemaining(props.nextFeedMs)}`,
+)
 
-function handlePet(): void {
-  emit('pet')
-  webApp?.HapticFeedback.impactOccurred('light')
+function handleFeed(): void {
+  emit('feed')
 }
-
-function handleSlider(event: Event): void {
-  const value = Number((event.target as HTMLInputElement).value)
-  emit('setMood', value)
-}
-
-watchEffect(() => {
-  if (!webApp) {
-    return
-  }
-  if (props.remainingMs !== null) {
-    webApp.MainButton.hide()
-    return
-  }
-  webApp.MainButton.setText('Погладить')
-  webApp.MainButton.show()
-  if (props.mood >= MOOD_MAX) {
-    webApp.MainButton.disable()
-  } else {
-    webApp.MainButton.enable()
-  }
-})
-
-onMounted(() => {
-  webApp?.MainButton.onClick(handlePet)
-})
-
-onUnmounted(() => {
-  webApp?.MainButton.offClick(handlePet)
-  webApp?.MainButton.hide()
-})
 </script>
 
 <template>
@@ -52,21 +20,11 @@ onUnmounted(() => {
       Он ушёл. Вернётся через {{ formatRemaining(remainingMs) }}
     </p>
     <template v-else>
-      <p class="hint">Настроение падает само. Погладь, чтобы поднять.</p>
-      <button
-        v-if="!inTelegram"
-        class="pet"
-        type="button"
-        :disabled="mood >= MOOD_MAX"
-        @click="handlePet"
-      >
-        Погладить
+      <p class="hint">Настроение падает само. Покорми раз в день, чтобы поднять.</p>
+      <button class="feed" type="button" :disabled="nextFeedMs !== null" @click="handleFeed">
+        {{ feedLabel }}
       </button>
     </template>
-    <label v-if="!inTelegram" class="slider">
-      <span>Настроение: {{ Math.round(mood) }}</span>
-      <input type="range" min="-100" max="100" :value="mood" @input="handleSlider" />
-    </label>
   </section>
 </template>
 
@@ -94,7 +52,7 @@ onUnmounted(() => {
   text-align: center;
 }
 
-.pet {
+.feed {
   padding: 12px 20px;
   border: none;
   border-radius: 10px;
@@ -104,21 +62,8 @@ onUnmounted(() => {
   cursor: pointer;
 }
 
-.pet:disabled {
+.feed:disabled {
   opacity: 0.5;
   cursor: default;
-}
-
-.slider {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  color: var(--tg-hint);
-  font-size: 13px;
-}
-
-.slider input {
-  width: 100%;
 }
 </style>

@@ -3,14 +3,17 @@ import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { getWebApp, isTelegram, type TelegramThemeParams } from './telegram'
 import {
   applyDecay,
+  canFeed,
   createInitialState,
-  pet as petState,
+  feed as feedState,
+  feedCooldownRemaining,
   MOOD_MIN,
   TICK_MS,
   type TamagotchiState,
 } from './tamagotchi'
 import { loadState, saveState } from './storage'
 import Tamagotchi from './components/Tamagotchi.vue'
+import MoodIndicator from './components/MoodIndicator.vue'
 import MoodControls from './components/MoodControls.vue'
 
 const webApp = getWebApp()
@@ -24,6 +27,7 @@ const away = computed(() => current.value.awayUntil !== null || current.value.mo
 const remainingMs = computed(() =>
   current.value.awayUntil === null ? null : Math.max(0, current.value.awayUntil - now.value),
 )
+const nextFeedMs = computed(() => feedCooldownRemaining(current.value, now.value))
 
 let timer: number | undefined
 
@@ -40,15 +44,12 @@ function tick(): void {
   commitTransitions()
 }
 
-function handlePet(): void {
+function handleFeed(): void {
   now.value = Date.now()
-  state.value = petState(current.value, now.value)
-  void saveState(state.value)
-}
-
-function handleSetMood(mood: number): void {
-  now.value = Date.now()
-  state.value = { mood, lastSeen: now.value, awayUntil: null, lastFedAt: null }
+  if (!canFeed(current.value, now.value)) {
+    return
+  }
+  state.value = feedState(current.value, now.value)
   void saveState(state.value)
 }
 
@@ -105,13 +106,11 @@ onUnmounted(() => {
       Приложение открыто не в Telegram: настроение хранится локально в браузере.
     </div>
     <main class="content">
-      <Tamagotchi :mood="current.mood" :away="away" />
-      <MoodControls
-        :mood="current.mood"
-        :remaining-ms="remainingMs"
-        @pet="handlePet"
-        @set-mood="handleSetMood"
-      />
+      <div class="pet-row">
+        <Tamagotchi :mood="current.mood" :away="away" />
+        <MoodIndicator :mood="current.mood" />
+      </div>
+      <MoodControls :remaining-ms="remainingMs" :next-feed-ms="nextFeedMs" @feed="handleFeed" />
     </main>
   </div>
 </template>
@@ -150,6 +149,12 @@ body {
 .content {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.pet-row {
+  display: flex;
   align-items: center;
   gap: 16px;
 }
