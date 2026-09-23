@@ -62,7 +62,7 @@ export function applyDecay(state: TamagotchiState, now: number): TamagotchiState
     return state
   }
 
-  const hours = (now - state.lastSeen) / HOUR_MS
+  const hours = Math.max(0, (now - state.lastSeen) / HOUR_MS)
   const mood = Math.min(MOOD_MAX, Math.max(MOOD_MIN, state.mood - hours * decayRate(state)))
 
   if (mood <= MOOD_MIN) {

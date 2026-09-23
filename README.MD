@@ -34,10 +34,12 @@
 
 ## Хранение состояния
 
-Состояние (настроение, время последнего взаимодействия, время возврата)
-хранится в **Telegram CloudStorage** — облаке Telegram, отдельно для каждого
-пользователя бота. База данных и бэкенд не нужны. В браузерном режиме
-используется `localStorage`, чтобы состояние переживало перезагрузку страницы.
+Состояние хранится в **Telegram CloudStorage** — облаке Telegram, отдельно для
+каждого пользователя бота. Сохраняемый объект — `{ mood, lastSeen, awayUntil,
+lastFedAt, task }`: настроение, время последнего взаимодействия, время возврата,
+время последнего кормления и активная задача. База данных и бэкенд не нужны.
+В браузерном режиме используется `localStorage`, чтобы состояние переживало
+перезагрузку страницы.
 
 Важно: приложение не проверяет подпись `initData` на сервере (сервера нет).
 Для реального приложения с наградами или платежами такую проверку нужно
@@ -96,11 +98,16 @@ export default defineConfig({
   `https://telegram.org/js/telegram-web-app.js`
 - `src/telegram.ts` — типы и безопасный доступ к `window.Telegram.WebApp`
 - `src/tamagotchi.ts` — чистая логика настроения (константы, `applyDecay`, `feed`)
+- `src/phrases.ts` — реплики персонажа и выбор случайной фразы
 - `src/storage.ts` — сохранение состояния (CloudStorage → localStorage)
 - `src/App.vue` — оркестрация: загрузка состояния, тик раз в минуту, тема
 - `src/components/Tamagotchi.vue` — SVG-персонаж и анимации
+- `src/components/SpeechBubble.vue` — облако с репликой над персонажем
 - `src/components/MoodIndicator.vue` — вертикальный индикатор настроения
 - `src/components/MoodControls.vue` — кнопка ПОКОРМИТЬ и таймеры
+- `src/components/Modal.vue` — общая модалка
+- `src/components/TaskCreateDialog.vue` — форма создания задачи
+- `src/components/TaskInfoDialog.vue` — карточка активной задачи
 
 ## Полезные ссылки
 

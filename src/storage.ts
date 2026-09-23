@@ -1,5 +1,11 @@
 import { getWebApp, type TelegramCloudStorage } from './telegram'
-import type { TamagotchiState, TamagotchiTask } from './tamagotchi'
+import {
+  TASK_DESCRIPTION_MAX,
+  TASK_MAX_HOURS,
+  TASK_MIN_HOURS,
+  type TamagotchiState,
+  type TamagotchiTask,
+} from './tamagotchi'
 
 const KEY = 'tamagotchi-state'
 
@@ -41,7 +47,20 @@ function isValidState(value: unknown): value is TamagotchiState {
 }
 
 function normalizeState(state: TamagotchiState): TamagotchiState {
-  return { ...state, lastFedAt: state.lastFedAt ?? null, task: state.task ?? null }
+  const task = state.task ?? null
+  return {
+    ...state,
+    lastFedAt: state.lastFedAt ?? null,
+    task:
+      task === null
+        ? null
+        : {
+            ...task,
+            hours: Math.min(TASK_MAX_HOURS, Math.max(TASK_MIN_HOURS, Math.round(task.hours))),
+            extensions: Math.max(0, Math.floor(task.extensions)),
+            description: task.description.slice(0, TASK_DESCRIPTION_MAX),
+          },
+  }
 }
 
 function parseState(raw: string | null | undefined): TamagotchiState | null {

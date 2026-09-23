@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { formatRemaining } from '../tamagotchi'
+import { getWebApp } from '../telegram'
 
 const props = defineProps<{ remainingMs: number | null; nextFeedMs: number | null }>()
 const emit = defineEmits<{ feed: []; feedBlocked: [] }>()
+const webApp = getWebApp()
 
 const feedLabel = computed(() =>
   props.nextFeedMs === null ? 'ПОКОРМИТЬ' : `Покормить через ${formatRemaining(props.nextFeedMs)}`,
@@ -11,6 +13,7 @@ const feedLabel = computed(() =>
 
 function handleFeed(): void {
   emit('feed')
+  webApp?.HapticFeedback.impactOccurred('light')
 }
 
 function handleWrapClick(): void {

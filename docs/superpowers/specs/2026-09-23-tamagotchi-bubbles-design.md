@@ -19,8 +19,8 @@ previous phrase of the same event.
 | --------------- | ------------------------------------------------------ | ------- |
 | `greeting`      | app opened (once per load)                             | «Привет! Как дела?», «Я скучал!», «Чем займёмся?» |
 | `feed`          | successful feeding below the cap                       | «Ням-ням! Спасибо!», «Вкусно!», «Ещё бы чуть-чуть!» |
-| `feedAtCap`     | feeding while mood is already at/above `FEED_CAP`      | «Спасибо, я сыт!», «Мне хватит на сегодня», «Я и так доволен!» |
-| `feedCooldown`  | feed button pressed while on cooldown (the button is disabled — see below) | «Я ещё не проголодался», «Давай попозже», «Мне хватит на сегодня» |
+| `feedAtCap`     | feeding while mood is already at/above `FEED_CAP`      | «Спасибо, я сыт!», «Мне больше не влезет», «Я и так доволен!» |
+| `feedCooldown`  | feed button pressed while on cooldown (the button is disabled — see below) | «Я ещё не проголодался», «Давай попозже», «Я сегодня уже ел» |
 | `taskStart`     | task started                                           | «Ого, задача! Я помогу!», «Берусь!», «Звучит серьёзно!» |
 | `taskComplete`  | task marked done                                       | «Ура, всё готово!», «Мы справились!», «Отличная работа!» |
 | `taskExtend`    | «+1 час» pressed                                       | «Ещё часик? Ладно...», «Хорошо, но я буду быстрее уставать», «Время летит...» |
@@ -40,8 +40,9 @@ without feeding.
   scene, centered), with a small pop-in animation.
 - Visible for 4 seconds, then fades out; a new phrase replaces the current one
   and restarts the timer.
-- Picking: random index, avoiding the same string as the previous pick for that
-  event.
+- Picking: `pickPhrase(event: PhraseEvent): string` keeps a module-level map of
+  the last pick per event, filters it out of the candidates, and picks a random
+  remaining phrase, so the same phrase never repeats immediately.
 - `greeting` fires once per app load, after the state is loaded.
 - `awayStart` is detected when `applyDecay` transitions into the away state;
   `returned` when it leaves the away state.
@@ -52,7 +53,7 @@ without feeding.
 
 ## Files
 
-- Create: `src/phrases.ts` (typed event map and `pickPhrase(event, previous)`),
+- Create: `src/phrases.ts` (typed event map and `pickPhrase(event: PhraseEvent): string`),
   `src/components/SpeechBubble.vue`
 - Modify: `src/App.vue` (trigger wiring, bubble timer), `README.MD`
 

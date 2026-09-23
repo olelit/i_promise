@@ -8,6 +8,9 @@ const emit = defineEmits<{ complete: []; extend: []; abandon: []; close: [] }>()
 
 const confirming = ref(false)
 const remaining = computed(() => Math.max(0, props.task.deadline - props.now))
+const remainingLabel = computed(() =>
+  remaining.value > 0 ? `Осталось: ${formatRemaining(remaining.value)}` : 'Просрочено',
+)
 
 function handleAbandon(): void {
   if (!confirming.value) {
@@ -22,7 +25,7 @@ function handleAbandon(): void {
   <Modal title="Задача" @close="emit('close')">
     <p class="description">{{ task.description }}</p>
     <p class="row">Часов: {{ task.hours }}</p>
-    <p class="row">Осталось: {{ formatRemaining(remaining) }}</p>
+    <p class="row">{{ remainingLabel }}</p>
     <p v-if="task.extensions > 0" class="row">Продлений: {{ task.extensions }}</p>
     <div class="actions">
       <button class="primary" type="button" @click="emit('complete')">Выполнено</button>
@@ -76,7 +79,7 @@ function handleAbandon(): void {
 }
 
 .danger {
-  background: #d9534f;
+  background: var(--tg-danger);
   color: #ffffff;
 }
 </style>

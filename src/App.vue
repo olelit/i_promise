@@ -60,12 +60,10 @@ function commitTransitions(): void {
     void saveState(next)
     if (before.task !== null && next.task === null) {
       say('overdue')
-    }
-    if (before.awayUntil === null && next.awayUntil !== null) {
-      say('awayStart')
-    }
-    if (before.awayUntil !== null && next.awayUntil === null) {
+    } else if (before.awayUntil !== null && next.awayUntil === null) {
       say('returned')
+    } else if (before.awayUntil === null && next.awayUntil !== null) {
+      say('awayStart')
     }
   }
 }
@@ -96,6 +94,11 @@ function handleTaskStart(input: { hours: number; description: string }): void {
 
 function handleTaskComplete(): void {
   now.value = Date.now()
+  if (current.value.task === null) {
+    infoOpen.value = false
+    say('overdue')
+    return
+  }
   state.value = completeTask(current.value, now.value)
   void saveState(state.value)
   infoOpen.value = false
@@ -104,6 +107,11 @@ function handleTaskComplete(): void {
 
 function handleTaskExtend(): void {
   now.value = Date.now()
+  if (current.value.task === null) {
+    infoOpen.value = false
+    say('overdue')
+    return
+  }
   state.value = extendTask(current.value, now.value)
   void saveState(state.value)
   say('taskExtend')
@@ -111,6 +119,11 @@ function handleTaskExtend(): void {
 
 function handleTaskAbandon(): void {
   now.value = Date.now()
+  if (current.value.task === null) {
+    infoOpen.value = false
+    say('overdue')
+    return
+  }
   state.value = abandonTask(current.value, now.value)
   void saveState(state.value)
   infoOpen.value = false
@@ -136,6 +149,7 @@ const themeStyle = computed(() => ({
   '--tg-button': theme.value.button_color ?? '#2481cc',
   '--tg-button-text': theme.value.button_text_color ?? '#ffffff',
   '--tg-secondary-bg': theme.value.secondary_bg_color ?? '#f4f4f5',
+  '--tg-danger': '#d9534f',
 }))
 
 watchEffect(() => {
