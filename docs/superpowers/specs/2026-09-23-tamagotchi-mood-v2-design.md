@@ -20,9 +20,10 @@ decay/away/return mechanics.
 | `FEED_COOLDOWN_MS`   | `24 * 3600_000`  |
 | decay / away / return | unchanged: `-20`/hour, away at `-100`, return after `2h` at `-50` |
 
-- `canFeed(state, now)`: `false` while `awayUntil !== null` (the pet is not
-  there); otherwise `true` when `lastFedAt === null` or
-  `now - lastFedAt >= FEED_COOLDOWN_MS`.
+- `feedBlockReason(state, now): 'away' | 'cooldown' | 'full' | null`:
+  `away` while `awayUntil !== null`; `cooldown` while the 24h cooldown is
+  active; `full` when `mood >= FEED_CAP` (feeding would add nothing); `null`
+  when feeding is possible. `canFeed` is `feedBlockReason(...) === null`.
 - `feed(state, now)`: `mood` becomes `mood` unchanged when `mood >= FEED_CAP`,
   otherwise `min(FEED_CAP, mood + FEED_GAIN)`; `lastFedAt = now`. Feeding never
   raises mood above `FEED_CAP` and never lowers it; if mood is already at or
@@ -78,10 +79,15 @@ interface TamagotchiState {
   emits `feed`. `remainingMs` is the away countdown (non-null while away);
   `nextFeedMs` is the time until feeding is allowed again (`null` when feeding
   is possible now).
-- Feed button «ПОКОРМИТЬ»: enabled when `nextFeedMs === null`; otherwise
-  disabled with the label `Покормить через <formatRemaining(nextFeedMs)>`.
-  Hidden entirely while away (`remainingMs !== null`), where the existing away
-  message is shown instead.
+- Layout: the character row and controls are vertically centered in the space
+  above the MainButton (`flex: 1; justify-content: center`), which keeps the
+  screen balanced and leaves room for the speech bubble above the character.
+- Feed button «ПОКОРМИТЬ»: enabled only when feeding would have an effect
+  (block reason `null`); labels: the countdown `Покормить через
+  <formatRemaining(nextFeedMs)>` while on cooldown, «Сыт» when mood is already
+  at/above `FEED_CAP`. Hidden entirely while away (`remainingMs !== null`),
+  where the existing away message is shown instead. Clicking the disabled
+  button shows the matching phrase (`feedCooldown` / `feedAtCap`).
 - Hint text: «Настроение падает само. Покорми раз в день, чтобы поднять.»
 - Successful feed triggers a light haptic in Telegram.
 - The same in-page button is used in browser mode; there are no separate dev

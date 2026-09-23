@@ -19,8 +19,8 @@ previous phrase of the same event.
 | --------------- | ------------------------------------------------------ | ------- |
 | `greeting`      | app opened (once per load)                             | «Привет! Как дела?», «Я скучал!», «Чем займёмся?» |
 | `feed`          | successful feeding below the cap                       | «Ням-ням! Спасибо!», «Вкусно!», «Ещё бы чуть-чуть!» |
-| `feedAtCap`     | feeding while mood is already at/above `FEED_CAP`      | «Спасибо, я сыт!», «Мне больше не влезет», «Я и так доволен!» |
-| `feedCooldown`  | feed button pressed while on cooldown (the button is disabled — see below) | «Я ещё не проголодался», «Давай попозже», «Я сегодня уже ел» |
+| `feedAtCap`     | clicking the disabled feed button while mood is already at/above `FEED_CAP` | «Спасибо, я сыт!», «Мне больше не влезет», «Я и так доволен!» |
+| `feedCooldown`  | clicking the disabled feed button while on cooldown | «Я ещё не проголодался», «Давай попозже», «Я сегодня уже ел» |
 | `taskStart`     | task started                                           | «Ого, задача! Я помогу!», «Берусь!», «Звучит серьёзно!» |
 | `taskComplete`  | task marked done                                       | «Ура, всё готово!», «Мы справились!», «Отличная работа!» |
 | `taskExtend`    | «+1 час» pressed                                       | «Ещё часик? Ладно...», «Хорошо, но я буду быстрее уставать», «Время летит...» |
