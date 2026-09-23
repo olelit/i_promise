@@ -13,7 +13,15 @@ function isValidState(value: unknown): value is TamagotchiState {
   const awayOk =
     candidate.awayUntil === null ||
     (typeof candidate.awayUntil === 'number' && Number.isFinite(candidate.awayUntil))
-  return moodOk && lastSeenOk && awayOk
+  const lastFedOk =
+    candidate.lastFedAt === undefined ||
+    candidate.lastFedAt === null ||
+    (typeof candidate.lastFedAt === 'number' && Number.isFinite(candidate.lastFedAt))
+  return moodOk && lastSeenOk && awayOk && lastFedOk
+}
+
+function normalizeState(state: TamagotchiState): TamagotchiState {
+  return { ...state, lastFedAt: state.lastFedAt ?? null }
 }
 
 function parseState(raw: string | null | undefined): TamagotchiState | null {
@@ -22,7 +30,7 @@ function parseState(raw: string | null | undefined): TamagotchiState | null {
   }
   try {
     const parsed: unknown = JSON.parse(raw)
-    return isValidState(parsed) ? parsed : null
+    return isValidState(parsed) ? normalizeState(parsed) : null
   } catch {
     return null
   }

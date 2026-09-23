@@ -48,7 +48,7 @@ function handlePet(): void {
 
 function handleSetMood(mood: number): void {
   now.value = Date.now()
-  state.value = { mood, lastSeen: now.value, awayUntil: null }
+  state.value = { mood, lastSeen: now.value, awayUntil: null, lastFedAt: null }
   void saveState(state.value)
 }
 
