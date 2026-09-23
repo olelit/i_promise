@@ -95,6 +95,8 @@ function handleTaskStart(input: { hours: number; description: string }): void {
 function handleTaskComplete(): void {
   now.value = Date.now()
   if (current.value.task === null) {
+    state.value = current.value
+    void saveState(state.value)
     infoOpen.value = false
     say('overdue')
     return
@@ -108,6 +110,8 @@ function handleTaskComplete(): void {
 function handleTaskExtend(): void {
   now.value = Date.now()
   if (current.value.task === null) {
+    state.value = current.value
+    void saveState(state.value)
     infoOpen.value = false
     say('overdue')
     return
@@ -120,6 +124,8 @@ function handleTaskExtend(): void {
 function handleTaskAbandon(): void {
   now.value = Date.now()
   if (current.value.task === null) {
+    state.value = current.value
+    void saveState(state.value)
     infoOpen.value = false
     say('overdue')
     return
