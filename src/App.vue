@@ -1,13 +1,17 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch, watchEffect } from 'vue'
 import { getWebApp, isTelegram, type TelegramThemeParams } from './telegram'
 import {
+  abandonTask,
   applyDecay,
   canFeed,
+  completeTask,
   createInitialState,
+  extendTask,
   feed as feedState,
   feedCooldownRemaining,
   MOOD_MIN,
+  startTask,
   TICK_MS,
   type TamagotchiState,
 } from './tamagotchi'
@@ -15,12 +19,16 @@ import { loadState, saveState } from './storage'
 import Tamagotchi from './components/Tamagotchi.vue'
 import MoodIndicator from './components/MoodIndicator.vue'
 import MoodControls from './components/MoodControls.vue'
+import TaskCreateDialog from './components/TaskCreateDialog.vue'
+import TaskInfoDialog from './components/TaskInfoDialog.vue'
 
 const webApp = getWebApp()
 const inTelegram = isTelegram()
 const theme = ref<TelegramThemeParams>({})
 const state = ref<TamagotchiState>(createInitialState(Date.now()))
 const now = ref(Date.now())
+const createOpen = ref(false)
+const infoOpen = ref(false)
 
 const current = computed(() => applyDecay(state.value, now.value))
 const away = computed(() => current.value.awayUntil !== null || current.value.mood <= MOOD_MIN)
@@ -28,6 +36,8 @@ const remainingMs = computed(() =>
   current.value.awayUntil === null ? null : Math.max(0, current.value.awayUntil - now.value),
 )
 const nextFeedMs = computed(() => feedCooldownRemaining(current.value, now.value))
+const task = computed(() => current.value.task)
+const showTaskButton = computed(() => !(away.value && task.value === null))
 
 let timer: number | undefined
 
@@ -53,6 +63,41 @@ function handleFeed(): void {
   void saveState(state.value)
 }
 
+function handleTaskStart(input: { hours: number; description: string }): void {
+  now.value = Date.now()
+  state.value = startTask(current.value, input, now.value)
+  void saveState(state.value)
+  createOpen.value = false
+}
+
+function handleTaskComplete(): void {
+  now.value = Date.now()
+  state.value = completeTask(current.value, now.value)
+  void saveState(state.value)
+  infoOpen.value = false
+}
+
+function handleTaskExtend(): void {
+  now.value = Date.now()
+  state.value = extendTask(current.value, now.value)
+  void saveState(state.value)
+}
+
+function handleTaskAbandon(): void {
+  now.value = Date.now()
+  state.value = abandonTask(current.value, now.value)
+  void saveState(state.value)
+  infoOpen.value = false
+}
+
+function handleMainButton(): void {
+  if (task.value === null) {
+    createOpen.value = true
+  } else {
+    infoOpen.value = true
+  }
+}
+
 function applyTheme(): void {
   theme.value = { ...(webApp?.themeParams ?? {}) }
 }
@@ -65,6 +110,24 @@ const themeStyle = computed(() => ({
   '--tg-button-text': theme.value.button_text_color ?? '#ffffff',
   '--tg-secondary-bg': theme.value.secondary_bg_color ?? '#f4f4f5',
 }))
+
+watchEffect(() => {
+  if (!webApp) {
+    return
+  }
+  if (!showTaskButton.value) {
+    webApp.MainButton.hide()
+    return
+  }
+  webApp.MainButton.setText(task.value === null ? 'Начать задачу' : 'Задача')
+  webApp.MainButton.show()
+})
+
+watch(task, (value) => {
+  if (value === null) {
+    infoOpen.value = false
+  }
+})
 
 function handleVisibility(): void {
   now.value = Date.now()
@@ -80,6 +143,7 @@ onMounted(async () => {
     webApp.expand()
     applyTheme()
     webApp.onEvent('themeChanged', applyTheme)
+    webApp.MainButton.onClick(handleMainButton)
   }
   const loaded = await loadState()
   if (loaded) {
@@ -93,6 +157,8 @@ onMounted(async () => {
 
 onUnmounted(() => {
   webApp?.offEvent('themeChanged', applyTheme)
+  webApp?.MainButton.offClick(handleMainButton)
+  webApp?.MainButton.hide()
   if (timer !== undefined) {
     window.clearInterval(timer)
   }
@@ -111,7 +177,25 @@ onUnmounted(() => {
         <MoodIndicator :mood="current.mood" />
       </div>
       <MoodControls :remaining-ms="remainingMs" :next-feed-ms="nextFeedMs" @feed="handleFeed" />
+      <button
+        v-if="!inTelegram && showTaskButton"
+        class="task-button"
+        type="button"
+        @click="task === null ? (createOpen = true) : (infoOpen = true)"
+      >
+        {{ task === null ? 'Начать задачу' : 'Задача' }}
+      </button>
     </main>
+    <TaskCreateDialog v-if="createOpen" @start="handleTaskStart" @close="createOpen = false" />
+    <TaskInfoDialog
+      v-if="infoOpen && task !== null"
+      :task="task"
+      :now="now"
+      @complete="handleTaskComplete"
+      @extend="handleTaskExtend"
+      @abandon="handleTaskAbandon"
+      @close="infoOpen = false"
+    />
   </div>
 </template>
 
@@ -157,5 +241,15 @@ body {
   display: flex;
   align-items: center;
   gap: 16px;
+}
+
+.task-button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 10px;
+  background: var(--tg-button);
+  color: var(--tg-button-text);
+  font-size: 16px;
+  cursor: pointer;
 }
 </style>
