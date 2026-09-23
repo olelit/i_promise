@@ -3,13 +3,23 @@ import { computed } from 'vue'
 import { formatRemaining } from '../tamagotchi'
 import { getWebApp } from '../telegram'
 
-const props = defineProps<{ remainingMs: number | null; nextFeedMs: number | null }>()
-const emit = defineEmits<{ feed: []; feedBlocked: [] }>()
+const props = defineProps<{
+  remainingMs: number | null
+  nextFeedMs: number | null
+  blockReason: 'cooldown' | 'full' | null
+}>()
+const emit = defineEmits<{ feed: []; feedBlocked: [reason: 'cooldown' | 'full'] }>()
 const webApp = getWebApp()
 
-const feedLabel = computed(() =>
-  props.nextFeedMs === null ? 'ПОКОРМИТЬ' : `Покормить через ${formatRemaining(props.nextFeedMs)}`,
-)
+const feedLabel = computed(() => {
+  if (props.blockReason === 'cooldown' && props.nextFeedMs !== null) {
+    return `Покормить через ${formatRemaining(props.nextFeedMs)}`
+  }
+  if (props.blockReason === 'full') {
+    return 'Сыт'
+  }
+  return 'ПОКОРМИТЬ'
+})
 
 function handleFeed(): void {
   emit('feed')
@@ -17,8 +27,8 @@ function handleFeed(): void {
 }
 
 function handleWrapClick(): void {
-  if (props.nextFeedMs !== null) {
-    emit('feedBlocked')
+  if (props.blockReason !== null) {
+    emit('feedBlocked', props.blockReason)
   }
 }
 </script>
@@ -31,7 +41,7 @@ function handleWrapClick(): void {
     <template v-else>
       <p class="hint">Настроение падает само. Покорми раз в день, чтобы поднять.</p>
       <div class="feed-wrap" @click="handleWrapClick">
-        <button class="feed" type="button" :disabled="nextFeedMs !== null" @click.stop="handleFeed">
+        <button class="feed" type="button" :disabled="blockReason !== null" @click.stop="handleFeed">
           {{ feedLabel }}
         </button>
       </div>

@@ -8,7 +8,7 @@ import {
   completeTask,
   createInitialState,
   extendTask,
-  FEED_CAP,
+  feedBlockReason,
   feed as feedState,
   feedCooldownRemaining,
   MOOD_MIN,
@@ -39,6 +39,10 @@ const remainingMs = computed(() =>
   current.value.awayUntil === null ? null : Math.max(0, current.value.awayUntil - now.value),
 )
 const nextFeedMs = computed(() => feedCooldownRemaining(current.value, now.value))
+const feedBlock = computed(() => {
+  const reason = feedBlockReason(current.value, now.value)
+  return reason === 'away' ? null : reason
+})
 const task = computed(() => current.value.task)
 const showTaskButton = computed(() => !(away.value && task.value === null))
 
@@ -78,10 +82,13 @@ function handleFeed(): void {
   if (!canFeed(current.value, now.value)) {
     return
   }
-  const atCap = current.value.mood >= FEED_CAP
   state.value = feedState(current.value, now.value)
   void saveState(state.value)
-  say(atCap ? 'feedAtCap' : 'feed')
+  say('feed')
+}
+
+function handleFeedBlocked(reason: 'cooldown' | 'full'): void {
+  say(reason === 'full' ? 'feedAtCap' : 'feedCooldown')
 }
 
 function handleTaskStart(input: { hours: number; description: string }): void {
@@ -230,8 +237,9 @@ onUnmounted(() => {
       <MoodControls
         :remaining-ms="remainingMs"
         :next-feed-ms="nextFeedMs"
+        :block-reason="feedBlock"
         @feed="handleFeed"
-        @feed-blocked="say('feedCooldown')"
+        @feed-blocked="handleFeedBlocked"
       />
       <button
         v-if="!inTelegram && showTaskButton"
@@ -291,6 +299,8 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 16px;
+  flex: 1;
+  justify-content: center;
 }
 
 .pet-row {

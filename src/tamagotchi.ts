@@ -86,11 +86,23 @@ export function feedCooldownRemaining(state: TamagotchiState, now: number): numb
   return remaining > 0 ? remaining : null
 }
 
-export function canFeed(state: TamagotchiState, now: number): boolean {
+export type FeedBlockReason = 'away' | 'cooldown' | 'full'
+
+export function feedBlockReason(state: TamagotchiState, now: number): FeedBlockReason | null {
   if (state.awayUntil !== null) {
-    return false
+    return 'away'
   }
-  return feedCooldownRemaining(state, now) === null
+  if (feedCooldownRemaining(state, now) !== null) {
+    return 'cooldown'
+  }
+  if (state.mood >= FEED_CAP) {
+    return 'full'
+  }
+  return null
+}
+
+export function canFeed(state: TamagotchiState, now: number): boolean {
+  return feedBlockReason(state, now) === null
 }
 
 export function feed(state: TamagotchiState, now: number): TamagotchiState {
