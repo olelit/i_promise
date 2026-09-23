@@ -13,7 +13,7 @@ const pupilDy = computed(() => (1 - t.value) * 3)
 const browTilt = computed(() => (1 - t.value) * 20)
 const mouthPath = computed(() => {
   const curve = 20 * t.value - 12
-  return `M 78 122 Q 100 ${122 + curve} 122 122`
+  return `M 82 96 Q 100 ${96 + curve} 118 96`
 })
 const blushOpacity = computed(() => t.value)
 
@@ -32,35 +32,56 @@ const crouchStyle = computed(() => ({
       <div class="crouch" :style="crouchStyle">
         <Transition name="flip" mode="out-in">
           <svg v-if="!turned" key="front" class="face" viewBox="0 0 200 200" aria-hidden="true">
-            <ellipse cx="100" cy="112" rx="55" ry="60" fill="#7ec8a9" />
-            <circle cx="72" cy="60" r="13" fill="#7ec8a9" />
-            <circle cx="128" cy="60" r="13" fill="#7ec8a9" />
-            <ellipse cx="100" cy="128" rx="34" ry="38" fill="#a8dcc0" />
-            <ellipse cx="66" cy="112" rx="8" ry="6" fill="#f4a3a3" :opacity="blushOpacity" />
-            <ellipse cx="134" cy="112" rx="8" ry="6" fill="#f4a3a3" :opacity="blushOpacity" />
-            <ellipse cx="80" cy="95" rx="7" :ry="eyeRy" fill="#ffffff" />
-            <ellipse cx="120" cy="95" rx="7" :ry="eyeRy" fill="#ffffff" />
-            <circle cx="80" :cy="95 + pupilDy" r="3.5" fill="#2f4f43" />
-            <circle cx="120" :cy="95 + pupilDy" r="3.5" fill="#2f4f43" />
+            <ellipse cx="100" cy="78" rx="42" ry="40" fill="#7ec8a9" />
+            <circle cx="66" cy="44" r="11" fill="#7ec8a9" />
+            <circle cx="134" cy="44" r="11" fill="#7ec8a9" />
+            <ellipse cx="100" cy="146" rx="34" ry="38" fill="#7ec8a9" />
+            <ellipse cx="100" cy="156" rx="22" ry="26" fill="#a8dcc0" />
             <line
-              x1="70"
-              y1="80"
-              x2="90"
-              y2="80"
-              stroke="#2f4f43"
-              stroke-width="3"
+              x1="68"
+              y1="128"
+              x2="52"
+              y2="156"
+              stroke="#7ec8a9"
+              stroke-width="14"
               stroke-linecap="round"
-              :transform="`rotate(${browTilt} 80 80)`"
             />
             <line
-              x1="110"
-              y1="80"
-              x2="130"
-              y2="80"
+              x1="132"
+              y1="128"
+              x2="148"
+              y2="156"
+              stroke="#7ec8a9"
+              stroke-width="14"
+              stroke-linecap="round"
+            />
+            <ellipse cx="80" cy="186" rx="14" ry="9" fill="#7ec8a9" />
+            <ellipse cx="120" cy="186" rx="14" ry="9" fill="#7ec8a9" />
+            <ellipse cx="74" cy="84" rx="7" ry="5" fill="#f4a3a3" :opacity="blushOpacity" />
+            <ellipse cx="126" cy="84" rx="7" ry="5" fill="#f4a3a3" :opacity="blushOpacity" />
+            <ellipse cx="80" cy="70" rx="6.5" :ry="eyeRy" fill="#ffffff" />
+            <ellipse cx="120" cy="70" rx="6.5" :ry="eyeRy" fill="#ffffff" />
+            <circle cx="80" :cy="70 + pupilDy" r="3.2" fill="#2f4f43" />
+            <circle cx="120" :cy="70 + pupilDy" r="3.2" fill="#2f4f43" />
+            <line
+              x1="72"
+              y1="56"
+              x2="88"
+              y2="56"
               stroke="#2f4f43"
               stroke-width="3"
               stroke-linecap="round"
-              :transform="`rotate(${-browTilt} 120 80)`"
+              :transform="`rotate(${browTilt} 80 56)`"
+            />
+            <line
+              x1="112"
+              y1="56"
+              x2="128"
+              y2="56"
+              stroke="#2f4f43"
+              stroke-width="3"
+              stroke-linecap="round"
+              :transform="`rotate(${-browTilt} 120 56)`"
             />
             <path
               :d="mouthPath"
@@ -71,17 +92,38 @@ const crouchStyle = computed(() => ({
             />
           </svg>
           <svg v-else key="back" class="face" viewBox="0 0 200 200" aria-hidden="true">
-            <ellipse cx="100" cy="112" rx="55" ry="60" fill="#7ec8a9" />
-            <circle cx="72" cy="60" r="13" fill="#7ec8a9" />
-            <circle cx="128" cy="60" r="13" fill="#7ec8a9" />
+            <ellipse cx="100" cy="78" rx="42" ry="40" fill="#7ec8a9" />
+            <circle cx="66" cy="44" r="11" fill="#7ec8a9" />
+            <circle cx="134" cy="44" r="11" fill="#7ec8a9" />
             <path
-              d="M 100 62 q 10 -16 24 -8 q 12 7 2 16"
+              d="M 100 44 q 8 -14 20 -7 q 10 6 2 14"
               fill="none"
               stroke="#5da88b"
               stroke-width="4"
               stroke-linecap="round"
             />
-            <ellipse cx="100" cy="160" rx="14" ry="10" fill="#a8dcc0" />
+            <ellipse cx="100" cy="146" rx="34" ry="38" fill="#7ec8a9" />
+            <line
+              x1="68"
+              y1="128"
+              x2="52"
+              y2="156"
+              stroke="#7ec8a9"
+              stroke-width="14"
+              stroke-linecap="round"
+            />
+            <line
+              x1="132"
+              y1="128"
+              x2="148"
+              y2="156"
+              stroke="#7ec8a9"
+              stroke-width="14"
+              stroke-linecap="round"
+            />
+            <ellipse cx="80" cy="186" rx="14" ry="9" fill="#7ec8a9" />
+            <ellipse cx="120" cy="186" rx="14" ry="9" fill="#7ec8a9" />
+            <ellipse cx="100" cy="162" rx="12" ry="9" fill="#a8dcc0" />
           </svg>
         </Transition>
       </div>
