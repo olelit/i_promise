@@ -198,7 +198,7 @@ Wrap the button in the template (the disabled button must not swallow clicks):
 
 ```html
       <div class="feed-wrap" @click="handleWrapClick">
-        <button class="feed" type="button" :disabled="nextFeedMs !== null" @click="handleFeed">
+        <button class="feed" type="button" :disabled="nextFeedMs !== null" @click.stop="handleFeed">
           {{ feedLabel }}
         </button>
       </div>
