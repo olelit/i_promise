@@ -726,7 +726,7 @@ body {
 
 <style scoped>
 .app {
-  min-height: 100vh;
+  min-height: var(--tg-viewport-stable-height, 100dvh);
   padding: 16px;
   display: flex;
   flex-direction: column;

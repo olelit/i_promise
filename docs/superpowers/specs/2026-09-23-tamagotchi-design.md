@@ -98,6 +98,10 @@ Props: `mood`, `awayUntil`; emits `pet` and `setMood` (dev slider only).
   available while the character is away (browser mode only); changing it
   clears `awayUntil`, which recalls the character immediately.
 
+Layout: the app fills the visible Telegram area using the script-provided
+`--tg-viewport-stable-height` CSS variable (fallback `100dvh`), so the page
+does not scroll because of the native header/MainButton overlay.
+
 ## Orchestration (`src/App.vue`)
 
 - Keeps the existing shell behavior: `ready()`, `expand()`, theme CSS
