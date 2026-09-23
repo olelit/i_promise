@@ -8,6 +8,7 @@ import {
   completeTask,
   createInitialState,
   extendTask,
+  FEED_CAP,
   feed as feedState,
   feedCooldownRemaining,
   MOOD_MIN,
@@ -16,9 +17,11 @@ import {
   type TamagotchiState,
 } from './tamagotchi'
 import { loadState, saveState } from './storage'
+import { pickPhrase, type PhraseEvent } from './phrases'
 import Tamagotchi from './components/Tamagotchi.vue'
 import MoodIndicator from './components/MoodIndicator.vue'
 import MoodControls from './components/MoodControls.vue'
+import SpeechBubble from './components/SpeechBubble.vue'
 import TaskCreateDialog from './components/TaskCreateDialog.vue'
 import TaskInfoDialog from './components/TaskInfoDialog.vue'
 
@@ -39,13 +42,31 @@ const nextFeedMs = computed(() => feedCooldownRemaining(current.value, now.value
 const task = computed(() => current.value.task)
 const showTaskButton = computed(() => !(away.value && task.value === null))
 
+const phrase = ref<{ text: string; id: number } | null>(null)
+let phraseId = 0
+
+function say(event: PhraseEvent): void {
+  phraseId += 1
+  phrase.value = { text: pickPhrase(event), id: phraseId }
+}
+
 let timer: number | undefined
 
 function commitTransitions(): void {
-  const next = applyDecay(state.value, now.value)
-  if (next.awayUntil !== state.value.awayUntil || next.lastSeen !== state.value.lastSeen) {
+  const before = state.value
+  const next = applyDecay(before, now.value)
+  if (next.awayUntil !== before.awayUntil || next.lastSeen !== before.lastSeen) {
     state.value = next
     void saveState(next)
+    if (before.task !== null && next.task === null) {
+      say('overdue')
+    }
+    if (before.awayUntil === null && next.awayUntil !== null) {
+      say('awayStart')
+    }
+    if (before.awayUntil !== null && next.awayUntil === null) {
+      say('returned')
+    }
   }
 }
 
@@ -59,8 +80,10 @@ function handleFeed(): void {
   if (!canFeed(current.value, now.value)) {
     return
   }
+  const atCap = current.value.mood >= FEED_CAP
   state.value = feedState(current.value, now.value)
   void saveState(state.value)
+  say(atCap ? 'feedAtCap' : 'feed')
 }
 
 function handleTaskStart(input: { hours: number; description: string }): void {
@@ -68,6 +91,7 @@ function handleTaskStart(input: { hours: number; description: string }): void {
   state.value = startTask(current.value, input, now.value)
   void saveState(state.value)
   createOpen.value = false
+  say('taskStart')
 }
 
 function handleTaskComplete(): void {
@@ -75,12 +99,14 @@ function handleTaskComplete(): void {
   state.value = completeTask(current.value, now.value)
   void saveState(state.value)
   infoOpen.value = false
+  say('taskComplete')
 }
 
 function handleTaskExtend(): void {
   now.value = Date.now()
   state.value = extendTask(current.value, now.value)
   void saveState(state.value)
+  say('taskExtend')
 }
 
 function handleTaskAbandon(): void {
@@ -88,6 +114,7 @@ function handleTaskAbandon(): void {
   state.value = abandonTask(current.value, now.value)
   void saveState(state.value)
   infoOpen.value = false
+  say('taskAbandon')
 }
 
 function handleMainButton(): void {
@@ -150,6 +177,7 @@ onMounted(async () => {
     state.value = loaded
   }
   now.value = Date.now()
+  say('greeting')
   commitTransitions()
   timer = window.setInterval(tick, TICK_MS)
   document.addEventListener('visibilitychange', handleVisibility)
@@ -173,10 +201,18 @@ onUnmounted(() => {
     </div>
     <main class="content">
       <div class="pet-row">
-        <Tamagotchi :mood="current.mood" :away="away" />
+        <div class="pet-wrap">
+          <SpeechBubble :message="phrase" />
+          <Tamagotchi :mood="current.mood" :away="away" />
+        </div>
         <MoodIndicator :mood="current.mood" />
       </div>
-      <MoodControls :remaining-ms="remainingMs" :next-feed-ms="nextFeedMs" @feed="handleFeed" />
+      <MoodControls
+        :remaining-ms="remainingMs"
+        :next-feed-ms="nextFeedMs"
+        @feed="handleFeed"
+        @feed-blocked="say('feedCooldown')"
+      />
       <button
         v-if="!inTelegram && showTaskButton"
         class="task-button"
@@ -241,6 +277,10 @@ body {
   display: flex;
   align-items: center;
   gap: 16px;
+}
+
+.pet-wrap {
+  position: relative;
 }
 
 .task-button {

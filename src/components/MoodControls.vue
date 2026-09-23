@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { formatRemaining } from '../tamagotchi'
 
 const props = defineProps<{ remainingMs: number | null; nextFeedMs: number | null }>()
-const emit = defineEmits<{ feed: [] }>()
+const emit = defineEmits<{ feed: []; feedBlocked: [] }>()
 
 const feedLabel = computed(() =>
   props.nextFeedMs === null ? 'ПОКОРМИТЬ' : `Покормить через ${formatRemaining(props.nextFeedMs)}`,
@@ -11,6 +11,12 @@ const feedLabel = computed(() =>
 
 function handleFeed(): void {
   emit('feed')
+}
+
+function handleWrapClick(): void {
+  if (props.nextFeedMs !== null) {
+    emit('feedBlocked')
+  }
 }
 </script>
 
@@ -21,9 +27,11 @@ function handleFeed(): void {
     </p>
     <template v-else>
       <p class="hint">Настроение падает само. Покорми раз в день, чтобы поднять.</p>
-      <button class="feed" type="button" :disabled="nextFeedMs !== null" @click="handleFeed">
-        {{ feedLabel }}
-      </button>
+      <div class="feed-wrap" @click="handleWrapClick">
+        <button class="feed" type="button" :disabled="nextFeedMs !== null" @click.stop="handleFeed">
+          {{ feedLabel }}
+        </button>
+      </div>
     </template>
   </section>
 </template>
@@ -52,6 +60,10 @@ function handleFeed(): void {
   text-align: center;
 }
 
+.feed-wrap {
+  display: inline-flex;
+}
+
 .feed {
   padding: 12px 20px;
   border: none;
@@ -65,5 +77,6 @@ function handleFeed(): void {
 .feed:disabled {
   opacity: 0.5;
   cursor: default;
+  pointer-events: none;
 }
 </style>
