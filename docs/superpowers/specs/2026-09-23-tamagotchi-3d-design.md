@@ -54,23 +54,25 @@ light, transparent renderer background so the Telegram theme shows through.
 | feet   | two `CapsuleGeometry(0.14, 0.2, 4, 8)`              | `#7ec8a9` |
 | eyes   | two `SphereGeometry(0.12, 8, 8)` + pupils (0.05)    | `#ffffff` / `#2f4f43` |
 | brows  | two `BoxGeometry(0.22, 0.05, 0.05)`                 | `#2f4f43` |
-| mouth  | `TorusGeometry(0.16, 0.035, 8, 12, Math.PI)`        | `#2f4f43` |
+| mouth  | `TubeGeometry` along a quadratic bezier from `(-0.16, 0, 0)` to `(0.16, 0, 0)` whose control point moves from `-0.08` (smile) through `0` (flat) to `+0.08` (frown) as mood falls | `#2f4f43` |
 | blush  | two `SphereGeometry(0.09, 8, 6)` (transparent)      | `#f4a3a3` |
 | curl   | `TorusGeometry(0.12, 0.03, 6, 10, Math.PI * 1.2)`   | `#5da88b` |
 | tail   | `SphereGeometry(0.12, 8, 6)` scaled (1, 0.7, 0.5)   | `#a8dcc0` |
 
-The mouth is a half-torus in the XY plane: `rotation.z = Math.PI` reads as a
-smile, `0` as a frown, so mood can morph it continuously.
+The mouth is a tube along a quadratic bezier curve in the XY plane: its control
+point sits below the endpoints for a smile, at the level of the endpoints for a
+flat mouth, and above them for a frown, so mood morphs it continuously. The
+geometry is rebuilt only when the mood value changes.
 
 ## Camera, lights, canvas
 
-- `PerspectiveCamera(40, 1, 0.1, 100)` at `(0, 0.2, 4.2)`, looking at
+- `PerspectiveCamera(40, 1, 0.1, 100)` at `(0, 0.2, 3.6)`, looking at
   `(0, 0.05, 0)`.
 - `HemisphereLight(0xffffff, 0x444444, 1.1)` + `DirectionalLight(0xffffff, 1.2)`
   at `(2, 3, 4)`.
 - `WebGLRenderer({ canvas, antialias: true, alpha: true })`,
-  `setPixelRatio(min(devicePixelRatio, 2))`, `setSize(200, 200, false)`,
-  transparent clear color. The canvas is 200×200 CSS pixels, like the SVG scene.
+  `setPixelRatio(min(devicePixelRatio, 2))`, `setSize(240, 240, false)`,
+  transparent clear color. The canvas is 240×240 CSS pixels, like the SVG scene.
 
 ## State mapping (per frame, smoothed)
 

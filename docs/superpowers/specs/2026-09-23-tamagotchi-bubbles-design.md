@@ -17,7 +17,7 @@ previous phrase of the same event.
 
 | Event           | Trigger                                                | Phrases |
 | --------------- | ------------------------------------------------------ | ------- |
-| `greeting`      | app opened (once per load)                             | «Привет! Как дела?», «Я скучал!», «Чем займёмся?» |
+| `greeting`      | app opened, and again when it becomes visible after being hidden for more than a minute | «Привет! Как дела?», «Я скучал!», «Чем займёмся?» |
 | `feed`          | successful feeding below the cap                       | «Ням-ням! Спасибо!», «Вкусно!», «Ещё бы чуть-чуть!» |
 | `feedAtCap`     | clicking the disabled feed button while mood is already at/above `FEED_CAP` | «Спасибо, я сыт!», «Мне больше не влезет», «Я и так доволен!» |
 | `feedCooldown`  | clicking the disabled feed button while on cooldown | «Я ещё не проголодался», «Давай попозже», «Я сегодня уже ел» |

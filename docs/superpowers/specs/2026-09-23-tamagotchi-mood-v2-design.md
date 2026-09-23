@@ -69,7 +69,7 @@ interface TamagotchiState {
   `#5da88b` back curl).
 - Front view keeps the face interpolation (`+100..+1`), back view has no face.
 - Unchanged: 2D flip at `mood <= 0` (scaleX squash, no 3D transforms), crouch at
-  `mood < 0`, exit/return slide when away. Scene stays 200x200.
+  `mood < 0`, exit/return slide when away. Scene is 240x240.
 
 ## Screen (`src/App.vue`, `src/components/MoodControls.vue`)
 
