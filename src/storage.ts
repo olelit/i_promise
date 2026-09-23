@@ -1,7 +1,25 @@
 import { getWebApp, type TelegramCloudStorage } from './telegram'
-import type { TamagotchiState } from './tamagotchi'
+import type { TamagotchiState, TamagotchiTask } from './tamagotchi'
 
 const KEY = 'tamagotchi-state'
+
+function isValidTask(value: unknown): value is TamagotchiTask {
+  if (typeof value !== 'object' || value === null) {
+    return false
+  }
+  const candidate = value as Record<string, unknown>
+  return (
+    typeof candidate.description === 'string' &&
+    typeof candidate.hours === 'number' &&
+    Number.isFinite(candidate.hours) &&
+    typeof candidate.startedAt === 'number' &&
+    Number.isFinite(candidate.startedAt) &&
+    typeof candidate.deadline === 'number' &&
+    Number.isFinite(candidate.deadline) &&
+    typeof candidate.extensions === 'number' &&
+    Number.isFinite(candidate.extensions)
+  )
+}
 
 function isValidState(value: unknown): value is TamagotchiState {
   if (typeof value !== 'object' || value === null) {
@@ -17,11 +35,13 @@ function isValidState(value: unknown): value is TamagotchiState {
     candidate.lastFedAt === undefined ||
     candidate.lastFedAt === null ||
     (typeof candidate.lastFedAt === 'number' && Number.isFinite(candidate.lastFedAt))
-  return moodOk && lastSeenOk && awayOk && lastFedOk
+  const taskOk =
+    candidate.task === undefined || candidate.task === null || isValidTask(candidate.task)
+  return moodOk && lastSeenOk && awayOk && lastFedOk && taskOk
 }
 
 function normalizeState(state: TamagotchiState): TamagotchiState {
-  return { ...state, lastFedAt: state.lastFedAt ?? null }
+  return { ...state, lastFedAt: state.lastFedAt ?? null, task: state.task ?? null }
 }
 
 function parseState(raw: string | null | undefined): TamagotchiState | null {
