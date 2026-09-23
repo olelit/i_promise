@@ -616,30 +616,30 @@ const theme = ref<TelegramThemeParams>({})
 const state = ref<TamagotchiState>(createInitialState(Date.now()))
 const now = ref(Date.now())
 
-const away = computed(() => state.value.awayUntil !== null || state.value.mood <= MOOD_MIN)
+const current = computed(() => applyDecay(state.value, now.value))
+const away = computed(() => current.value.awayUntil !== null || current.value.mood <= MOOD_MIN)
 const remainingMs = computed(() =>
-  state.value.awayUntil === null ? null : Math.max(0, state.value.awayUntil - now.value),
+  current.value.awayUntil === null ? null : Math.max(0, current.value.awayUntil - now.value),
 )
 
 let timer: number | undefined
 
-function sync(): void {
-  const before = state.value
-  const next = applyDecay(before, now.value)
-  state.value = next
-  if (next.awayUntil !== before.awayUntil) {
+function commitTransitions(): void {
+  const next = applyDecay(state.value, now.value)
+  if (next.awayUntil !== state.value.awayUntil || next.lastSeen !== state.value.lastSeen) {
+    state.value = next
     void saveState(next)
   }
 }
 
 function tick(): void {
   now.value = Date.now()
-  sync()
+  commitTransitions()
 }
 
 function handlePet(): void {
   now.value = Date.now()
-  state.value = petState(state.value, now.value)
+  state.value = petState(current.value, now.value)
   void saveState(state.value)
 }
 
@@ -665,7 +665,7 @@ const themeStyle = computed(() => ({
 function handleVisibility(): void {
   if (document.visibilityState === 'hidden') {
     now.value = Date.now()
-    sync()
+    commitTransitions()
     void saveState(state.value)
   }
 }
@@ -682,7 +682,7 @@ onMounted(async () => {
     state.value = loaded
   }
   now.value = Date.now()
-  sync()
+  commitTransitions()
   timer = window.setInterval(tick, TICK_MS)
   document.addEventListener('visibilitychange', handleVisibility)
 })
@@ -702,9 +702,9 @@ onUnmounted(() => {
       Приложение открыто не в Telegram: настроение хранится локально в браузере.
     </div>
     <main class="content">
-      <Tamagotchi :mood="state.mood" :away="away" />
+      <Tamagotchi :mood="current.mood" :away="away" />
       <MoodControls
-        :mood="state.mood"
+        :mood="current.mood"
         :remaining-ms="remainingMs"
         @pet="handlePet"
         @set-mood="handleSetMood"

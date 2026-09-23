@@ -102,8 +102,11 @@ Props: `mood`, `awayUntil`; emits `pet` and `setMood` (dev slider only).
   custom properties, `themeChanged` subscription, and the browser banner
   (banner text updated to say that in browser mode state is stored
   locally).
-- On mount: `loadState()` → `applyDecay(now)` → set state; save if the
-  decayed state differs (e.g. auto-return or newly away).
+- The persisted state is a checkpoint at `lastSeen`; the displayed mood is
+  always `applyDecay(state, now)` derived from it, so periodic
+  recomputation never compounds decay.
+- On mount: `loadState()` → keep it as the checkpoint; commit and save
+  `applyDecay` transitions only (auto-return or newly away).
 - `setInterval(TICK_MS)`: recompute `applyDecay(state, now)` for display
   and the away countdown; persist only when the away transition happens
   (entering or leaving away). No per-tick writes.
