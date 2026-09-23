@@ -92,6 +92,9 @@ export function feedCooldownRemaining(state: TamagotchiState, now: number): numb
 }
 
 export function canFeed(state: TamagotchiState, now: number): boolean {
+  if (state.awayUntil !== null) {
+    return false
+  }
   return feedCooldownRemaining(state, now) === null
 }
 
