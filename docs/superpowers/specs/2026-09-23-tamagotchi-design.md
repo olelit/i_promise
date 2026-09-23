@@ -72,9 +72,11 @@ Props: `mood: number`, `away: boolean`.
     (+8) to a frown (−12);
   - eyes: from happy arcs to droopy half-closed eyes;
   - brows: neutral at high mood, tilted inward as mood falls.
-- `mood === 0` and below: the character is turned away — CSS 3D flip
-  (`transform: rotateY(180deg)`, two SVG layers with
-  `backface-visibility: hidden`); the back layer has no face.
+- `mood === 0` and below: the character is turned away — a 2D flip: a
+  `scaleX` squash swaps the front SVG for a back SVG (Vue `<Transition
+  mode="out-in">`). No 3D transforms: `perspective`/`preserve-3d`/
+  `backface-visibility` render unreliably in embedded Telegram webviews.
+  The back view has no face.
 - `mood -1..-99`: back view plus a crouch: `crouch = |mood| / 100`,
   `translateY` down to ~10% and `scaleY` down to ~0.85 at −99.
 - `mood === -100` / `away === true`: exit animation — slides off the

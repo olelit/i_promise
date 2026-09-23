@@ -24,18 +24,14 @@ const exitStyle = computed(() => ({
 const crouchStyle = computed(() => ({
   transform: `translateY(${crouch.value * 12}px) scaleY(${1 - crouch.value * 0.15})`,
 }))
-
-const flipperStyle = computed(() => ({
-  transform: `perspective(600px) rotateY(${turned.value ? 180 : 0}deg)`,
-}))
 </script>
 
 <template>
   <div class="scene">
     <div class="exit" :style="exitStyle">
       <div class="crouch" :style="crouchStyle">
-        <div class="flipper" :style="flipperStyle">
-          <svg class="layer front" viewBox="0 0 200 200" aria-hidden="true">
+        <Transition name="flip" mode="out-in">
+          <svg v-if="!turned" key="front" class="face" viewBox="0 0 200 200" aria-hidden="true">
             <ellipse cx="100" cy="112" rx="55" ry="60" fill="#7ec8a9" />
             <circle cx="72" cy="60" r="13" fill="#7ec8a9" />
             <circle cx="128" cy="60" r="13" fill="#7ec8a9" />
@@ -74,7 +70,7 @@ const flipperStyle = computed(() => ({
               stroke-linecap="round"
             />
           </svg>
-          <svg class="layer back" viewBox="0 0 200 200" aria-hidden="true">
+          <svg v-else key="back" class="face" viewBox="0 0 200 200" aria-hidden="true">
             <ellipse cx="100" cy="112" rx="55" ry="60" fill="#7ec8a9" />
             <circle cx="72" cy="60" r="13" fill="#7ec8a9" />
             <circle cx="128" cy="60" r="13" fill="#7ec8a9" />
@@ -87,7 +83,7 @@ const flipperStyle = computed(() => ({
             />
             <ellipse cx="100" cy="160" rx="14" ry="10" fill="#a8dcc0" />
           </svg>
-        </div>
+        </Transition>
       </div>
     </div>
   </div>
@@ -101,8 +97,7 @@ const flipperStyle = computed(() => ({
 }
 
 .exit,
-.crouch,
-.flipper {
+.crouch {
   width: 100%;
   height: 100%;
 }
@@ -116,19 +111,19 @@ const flipperStyle = computed(() => ({
   transition: transform 0.6s ease;
 }
 
-.flipper {
-  position: relative;
-  transform-style: preserve-3d;
-  transition: transform 0.6s ease;
+.face {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
-.layer {
-  position: absolute;
-  inset: 0;
-  backface-visibility: hidden;
+.flip-enter-active,
+.flip-leave-active {
+  transition: transform 0.25s ease;
 }
 
-.back {
-  transform: rotateY(180deg);
+.flip-enter-from,
+.flip-leave-to {
+  transform: scaleX(0);
 }
 </style>
