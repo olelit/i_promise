@@ -85,15 +85,6 @@ declare global {
   }
 }
 
-export const mockUser: TelegramWebAppUser = {
-  id: 1,
-  first_name: 'Test',
-  last_name: 'User',
-  username: 'test_user',
-  language_code: 'en',
-  is_premium: false,
-}
-
 export function getWebApp(): TelegramWebApp | undefined {
   return window.Telegram?.WebApp
 }
