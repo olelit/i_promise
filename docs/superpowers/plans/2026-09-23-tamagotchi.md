@@ -501,11 +501,11 @@ onUnmounted(() => {
       >
         Погладить
       </button>
-      <label v-if="!inTelegram" class="slider">
-        <span>Настроение: {{ mood }}</span>
-        <input type="range" min="-100" max="100" :value="mood" @input="handleSlider" />
-      </label>
     </template>
+    <label v-if="!inTelegram" class="slider">
+      <span>Настроение: {{ Math.round(mood) }}</span>
+      <input type="range" min="-100" max="100" :value="mood" @input="handleSlider" />
+    </label>
   </section>
 </template>
 
@@ -663,9 +663,9 @@ const themeStyle = computed(() => ({
 }))
 
 function handleVisibility(): void {
+  now.value = Date.now()
+  commitTransitions()
   if (document.visibilityState === 'hidden') {
-    now.value = Date.now()
-    commitTransitions()
     void saveState(state.value)
   }
 }
@@ -851,8 +851,8 @@ git commit -m "Wire tamagotchi into app and remove demo components"
 - `npm run build` — проверка типов и сборка в `dist/`
 - `npm run preview` — локальный просмотр собранной версии
 
-В обычном браузере приложение открывается с баннером, тестовыми данными и
-ползунком настроения — это режим разработки: ползунок позволяет посмотреть все
+В обычном браузере приложение открывается с баннером, кнопкой и ползунком
+настроения — это режим разработки: ползунок позволяет посмотреть все
 состояния персонажа, не дожидаясь падения настроения.
 
 ## Как подключить к боту

@@ -69,7 +69,7 @@ Props: `mood: number`, `away: boolean`.
 - `mood +100..+1` (present, front view): the face is interpolated by
   `t = mood / MOOD_MAX` (1 → 0):
   - mouth: quadratic SVG curve whose control point moves from a smile
-    (+8) to a frown (−8);
+    (+8) to a frown (−12);
   - eyes: from happy arcs to droopy half-closed eyes;
   - brows: neutral at high mood, tilted inward as mood falls.
 - `mood === 0` and below: the character is turned away — CSS 3D flip
@@ -94,7 +94,9 @@ Props: `mood`, `awayUntil`; emits `pet` and `setMood` (dev slider only).
   app tick.
 - Browser mode (not inside Telegram): an in-page «Погладить» button and a
   development slider (`input[type=range]`, `-100..100`) that sets mood
-  directly to preview every visual state without waiting.
+  directly to preview every visual state without waiting. The slider stays
+  available while the character is away (browser mode only); changing it
+  clears `awayUntil`, which recalls the character immediately.
 
 ## Orchestration (`src/App.vue`)
 
@@ -111,7 +113,10 @@ Props: `mood`, `awayUntil`; emits `pet` and `setMood` (dev slider only).
   and the away countdown; persist only when the away transition happens
   (entering or leaving away). No per-tick writes.
 - `pet` and dev `setMood` handlers update state and `saveState`.
-- On `visibilitychange` → hidden: `saveState(applyDecay(state, now))`.
+- On `visibilitychange`: refresh `now` and commit `applyDecay` transitions;
+  on `hidden`, additionally `saveState(state)` — always the untouched
+  checkpoint, never the decayed output (saving the derived mood would
+  double-decay on the next load).
 - On unmount: clear interval and remove listeners.
 
 ## Persistence (`src/storage.ts`)
