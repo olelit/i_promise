@@ -667,7 +667,6 @@ body {
 ```
 
 - [ ] **Step 3: Remove the temporary `pet` API from `src/tamagotchi.ts`**
-
 Delete the `PET_GAIN` constant and the `pet` function (no longer referenced):
 
 ```ts
@@ -685,12 +684,24 @@ export function pet(state: TamagotchiState, now: number): TamagotchiState {
 }
 ```
 
-- [ ] **Step 4: Verify typecheck and build**
+- [ ] **Step 4: Reduce the crouch sink so the feet stay inside the scene**
+
+`src/components/Tamagotchi.vue` now has feet at y≈195 and the crouch moves the
+body down by up to 12px, so at maximum crouch the feet clip against the
+scene's `overflow: hidden`. Change the crouch offset from `12` to `4`:
+
+```ts
+const crouchStyle = computed(() => ({
+  transform: `translateY(${crouch.value * 4}px) scaleY(${1 - crouch.value * 0.15})`,
+}))
+```
+
+- [ ] **Step 5: Verify typecheck and build**
 
 Run: `npm run typecheck` → exits 0.
 Run: `npm run build` → exits 0.
 
-- [ ] **Step 5: Browser checks (headless, state injected before app scripts)**
+- [ ] **Step 6: Browser checks (headless, state injected before app scripts)**
 
 Inject `localStorage['tamagotchi-state']` via CDP
 `Page.addScriptToEvaluateOnNewDocument` before loading `http://localhost:5173/`, then verify:
@@ -703,10 +714,10 @@ Inject `localStorage['tamagotchi-state']` via CDP
 Clicking the enabled feed button raises mood by 20 (cap 20) and persists it.
 Kill the dev server afterwards.
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 7: Commit**
 
 ```bash
-git add src/components/MoodControls.vue src/App.vue src/tamagotchi.ts
+git add src/components/MoodControls.vue src/App.vue src/tamagotchi.ts src/components/Tamagotchi.vue
 git commit -m "Wire daily feeding and mood indicator into the app"
 ```
 
