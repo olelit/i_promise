@@ -28,9 +28,9 @@ builds) the current SVG character is used automatically.
   throwaway canvas (three r186 requires WebGL2), releases it via
   `WEBGL_lose_context`, guarded by try/catch.
 - `src/three/character.ts`: `createCharacter(): Character` — builds the model
-  from primitives and returns the group plus references to the animated parts
-  (mouth, eyes, brows, blush materials, back details). Pure three.js code, no
-  Vue.
+  from primitives and returns the group plus the animated parts (a `setMouth`
+  rebuild function, eyes, brows, blush material, back details). Pure three.js
+  code, no Vue.
 - `src/components/Tamagotchi3D.vue`: props `{ mood: number; away: boolean }`,
   emits `unsupported`. Owns the renderer, camera, lights, animation loop and
   disposal; maps props to the model each frame.
@@ -77,7 +77,7 @@ geometry is rebuilt only when the mood value changes.
 ## State mapping (per frame, smoothed)
 
 - `t = clamp(mood / 100, 0, 1)`:
-  - mouth `rotation.z = Math.PI * t`;
+  - `setMouth(t)` morphs the mouth bezier (smile → flat → frown);
   - eye `scale.y = 1 - (1 - t) * 0.35`;
   - brows `rotation.z = ±(1 - t) * 0.35`;
   - blush material `opacity = t` (hidden below 0.05).

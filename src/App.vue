@@ -206,16 +206,17 @@ watch(task, (value) => {
 
 function handleVisibility(): void {
   now.value = Date.now()
-  commitTransitions()
   if (document.visibilityState === 'hidden') {
+    commitTransitions()
     hiddenAt = Date.now()
     void saveState(state.value)
-  } else {
-    if (hiddenAt !== null && Date.now() - hiddenAt > 60_000) {
-      say('greeting')
-    }
-    hiddenAt = null
+    return
   }
+  if (hiddenAt !== null && Date.now() - hiddenAt > 60_000) {
+    say('greeting')
+  }
+  hiddenAt = null
+  commitTransitions()
 }
 
 onMounted(async () => {
