@@ -219,7 +219,8 @@ git commit -m "Set up Vite + Vue 3 + TypeScript scaffold and AGENTS.md"
 **Interfaces:**
 - Consumes: nothing.
 - Produces:
-  - `getWebApp(): TelegramWebApp | undefined` — safe accessor, `undefined` outside Telegram.
+  - `getWebApp(): TelegramWebApp | undefined` — raw accessor. The official script defines `window.Telegram.WebApp` even in a plain browser (platform `unknown`, empty `initData`), so a defined `WebApp` does NOT by itself mean "inside Telegram".
+  - `isTelegram(): boolean` — true only in a real Telegram client (non-empty `initData` or known `platform`).
   - `mockUser: TelegramWebAppUser` — mock data for browser development.
   - Types: `TelegramWebApp`, `TelegramWebAppUser`, `TelegramThemeParams`, `TelegramMainButton`, `TelegramBackButton`, `TelegramHapticFeedback`.
 
@@ -318,6 +319,11 @@ export const mockUser: TelegramWebAppUser = {
 export function getWebApp(): TelegramWebApp | undefined {
   return window.Telegram?.WebApp
 }
+
+export function isTelegram(): boolean {
+  const webApp = getWebApp()
+  return webApp !== undefined && (webApp.initData !== '' || webApp.platform !== 'unknown')
+}
 ```
 
 - [ ] **Step 2: Verify typecheck and build**
@@ -341,20 +347,32 @@ git commit -m "Add typed Telegram WebApp accessor"
 
 **Files:**
 - Modify: `src/App.vue` (full rewrite of the Task 1 placeholder)
+- Modify: `src/telegram.ts` (add the `isTelegram()` helper)
 
 **Interfaces:**
-- Consumes: `getWebApp()`, `mockUser`, types `TelegramWebAppUser`, `TelegramThemeParams` from `src/telegram.ts` (Task 2).
+- Consumes: `getWebApp()`, `isTelegram()`, `mockUser`, types `TelegramWebAppUser`, `TelegramThemeParams` from `src/telegram.ts` (Task 2).
 - Produces: CSS custom properties on the app root (`--tg-bg`, `--tg-text`, `--tg-hint`, `--tg-button`, `--tg-button-text`, `--tg-secondary-bg`) that all components use; the app layout that Task 4/5 components are inserted into.
 
-- [ ] **Step 1: Replace `src/App.vue`**
+- [ ] **Step 1: Add `isTelegram()` to `src/telegram.ts`**
+
+Append after `getWebApp`:
+
+```ts
+export function isTelegram(): boolean {
+  const webApp = getWebApp()
+  return webApp !== undefined && (webApp.initData !== '' || webApp.platform !== 'unknown')
+}
+```
+
+- [ ] **Step 2: Replace `src/App.vue`**
 
 ```vue
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
-import { getWebApp, mockUser, type TelegramThemeParams } from './telegram'
+import { getWebApp, isTelegram, mockUser, type TelegramThemeParams } from './telegram'
 
 const webApp = getWebApp()
-const isTelegram = webApp !== undefined
+const inTelegram = isTelegram()
 const user = webApp?.initDataUnsafe.user ?? mockUser
 const theme = ref<TelegramThemeParams>({})
 
@@ -388,7 +406,7 @@ onUnmounted(() => {
 
 <template>
   <div class="app" :style="themeStyle">
-    <div v-if="!isTelegram" class="banner">
+    <div v-if="!inTelegram" class="banner">
       Приложение открыто не в Telegram: показаны тестовые данные. Чтобы увидеть
       реальные данные пользователя, открой мини-приложение из бота.
     </div>
@@ -443,7 +461,7 @@ body {
 </style>
 ```
 
-- [ ] **Step 2: Verify typecheck and build**
+- [ ] **Step 3: Verify typecheck and build**
 
 Run: `npm run typecheck`
 Expected: exits 0.
@@ -451,15 +469,15 @@ Expected: exits 0.
 Run: `npm run build`
 Expected: exits 0.
 
-- [ ] **Step 3: Verify in browser**
+- [ ] **Step 4: Verify in browser**
 
 Run (background): `npm run dev`
 Then: `curl -s http://localhost:5173/ | grep 'telegram-web-app.js'`
 Expected: the script tag line is printed.
-Open `http://localhost:5173/` in a browser: the banner about "не в Telegram" and the title are visible on a white background.
+Open `http://localhost:5173/` in a browser: the banner about "не в Telegram" and the title are visible on a white background (the banner must render even though the Telegram script loaded successfully — `isTelegram()` is false because `initData` is empty and `platform` is `unknown`).
 Stop the dev server afterwards.
 
-- [ ] **Step 4: Commit**
+- [ ] **Step 5: Commit**
 
 ```bash
 git add src/App.vue
@@ -627,7 +645,7 @@ git commit -m "Add UserCard component with mock user fallback"
 - Modify: `src/App.vue` (import and render `DemoControls`)
 
 **Interfaces:**
-- Consumes: `getWebApp()` from `src/telegram.ts` (Task 2).
+- Consumes: `getWebApp()`, `isTelegram()` from `src/telegram.ts` (Tasks 2-3).
 - Produces: `DemoControls` component with no props; owns the tap counter and all MainButton/BackButton/haptic side effects.
 
 - [ ] **Step 1: Create `src/components/DemoControls.vue`**
@@ -635,10 +653,10 @@ git commit -m "Add UserCard component with mock user fallback"
 ```vue
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref, watch } from 'vue'
-import { getWebApp } from '../telegram'
+import { getWebApp, isTelegram } from '../telegram'
 
 const webApp = getWebApp()
-const isTelegram = webApp !== undefined
+const inTelegram = isTelegram()
 const count = ref(0)
 
 function increment(): void {
@@ -692,7 +710,7 @@ onUnmounted(() => {
       haptic feedback. BackButton появляется, когда счётчик больше нуля, и
       сбрасывает его.
     </p>
-    <button v-if="!isTelegram" class="fallback" type="button" @click="increment">
+    <button v-if="!inTelegram" class="fallback" type="button" @click="increment">
       Нажми меня (браузерный режим)
     </button>
   </section>

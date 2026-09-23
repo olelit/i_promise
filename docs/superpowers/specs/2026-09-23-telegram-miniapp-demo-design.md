@@ -48,10 +48,13 @@ src/
 
 ### Startup
 
-- `src/telegram.ts` exports a typed accessor for `window.Telegram.WebApp` that
-  returns `undefined` when the page is opened outside Telegram.
+- `src/telegram.ts` exports a typed accessor for `window.Telegram.WebApp`.
+  Note: the official script defines `window.Telegram.WebApp` even in a plain
+  browser (platform `unknown`, empty `initData`), so a separate
+  `isTelegram()` helper reports true only when `initData` is non-empty or
+  `platform` is known.
 - `App.vue` on mount, when inside Telegram: calls `ready()` and `expand()`.
-- When outside Telegram: renders a dismissible banner explaining that the app
+- When outside Telegram: renders a banner explaining that the app
   must be opened from Telegram, and uses mock user data so the UI can be
   developed in a normal browser.
 
