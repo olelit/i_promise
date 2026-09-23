@@ -34,7 +34,15 @@ import SpeechBubble from './components/SpeechBubble.vue'
 import TaskCreateDialog from './components/TaskCreateDialog.vue'
 import TaskInfoDialog from './components/TaskInfoDialog.vue'
 
-const Tamagotchi3D = defineAsyncComponent(() => import('./components/Tamagotchi3D.vue'))
+const use3d = ref(isWebglAvailable())
+
+const Tamagotchi3D = defineAsyncComponent({
+  loader: () => import('./components/Tamagotchi3D.vue'),
+  onError(_error, _retry, fail) {
+    use3d.value = false
+    fail()
+  },
+})
 
 const webApp = getWebApp()
 const inTelegram = isTelegram()
@@ -43,7 +51,6 @@ const state = ref<TamagotchiState>(createInitialState(Date.now()))
 const now = ref(Date.now())
 const createOpen = ref(false)
 const infoOpen = ref(false)
-const use3d = ref(isWebglAvailable())
 
 const current = computed(() => applyDecay(state.value, now.value))
 const away = computed(() => current.value.awayUntil !== null || current.value.mood <= MOOD_MIN)
