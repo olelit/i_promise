@@ -23,6 +23,12 @@ export interface TelegramHapticFeedback {
   notificationOccurred(type: 'error' | 'success' | 'warning'): void
 }
 
+export interface TelegramCloudStorage {
+  setItem(key: string, value: string, callback?: (error: string | null, success?: boolean) => void): void
+  getItem(key: string, callback: (error: string | null, value?: string) => void): void
+  removeItem(key: string, callback?: (error: string | null, success?: boolean) => void): void
+}
+
 export interface TelegramMainButton {
   text: string
   isVisible: boolean
@@ -68,6 +74,7 @@ export interface TelegramWebApp {
   MainButton: TelegramMainButton
   BackButton: TelegramBackButton
   HapticFeedback: TelegramHapticFeedback
+  CloudStorage?: TelegramCloudStorage
 }
 
 declare global {
