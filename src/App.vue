@@ -2,6 +2,7 @@
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { getWebApp, isTelegram, mockUser, type TelegramThemeParams } from './telegram'
 import UserCard from './components/UserCard.vue'
+import DemoControls from './components/DemoControls.vue'
 
 const webApp = getWebApp()
 const inTelegram = isTelegram()
@@ -44,6 +45,7 @@ onUnmounted(() => {
     </div>
     <main class="content">
       <UserCard :user="user" />
+      <DemoControls />
     </main>
   </div>
 </template>
