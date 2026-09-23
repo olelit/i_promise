@@ -100,7 +100,7 @@ export function canFeed(state: TamagotchiState, now: number): boolean {
 
 export function feed(state: TamagotchiState, now: number): TamagotchiState {
   return {
-    mood: Math.min(FEED_CAP, state.mood + FEED_GAIN),
+    mood: state.mood >= FEED_CAP ? state.mood : Math.min(FEED_CAP, state.mood + FEED_GAIN),
     lastSeen: now,
     awayUntil: state.awayUntil,
     lastFedAt: now,

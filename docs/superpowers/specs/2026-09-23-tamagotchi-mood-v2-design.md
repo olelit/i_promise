@@ -23,9 +23,10 @@ decay/away/return mechanics.
 - `canFeed(state, now)`: `false` while `awayUntil !== null` (the pet is not
   there); otherwise `true` when `lastFedAt === null` or
   `now - lastFedAt >= FEED_COOLDOWN_MS`.
-- `feed(state, now)`: `mood = min(FEED_CAP, mood + FEED_GAIN)`, `lastFedAt = now`.
-  Feeding never raises mood above `FEED_CAP`; if mood is already at or above the
-  cap the call still consumes the daily feeding.
+- `feed(state, now)`: `mood` becomes `mood` unchanged when `mood >= FEED_CAP`,
+  otherwise `min(FEED_CAP, mood + FEED_GAIN)`; `lastFedAt = now`. Feeding never
+  raises mood above `FEED_CAP` and never lowers it; if mood is already at or
+  above the cap the call still consumes the daily feeding.
 - `pet` and `PET_GAIN` are removed. The old dev slider is removed.
 - The MainButton is not used in this stage (stage 2 gives it to tasks).
 
