@@ -38,6 +38,7 @@ const use3d = ref(isWebglAvailable())
 
 const Tamagotchi3D = defineAsyncComponent({
   loader: () => import('./components/Tamagotchi3D.vue'),
+  loadingComponent: Tamagotchi,
   onError(_error, _retry, fail) {
     use3d.value = false
     fail()

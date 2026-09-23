@@ -75,7 +75,7 @@ smile, `0` as a frown, so mood can morph it continuously.
 
 - `t = clamp(mood / 100, 0, 1)`:
   - mouth `rotation.z = Math.PI * t`;
-  - eye `scale.y = 1 - (1 - t) * 0.35`, pupils shift down slightly;
+  - eye `scale.y = 1 - (1 - t) * 0.35`;
   - brows `rotation.z = ±(1 - t) * 0.35`;
   - blush material `opacity = t` (hidden below 0.05).
 - `turned = mood <= 0` → base yaw `π`, else `0`, eased toward the target.

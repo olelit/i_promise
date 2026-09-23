@@ -445,8 +445,17 @@ import { computed, defineAsyncComponent, onMounted, onUnmounted, ref, watch, wat
 import { isWebglAvailable } from './webgl'
 import Tamagotchi from './components/Tamagotchi.vue'
 
-const Tamagotchi3D = defineAsyncComponent(() => import('./components/Tamagotchi3D.vue'))
+const Tamagotchi3D = defineAsyncComponent({
+  loader: () => import('./components/Tamagotchi3D.vue'),
+  loadingComponent: Tamagotchi,
+  onError(_error, _retry, fail) {
+    use3d.value = false
+    fail()
+  },
+})
 ```
+
+(`use3d` is declared with the other refs, before this call.)
 
 Add state next to the other refs:
 
