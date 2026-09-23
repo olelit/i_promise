@@ -30,7 +30,7 @@
 
 **Interfaces:**
 - Consumes: nothing new.
-- Produces: `TamagotchiState` with `lastFedAt: number | null`; constants `FEED_GAIN`, `FEED_CAP`, `FEED_COOLDOWN_MS`; functions `canFeed(state, now): boolean`, `feed(state, now): TamagotchiState`, `feedCooldownRemaining(state, now): number | null`. `pet` and `PET_GAIN` are removed.
+- Produces: `TamagotchiState` with `lastFedAt: number | null`; constants `FEED_GAIN`, `FEED_CAP`, `FEED_COOLDOWN_MS`; functions `canFeed(state, now): boolean`, `feed(state, now): TamagotchiState`, `feedCooldownRemaining(state, now): number | null`. `pet` and `PET_GAIN` stay temporarily (the old UI still uses them) and are removed in Task 4.
 
 - [ ] **Step 1: Replace `src/tamagotchi.ts`**
 
@@ -52,6 +52,7 @@ export const TICK_MS = 60_000
 export const FEED_GAIN = 20
 export const FEED_CAP = 20
 export const FEED_COOLDOWN_MS = 24 * 3_600_000
+export const PET_GAIN = 20
 
 const HOUR_MS = 3_600_000
 
@@ -100,6 +101,15 @@ export function feed(state: TamagotchiState, now: number): TamagotchiState {
     lastSeen: now,
     awayUntil: state.awayUntil,
     lastFedAt: now,
+  }
+}
+
+export function pet(state: TamagotchiState, now: number): TamagotchiState {
+  return {
+    mood: Math.min(MOOD_MAX, state.mood + PET_GAIN),
+    lastSeen: now,
+    awayUntil: state.awayUntil,
+    lastFedAt: state.lastFedAt,
   }
 }
 
@@ -156,15 +166,28 @@ function parseState(raw: string | null | undefined): TamagotchiState | null {
 }
 ```
 
-- [ ] **Step 3: Verify typecheck and build**
+- [ ] **Step 3: Patch the temporary state literal in `src/App.vue`**
+
+The old dev slider builds a state object by hand; add the new field so the app
+still typechecks until Task 4 replaces the file:
+
+```ts
+function handleSetMood(mood: number): void {
+  now.value = Date.now()
+  state.value = { mood, lastSeen: now.value, awayUntil: null, lastFedAt: null }
+  void saveState(state.value)
+}
+```
+
+- [ ] **Step 4: Verify typecheck and build**
 
 Run: `npm run typecheck` → exits 0.
 Run: `npm run build` → exits 0.
 
-- [ ] **Step 4: Commit**
+- [ ] **Step 5: Commit**
 
 ```bash
-git add src/tamagotchi.ts src/storage.ts
+git add src/tamagotchi.ts src/storage.ts src/App.vue
 git commit -m "Replace petting with daily feeding logic"
 ```
 
@@ -640,12 +663,31 @@ body {
 </style>
 ```
 
-- [ ] **Step 3: Verify typecheck and build**
+- [ ] **Step 3: Remove the temporary `pet` API from `src/tamagotchi.ts`**
+
+Delete the `PET_GAIN` constant and the `pet` function (no longer referenced):
+
+```ts
+export const PET_GAIN = 20
+```
+
+```ts
+export function pet(state: TamagotchiState, now: number): TamagotchiState {
+  return {
+    mood: Math.min(MOOD_MAX, state.mood + PET_GAIN),
+    lastSeen: now,
+    awayUntil: state.awayUntil,
+    lastFedAt: state.lastFedAt,
+  }
+}
+```
+
+- [ ] **Step 4: Verify typecheck and build**
 
 Run: `npm run typecheck` → exits 0.
 Run: `npm run build` → exits 0.
 
-- [ ] **Step 4: Browser checks (headless, state injected before app scripts)**
+- [ ] **Step 5: Browser checks (headless, state injected before app scripts)**
 
 Inject `localStorage['tamagotchi-state']` via CDP
 `Page.addScriptToEvaluateOnNewDocument` before loading `http://localhost:5173/`, then verify:
@@ -658,10 +700,10 @@ Inject `localStorage['tamagotchi-state']` via CDP
 Clicking the enabled feed button raises mood by 20 (cap 20) and persists it.
 Kill the dev server afterwards.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 6: Commit**
 
 ```bash
-git add src/components/MoodControls.vue src/App.vue
+git add src/components/MoodControls.vue src/App.vue src/tamagotchi.ts
 git commit -m "Wire daily feeding and mood indicator into the app"
 ```
 
