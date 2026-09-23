@@ -377,7 +377,7 @@ const user = webApp?.initDataUnsafe.user ?? mockUser
 const theme = ref<TelegramThemeParams>({})
 
 function applyTheme(): void {
-  theme.value = webApp?.themeParams ?? {}
+  theme.value = { ...(webApp?.themeParams ?? {}) }
 }
 
 const themeStyle = computed(() => ({
