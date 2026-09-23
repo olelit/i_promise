@@ -6,8 +6,11 @@ import {
   Mesh,
   MeshStandardMaterial,
   type Object3D,
+  QuadraticBezierCurve3,
   SphereGeometry,
   TorusGeometry,
+  TubeGeometry,
+  Vector3,
 } from 'three'
 
 const BODY = 0x7ec8a9
@@ -18,7 +21,7 @@ const CURL = 0x5da88b
 
 export interface Character {
   group: Group
-  mouth: Object3D
+  setMouth(t: number): void
   leftEye: Object3D
   rightEye: Object3D
   leftBrow: Object3D
@@ -28,6 +31,16 @@ export interface Character {
 
 function bodyMaterial(color: number): MeshStandardMaterial {
   return new MeshStandardMaterial({ color, flatShading: true, roughness: 0.9 })
+}
+
+function mouthGeometry(t: number): TubeGeometry {
+  const controlY = 0.08 - 0.16 * t
+  const curve = new QuadraticBezierCurve3(
+    new Vector3(-0.16, 0, 0),
+    new Vector3(0, controlY, 0),
+    new Vector3(0.16, 0, 0),
+  )
+  return new TubeGeometry(curve, 12, 0.03, 6, false)
 }
 
 export function disposeObject(root: Object3D): void {
@@ -110,10 +123,19 @@ export function createCharacter(): Character {
     brows.push(brow)
   }
 
-  const mouth = new Mesh(new TorusGeometry(0.16, 0.035, 8, 12, Math.PI), features)
-  mouth.position.set(0, 0.62, 0.5)
-  mouth.rotation.z = Math.PI
-  group.add(mouth)
+  let mouthMesh: Mesh | undefined
+
+  function setMouth(t: number): void {
+    const geometry = mouthGeometry(t)
+    if (mouthMesh) {
+      mouthMesh.geometry.dispose()
+      mouthMesh.geometry = geometry
+    } else {
+      mouthMesh = new Mesh(geometry, features)
+      mouthMesh.position.set(0, 0.62, 0.5)
+      group.add(mouthMesh)
+    }
+  }
 
   for (const side of [-1, 1]) {
     const cheek = new Mesh(new SphereGeometry(0.09, 8, 6), blushMaterial)
@@ -132,9 +154,11 @@ export function createCharacter(): Character {
   tail.position.set(0, -0.72, -0.5)
   group.add(tail)
 
+  setMouth(1)
+
   return {
     group,
-    mouth,
+    setMouth,
     leftEye: eyes[0],
     rightEye: eyes[1],
     leftBrow: brows[0],

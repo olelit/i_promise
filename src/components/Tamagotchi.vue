@@ -133,8 +133,8 @@ const crouchStyle = computed(() => ({
 
 <style scoped>
 .scene {
-  width: 200px;
-  height: 200px;
+  width: 240px;
+  height: 240px;
   overflow: hidden;
 }
 

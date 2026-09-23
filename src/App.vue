@@ -75,6 +75,7 @@ function say(event: PhraseEvent): void {
 }
 
 let timer: number | undefined
+let hiddenAt: number | null = null
 
 function commitTransitions(): void {
   const before = state.value
@@ -207,7 +208,13 @@ function handleVisibility(): void {
   now.value = Date.now()
   commitTransitions()
   if (document.visibilityState === 'hidden') {
+    hiddenAt = Date.now()
     void saveState(state.value)
+  } else {
+    if (hiddenAt !== null && Date.now() - hiddenAt > 60_000) {
+      say('greeting')
+    }
+    hiddenAt = null
   }
 }
 

@@ -46,7 +46,7 @@ function applyMood(): void {
     return
   }
   const t = clamp(props.mood / MOOD_MAX, 0, 1)
-  character.mouth.rotation.z = Math.PI * t
+  character.setMouth(t)
   character.leftEye.scale.y = 1 - (1 - t) * 0.35
   character.rightEye.scale.y = 1 - (1 - t) * 0.35
   character.leftBrow.rotation.z = (1 - t) * 0.35
@@ -135,12 +135,12 @@ function start(): void {
     renderer = new WebGLRenderer({ canvas: element, antialias: true, alpha: true })
     element.addEventListener('webglcontextlost', handleContextLost)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-    renderer.setSize(200, 200, false)
+    renderer.setSize(240, 240, false)
     renderer.setClearColor(0x000000, 0)
 
     scene = new Scene()
     camera = new PerspectiveCamera(40, 1, 0.1, 100)
-    camera.position.set(0, 0.2, 4.2)
+    camera.position.set(0, 0.2, 3.6)
     camera.lookAt(0, 0.05, 0)
 
     scene.add(new HemisphereLight(0xffffff, 0x444444, 1.1))
@@ -187,8 +187,8 @@ onUnmounted(() => {
 <style scoped>
 .scene,
 .canvas {
-  width: 200px;
-  height: 200px;
+  width: 240px;
+  height: 240px;
   display: block;
 }
 </style>
