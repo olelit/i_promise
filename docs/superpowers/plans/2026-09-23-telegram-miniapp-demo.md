@@ -4,7 +4,7 @@
 
 **Goal:** Build a minimal Vue 3 + TypeScript Telegram Mini App demo (user data, theming, MainButton, BackButton, haptics) that can be loaded into a Telegram bot as static files.
 
-**Architecture:** A single-page Vite app. The official `telegram-web-app.js` script is loaded in `index.html`; `src/telegram.ts` is the single typed entry point to `window.Telegram.WebApp` and returns `undefined` outside Telegram. `App.vue` owns startup calls (`ready()`, `expand()`) and theme CSS custom properties; two presentational components render user data and controls.
+**Architecture:** A single-page Vite app. The official `telegram-web-app.js` script is loaded in `index.html`; `src/telegram.ts` is the single typed entry point to `window.Telegram.WebApp` (with an `isTelegram()` helper that distinguishes a real Telegram client from a plain browser, where the script still defines `WebApp`). `App.vue` owns startup calls (`ready()`, `expand()`) and theme CSS custom properties; two presentational components render user data and controls.
 
 **Tech Stack:** Vue 3.5, Vite 8, TypeScript 5.9, vue-tsc 3.3, official Telegram WebApp script (no npm SDK).
 
