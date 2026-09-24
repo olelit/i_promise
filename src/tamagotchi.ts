@@ -125,7 +125,7 @@ export function startTask(
   return {
     mood,
     lastSeen: now,
-    awayUntil: state.awayUntil,
+    awayUntil: null,
     lastFedAt: state.lastFedAt,
     task: {
       description: input.description.trim(),
