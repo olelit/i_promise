@@ -286,7 +286,9 @@ In `src/App.vue`:
 - `.app` becomes `position: relative; z-index: 1;` and loses its
   `background: var(--tg-bg);` (the room covers the viewport);
 - `.controls` gains a readable panel:
-  `padding: 12px 16px; border-radius: 14px; background: var(--tg-secondary-bg); max-width: 340px;`.
+  `padding: 12px 16px; border-radius: 14px; background: var(--tg-secondary-bg); max-width: 340px;`;
+- `.pet-wrap` reserves space for the speech bubble so it never covers the top
+  indicator: `margin-top: 60px;`.
 
 - [ ] **Step 3: Bear ears (3D)**
 

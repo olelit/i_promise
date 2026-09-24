@@ -31,7 +31,9 @@ bear-like ears.
   `width: fraction * 100%`. Same fill fraction `(mood + 100) / 200` and same
   HSL color mapping; same `role="meter"` attributes; same 0.6s transitions.
 - Layout: the indicator moves from beside the character to the top of
-  `.content` (indicator → character row → controls).
+  `.content` (indicator → character row → controls). The character container
+  reserves ~60px above itself (`.pet-wrap { margin-top: 60px; }`) so the speech
+  bubble never covers the indicator.
 
 ## 3. Test animations button (browser mode only)
 
