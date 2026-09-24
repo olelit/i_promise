@@ -18,7 +18,7 @@ const mouthPath = computed(() => {
 const blushOpacity = computed(() => t.value)
 
 const exitStyle = computed(() => ({
-  transform: props.away ? 'translateX(-140%) rotate(-4deg)' : 'translateX(0) rotate(0deg)',
+  transform: props.away ? 'translateY(-26px) scale(0.32)' : 'translateY(0) scale(1)',
 }))
 
 const crouchStyle = computed(() => ({
@@ -28,7 +28,7 @@ const crouchStyle = computed(() => ({
 
 <template>
   <div class="scene">
-    <div class="exit" :style="exitStyle">
+    <div class="exit" :class="{ away }" :style="exitStyle">
       <div class="idle">
         <div class="crouch" :style="crouchStyle">
           <Transition name="flip" mode="out-in">
@@ -150,7 +150,12 @@ const crouchStyle = computed(() => ({
 }
 
 .exit {
-  transition: transform 1s ease;
+  transform-origin: bottom center;
+  transition: transform 0.8s ease 0.45s;
+}
+
+.exit.away {
+  transition: transform 0.8s ease;
 }
 
 .idle {

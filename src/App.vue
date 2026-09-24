@@ -292,6 +292,7 @@ onUnmounted(() => {
         {{ task === null ? 'Начать задачу' : 'Задача' }}
       </button>
     </main>
+    <RoomScene :away="away" front />
     <TaskCreateDialog v-if="createOpen" @start="handleTaskStart" @close="createOpen = false" />
     <TaskInfoDialog
       v-if="infoOpen && task !== null"
