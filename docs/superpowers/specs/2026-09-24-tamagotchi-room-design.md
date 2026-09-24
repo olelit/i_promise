@@ -75,8 +75,9 @@ bear-like ears.
   outer `SphereGeometry(0.24, 10, 8)` scaled `(1, 1, 0.6)` at
   `(±0.36, 1.16, 0)`, plus an inner ear `SphereGeometry(0.13, 8, 6)` in the
   belly color at `(±0.36, 1.16, 0.12)`.
-- SVG fallback: ears grow from `r=13` to `r=17` at `(±30, 56)` relative to the
-  head center, with inner circles `r=8` in `#a8dcc0` for parity.
+- SVG fallback: ears grow from `r=11` to `r=17` at absolute `(70, 48)` and
+  `(130, 48)` (front and back views), with inner circles `r=8` in `#a8dcc0` in
+  the front view for parity.
 
 ## Files
 

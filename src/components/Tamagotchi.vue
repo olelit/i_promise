@@ -33,10 +33,10 @@ const crouchStyle = computed(() => ({
         <Transition name="flip" mode="out-in">
           <svg v-if="!turned" key="front" class="face" viewBox="0 0 200 200" aria-hidden="true">
             <ellipse cx="100" cy="78" rx="42" ry="40" fill="#7ec8a9" />
-            <circle cx="70" cy="54" r="17" fill="#7ec8a9" />
-            <circle cx="130" cy="54" r="17" fill="#7ec8a9" />
-            <circle cx="70" cy="54" r="8" fill="#a8dcc0" />
-            <circle cx="130" cy="54" r="8" fill="#a8dcc0" />
+            <circle cx="70" cy="48" r="17" fill="#7ec8a9" />
+            <circle cx="130" cy="48" r="17" fill="#7ec8a9" />
+            <circle cx="70" cy="48" r="8" fill="#a8dcc0" />
+            <circle cx="130" cy="48" r="8" fill="#a8dcc0" />
             <ellipse cx="100" cy="146" rx="34" ry="38" fill="#7ec8a9" />
             <ellipse cx="100" cy="156" rx="22" ry="26" fill="#a8dcc0" />
             <line
@@ -95,8 +95,8 @@ const crouchStyle = computed(() => ({
           </svg>
           <svg v-else key="back" class="face" viewBox="0 0 200 200" aria-hidden="true">
             <ellipse cx="100" cy="78" rx="42" ry="40" fill="#7ec8a9" />
-            <circle cx="70" cy="54" r="17" fill="#7ec8a9" />
-            <circle cx="130" cy="54" r="17" fill="#7ec8a9" />
+            <circle cx="70" cy="48" r="17" fill="#7ec8a9" />
+            <circle cx="130" cy="48" r="17" fill="#7ec8a9" />
             <path
               d="M 100 44 q 8 -14 20 -7 q 10 6 2 14"
               fill="none"
