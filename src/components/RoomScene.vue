@@ -31,20 +31,18 @@ const nightOpacity = computed(() => 0.45 * (1 - daylight.value))
             <rect x="24" y="154" width="64" height="112" />
           </clipPath>
           <clipPath id="room-door-opening">
-            <rect x="142" y="192" width="116" height="288" />
+            <rect x="120" y="192" width="160" height="288" />
           </clipPath>
         </defs>
         <rect x="0" y="0" width="400" height="700" fill="#f3e9dc" />
         <rect x="0" y="470" width="400" height="230" fill="#e2c49c" />
         <rect x="0" y="466" width="400" height="8" fill="#cfa87c" />
-        <rect x="130" y="180" width="140" height="300" rx="8" fill="#8c5a3b" />
+        <rect x="108" y="180" width="184" height="300" rx="8" fill="#8c5a3b" />
         <g clip-path="url(#room-door-opening)">
-          <rect x="142" y="192" width="116" height="288" fill="#9ec9e2" />
-          <rect x="142" y="372" width="116" height="108" fill="#8fbf7f" />
-          <circle cx="165" cy="210" r="13" fill="#6da85f" />
-          <rect x="162" y="210" width="5" height="14" fill="#7a5a3a" />
-          <circle cx="240" cy="214" r="10" fill="#6da85f" />
-          <rect x="238" y="214" width="4" height="12" fill="#7a5a3a" />
+          <rect x="120" y="192" width="160" height="288" fill="#9ec9e2" />
+          <rect x="120" y="372" width="160" height="108" fill="#8fbf7f" />
+          <circle cx="269" cy="338" r="9" fill="#6da85f" />
+          <rect x="267" y="338" width="4" height="34" fill="#7a5a3a" />
         </g>
         <g clip-path="url(#room-window-pane)">
           <rect x="20" y="150" width="72" height="120" fill="#bcd8e8" />
@@ -59,8 +57,8 @@ const nightOpacity = computed(() => 0.45 * (1 - daylight.value))
         <rect x="0" y="0" width="400" height="700" fill="#0b1a33" :opacity="nightOpacity" />
       </template>
       <g v-else class="door front-door" :class="{ closed: away }">
-        <rect x="142" y="192" width="116" height="288" rx="4" fill="#b07b52" />
-        <circle cx="232" cy="350" r="6" fill="#f4d35e" />
+        <rect x="120" y="192" width="160" height="288" rx="4" fill="#b07b52" />
+        <circle cx="264" cy="350" r="6" fill="#f4d35e" />
       </g>
     </svg>
   </div>

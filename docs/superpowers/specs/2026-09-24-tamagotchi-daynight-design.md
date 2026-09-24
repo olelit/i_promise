@@ -46,10 +46,11 @@ function daylightAt(timestamp: number): number {
   (`#e8eef7` with a `#cbd6e6` crater, opacity `1 - daylight`), both partially
   visible in the pane's upper-left corner. The cross bars and frame draw over
   them.
-- Open door: the opening shows the outside world, clipped to the opening —
-  a sky `#9ec9e2`, a grass strip `#8fbf7f` from `y=372`, and a simple tree
-  (crown `#6da85f` + trunk `#7a5a3a`) at the horizon. The character stands in
-  front of it, so the sky is visible above its head.
+- Open door: the doorway is wide (`x=120..280`, frame `108..292`) so the
+  outside world stays visible beside the character; the opening is clipped and
+  shows a sky `#9ec9e2`, a grass strip `#8fbf7f` from `y=372`, and one tree on
+  the right — a symmetric crown (`cx=269`, `cy=338`, `r=9`, `#6da85f`) with a
+  straight trunk (`x=267`, width `4`) reaching the grass line at `y=372`.
 - Night dimming: a full-viewBox rect `#0b1a33` with
   `opacity = 0.45 * (1 - daylight)` drawn on top of the back layer (the
   character and the front door leaf stay as they are).
