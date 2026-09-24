@@ -37,9 +37,9 @@ stop the room window from overlapping the door.
 
 ## 3. Room fix
 
-- The window no longer overlaps the door frame and survives cropping on tall
-  phone screens: it moves to `x=44`, width `80` (right edge 124 < door frame
-  left 130), with the cross bars adjusted.
+- The window moves further from the door: `x=20`, width `72` (right edge 92 <
+  door frame left 130), with the cross bars adjusted; the rug is raised to
+  `cy=540` so it sits higher on the floor, above the bottom panel.
 - The room layer keeps its fixed palette and geometry but paints with
   `z-index: -1` (the app chrome has no stacking position of its own), so the
   scene stays behind the content.
