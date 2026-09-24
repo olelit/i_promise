@@ -60,6 +60,7 @@ function handleWrapClick(): void {
   color: var(--tg-hint);
   font-size: 15px;
   text-align: center;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
 }
 
 .feed-wrap {

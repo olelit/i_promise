@@ -14,7 +14,7 @@ defineProps<{ away: boolean; front?: boolean }>()
         <line x1="20" y1="210" x2="92" y2="210" stroke="#cfa87c" stroke-width="6" />
         <rect x="130" y="180" width="140" height="300" rx="8" fill="#8c5a3b" />
         <rect x="142" y="192" width="116" height="288" fill="#5c4033" />
-        <ellipse cx="200" cy="540" rx="150" ry="38" fill="#cfe6d4" />
+        <ellipse cx="200" cy="495" rx="150" ry="38" fill="#cfe6d4" />
       </template>
       <g v-else class="door front-door" :class="{ closed: away }">
         <rect x="142" y="192" width="116" height="288" rx="4" fill="#b07b52" />

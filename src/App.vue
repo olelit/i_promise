@@ -341,10 +341,10 @@ body {
 }
 
 .controls {
-  padding: 12px 16px;
-  border-radius: 14px;
-  background: var(--tg-secondary-bg);
-  max-width: 340px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
 }
 
 .content {
