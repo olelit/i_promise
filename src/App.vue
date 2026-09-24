@@ -29,6 +29,7 @@ import {
 import { loadState, saveState } from './storage'
 import { pickPhrase, type PhraseEvent } from './phrases'
 import Tamagotchi from './components/Tamagotchi.vue'
+import RoomScene from './components/RoomScene.vue'
 import MoodIndicator from './components/MoodIndicator.vue'
 import MoodControls from './components/MoodControls.vue'
 import SpeechBubble from './components/SpeechBubble.vue'
@@ -272,6 +273,7 @@ onUnmounted(() => {
 
 <template>
   <div class="app" :style="themeStyle">
+    <RoomScene :away="away" />
     <div v-if="!inTelegram" class="banner">
       Приложение открыто не в Telegram: настроение хранится локально в браузере.
     </div>
@@ -343,11 +345,14 @@ body {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  background: var(--tg-bg);
+  position: relative;
+  z-index: 1;
   color: var(--tg-text);
 }
 
 .banner {
+  position: relative;
+  z-index: 1;
   padding: 12px 16px;
   border-radius: 12px;
   background: var(--tg-secondary-bg);
@@ -356,7 +361,16 @@ body {
   line-height: 1.4;
 }
 
+.controls {
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: var(--tg-secondary-bg);
+  max-width: 340px;
+}
+
 .content {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -367,6 +381,7 @@ body {
 
 .pet-wrap {
   position: relative;
+  margin-top: 60px;
 }
 
 .test-button {

@@ -76,9 +76,15 @@ export function createCharacter(): Character {
   group.add(head)
 
   for (const side of [-1, 1]) {
-    const ear = new Mesh(new IcosahedronGeometry(0.18, 0), green)
-    ear.position.set(side * 0.42, 1.12, 0)
+    const ear = new Mesh(new SphereGeometry(0.24, 10, 8), green)
+    ear.scale.set(1, 1, 0.6)
+    ear.position.set(side * 0.36, 1.16, 0)
     group.add(ear)
+
+    const innerEar = new Mesh(new SphereGeometry(0.13, 8, 6), belly)
+    innerEar.scale.set(1, 1, 0.5)
+    innerEar.position.set(side * 0.36, 1.16, 0.12)
+    group.add(innerEar)
   }
 
   const torso = new Mesh(new IcosahedronGeometry(0.62, 1), green)
