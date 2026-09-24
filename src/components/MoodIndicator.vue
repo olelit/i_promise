@@ -70,11 +70,19 @@ function handleInput(event: Event): void {
 
 .range {
   position: absolute;
-  inset: 0;
+  left: 0;
+  right: 0;
+  top: 50%;
   width: 100%;
-  height: 100%;
+  height: 44px;
   margin: 0;
+  transform: translateY(-50%);
   opacity: 0;
   cursor: pointer;
+}
+
+.meter-wrap:focus-within .meter {
+  outline: 2px solid var(--tg-button);
+  outline-offset: 2px;
 }
 </style>

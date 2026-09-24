@@ -172,6 +172,13 @@ const crouchStyle = computed(() => ({
   .idle {
     animation: none;
   }
+
+  .face path,
+  .face ellipse,
+  .face circle,
+  .face line {
+    transition: none;
+  }
 }
 
 .crouch {

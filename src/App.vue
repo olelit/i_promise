@@ -63,6 +63,17 @@ function say(event: PhraseEvent): void {
 }
 
 let timer: number | undefined
+let saveTimer: number | undefined
+
+function scheduleSave(): void {
+  if (saveTimer !== undefined) {
+    window.clearTimeout(saveTimer)
+  }
+  saveTimer = window.setTimeout(() => {
+    saveTimer = undefined
+    void saveState(state.value)
+  }, 300)
+}
 let hiddenAt: number | null = null
 
 function commitTransitions(): void {
@@ -102,13 +113,16 @@ function handleFeedBlocked(reason: 'cooldown' | 'full'): void {
 
 function handleSetMood(mood: number): void {
   now.value = Date.now()
-  state.value = {
-    ...state.value,
-    mood,
-    lastSeen: now.value,
-    awayUntil: mood <= MOOD_MIN ? now.value + AWAY_DURATION_MS : null,
+  const before = current.value
+  const wasAway = before.awayUntil !== null
+  const awayUntil = mood <= MOOD_MIN ? (before.awayUntil ?? now.value + AWAY_DURATION_MS) : null
+  state.value = { ...before, mood, lastSeen: now.value, awayUntil }
+  scheduleSave()
+  if (!wasAway && awayUntil !== null) {
+    say('awayStart')
+  } else if (wasAway && awayUntil === null) {
+    say('returned')
   }
-  void saveState(state.value)
 }
 
 function handleTaskStart(input: { hours: number; description: string }): void {
@@ -239,6 +253,10 @@ onUnmounted(() => {
   webApp?.MainButton.hide()
   if (timer !== undefined) {
     window.clearInterval(timer)
+  }
+  if (saveTimer !== undefined) {
+    window.clearTimeout(saveTimer)
+    void saveState(state.value)
   }
   document.removeEventListener('visibilitychange', handleVisibility)
 })
