@@ -264,11 +264,13 @@ onUnmounted(() => {
     <div v-if="!inTelegram" class="banner">
       Приложение открыто не в Telegram: настроение хранится локально в браузере.
     </div>
+    <MoodIndicator :mood="current.mood" />
     <main class="content">
-      <MoodIndicator :mood="current.mood" />
-      <div class="pet-wrap">
-        <SpeechBubble :message="phrase" />
-        <Tamagotchi :mood="current.mood" :away="away" />
+      <div class="pet-area">
+        <div class="pet-wrap">
+          <SpeechBubble :message="phrase" />
+          <Tamagotchi :mood="current.mood" :away="away" />
+        </div>
       </div>
       <MoodControls
         :remaining-ms="remainingMs"
@@ -350,13 +352,18 @@ body {
 }
 
 .content {
-  position: relative;
-  z-index: 1;
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 16px;
+}
+
+.pet-area {
   flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: center;
   justify-content: center;
 }
 

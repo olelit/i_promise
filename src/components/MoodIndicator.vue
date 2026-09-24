@@ -31,6 +31,7 @@ const fillStyle = computed(() => ({
 .meter {
   width: 100%;
   max-width: 300px;
+  margin: 0 auto;
   height: 14px;
   border-radius: 7px;
   background: var(--tg-secondary-bg);
