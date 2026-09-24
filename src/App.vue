@@ -340,13 +340,6 @@ body {
   line-height: 1.4;
 }
 
-.controls {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-}
-
 .content {
   flex: 1;
   display: flex;

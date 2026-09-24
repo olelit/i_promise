@@ -41,8 +41,10 @@ const nightOpacity = computed(() => 0.45 * (1 - daylight.value))
         <g clip-path="url(#room-door-opening)">
           <rect x="142" y="192" width="116" height="288" fill="#9ec9e2" />
           <rect x="142" y="372" width="116" height="108" fill="#8fbf7f" />
-          <circle cx="208" cy="356" r="24" fill="#6da85f" />
-          <rect x="204" y="356" width="8" height="24" fill="#7a5a3a" />
+          <circle cx="165" cy="210" r="13" fill="#6da85f" />
+          <rect x="162" y="210" width="5" height="14" fill="#7a5a3a" />
+          <circle cx="240" cy="214" r="10" fill="#6da85f" />
+          <rect x="238" y="214" width="4" height="12" fill="#7a5a3a" />
         </g>
         <g clip-path="url(#room-window-pane)">
           <rect x="20" y="150" width="72" height="120" fill="#bcd8e8" />

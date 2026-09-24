@@ -31,8 +31,9 @@ outside world through the open door, and dim the room at night.
   every minute) and computes:
 
 ```ts
-const hour = new Date(now).getHours() + new Date(now).getMinutes() / 60
-function daylightAt(hour: number): number {
+function daylightAt(timestamp: number): number {
+  const date = new Date(timestamp)
+  const hour = date.getHours() + date.getMinutes() / 60
   if (hour >= 8 && hour <= 20) return 1
   if (hour >= 6 && hour < 8) return (hour - 6) / 2
   if (hour > 20 && hour <= 22) return (22 - hour) / 2
