@@ -56,6 +56,8 @@ defineProps<{ away: boolean; front?: boolean }>()
 .front-door.closed {
   transform: scaleX(1);
   opacity: 1;
-  transition: transform 0.5s ease 0.7s;
+  transition:
+    transform 0.5s ease 0.7s,
+    opacity 0.15s linear 0.7s;
 }
 </style>
