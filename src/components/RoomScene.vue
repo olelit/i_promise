@@ -8,9 +8,9 @@ defineProps<{ away: boolean }>()
       <rect x="0" y="0" width="400" height="700" fill="#f3e9dc" />
       <rect x="0" y="470" width="400" height="230" fill="#e2c49c" />
       <rect x="0" y="466" width="400" height="8" fill="#cfa87c" />
-      <rect x="24" y="150" width="100" height="120" rx="10" fill="#bcd8e8" stroke="#cfa87c" stroke-width="8" />
-      <line x1="74" y1="150" x2="74" y2="270" stroke="#cfa87c" stroke-width="6" />
-      <line x1="24" y1="210" x2="124" y2="210" stroke="#cfa87c" stroke-width="6" />
+      <rect x="44" y="150" width="80" height="120" rx="10" fill="#bcd8e8" stroke="#cfa87c" stroke-width="8" />
+      <line x1="84" y1="150" x2="84" y2="270" stroke="#cfa87c" stroke-width="6" />
+      <line x1="44" y1="210" x2="124" y2="210" stroke="#cfa87c" stroke-width="6" />
       <rect x="130" y="225" width="140" height="255" rx="8" fill="#8c5a3b" />
       <rect x="142" y="237" width="116" height="243" fill="#5c4033" />
       <g class="door" :class="{ closed: away }">

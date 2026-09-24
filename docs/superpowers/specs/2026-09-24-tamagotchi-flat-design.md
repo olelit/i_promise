@@ -37,9 +37,12 @@ stop the room window from overlapping the door.
 
 ## 3. Room fix
 
-- The window no longer overlaps the door frame: it moves to `x=24`, width
-  `100` (right edge 124 < door frame left 130), with the cross bars adjusted.
-- Everything else in `RoomScene.vue` stays.
+- The window no longer overlaps the door frame and survives cropping on tall
+  phone screens: it moves to `x=44`, width `80` (right edge 124 < door frame
+  left 130), with the cross bars adjusted.
+- The room layer keeps its fixed palette and geometry but paints with
+  `z-index: -1` (the app chrome has no stacking position of its own), so the
+  scene stays behind the content.
 
 ## 4. Flat character animations
 

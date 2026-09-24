@@ -168,6 +168,12 @@ const crouchStyle = computed(() => ({
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .idle {
+    animation: none;
+  }
+}
+
 .crouch {
   transform-origin: bottom center;
   transition: transform 0.6s ease;

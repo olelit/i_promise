@@ -334,8 +334,6 @@ body {
 }
 
 .banner {
-  position: relative;
-  z-index: 1;
   padding: 12px 16px;
   border-radius: 12px;
   background: var(--tg-secondary-bg);
