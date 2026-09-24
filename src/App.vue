@@ -276,18 +276,16 @@ onUnmounted(() => {
       Приложение открыто не в Telegram: настроение хранится локально в браузере.
     </div>
     <main class="content">
-      <div class="pet-row">
-        <div class="pet-wrap">
-          <SpeechBubble :message="phrase" />
-          <Tamagotchi3D
-            v-if="use3d"
-            :mood="current.mood"
-            :away="away"
-            @unsupported="use3d = false"
-          />
-          <Tamagotchi v-else :mood="current.mood" :away="away" />
-        </div>
-        <MoodIndicator :mood="current.mood" />
+      <MoodIndicator :mood="current.mood" />
+      <div class="pet-wrap">
+        <SpeechBubble :message="phrase" />
+        <Tamagotchi3D
+          v-if="use3d"
+          :mood="current.mood"
+          :away="away"
+          @unsupported="use3d = false"
+        />
+        <Tamagotchi v-else :mood="current.mood" :away="away" />
       </div>
       <MoodControls
         :remaining-ms="remainingMs"
@@ -365,12 +363,6 @@ body {
   gap: 16px;
   flex: 1;
   justify-content: center;
-}
-
-.pet-row {
-  display: flex;
-  align-items: center;
-  gap: 16px;
 }
 
 .pet-wrap {

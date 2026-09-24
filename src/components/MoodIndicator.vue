@@ -9,7 +9,7 @@ const fraction = computed(() =>
 )
 const hue = computed(() => 120 * Math.min(1, Math.max(0, props.mood / MOOD_MAX)))
 const fillStyle = computed(() => ({
-  height: `${fraction.value * 100}%`,
+  width: `${fraction.value * 100}%`,
   background: `hsl(${hue.value}, 70%, 45%)`,
 }))
 </script>
@@ -29,19 +29,17 @@ const fillStyle = computed(() => ({
 
 <style scoped>
 .meter {
-  width: 14px;
-  height: 160px;
+  width: 100%;
+  max-width: 300px;
+  height: 14px;
   border-radius: 7px;
   background: var(--tg-secondary-bg);
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
 }
 
 .fill {
-  width: 100%;
+  height: 100%;
   border-radius: 7px;
-  transition: height 0.6s ease, background 0.6s ease;
+  transition: width 0.6s ease, background 0.6s ease;
 }
 </style>
