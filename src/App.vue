@@ -264,7 +264,7 @@ onUnmounted(() => {
 
 <template>
   <div class="app" :style="themeStyle">
-    <RoomScene :away="away" />
+    <RoomScene :away="away" :now="now" />
     <div v-if="!inTelegram" class="banner">
       Приложение открыто не в Telegram: настроение хранится локально в браузере.
     </div>
@@ -294,7 +294,7 @@ onUnmounted(() => {
         {{ task === null ? 'Начать задачу' : 'Задача' }}
       </button>
     </main>
-    <RoomScene :away="away" front />
+    <RoomScene :away="away" :now="now" front />
     <TaskCreateDialog v-if="createOpen" @start="handleTaskStart" @close="createOpen = false" />
     <TaskInfoDialog
       v-if="infoOpen && task !== null"
