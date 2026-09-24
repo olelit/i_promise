@@ -185,6 +185,19 @@ const crouchStyle = computed(() => ({
   display: block;
 }
 
+.face path,
+.face ellipse,
+.face circle,
+.face line {
+  transition:
+    d 0.4s ease,
+    rx 0.4s ease,
+    ry 0.4s ease,
+    cy 0.4s ease,
+    transform 0.4s ease,
+    opacity 0.4s ease;
+}
+
 .flip-enter-active,
 .flip-leave-active {
   transition: transform 0.28s ease;
