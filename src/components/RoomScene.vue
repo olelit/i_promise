@@ -60,4 +60,11 @@ defineProps<{ away: boolean; front?: boolean }>()
     transform 0.5s ease 0.7s,
     opacity 0.15s linear 0.7s;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .front-door,
+  .front-door.closed {
+    transition: none;
+  }
+}
 </style>

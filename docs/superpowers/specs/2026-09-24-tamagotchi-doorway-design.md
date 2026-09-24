@@ -39,9 +39,10 @@ The panel keeps the feed button (or the away message while away).
   `pointer-events: none`, `z-index: 2` (above the app content).
 - Front leaf behaviour:
   - present (open): `opacity: 0` (invisible, the dark opening shows);
-  - away: `opacity: 1` instantly and `transform: scaleX(1)` with
-    `transition: transform 0.5s ease 0.7s` — the door closes 0.7s after the
-    character starts entering.
+  - away: `transform: scaleX(1)` and `opacity: 1` both start at 0.7s
+    (`transform 0.5s ease 0.7s`, `opacity 0.15s linear 0.7s`) — the leaf fades in
+    as it starts swinging, so no hinge sliver shows during the delay and the
+    door closes after the character has entered.
 - `Tamagotchi.vue` exit animation: instead of sliding off-screen, the character
   shrinks into the doorway: `translateY(-26px) scale(0.32)` with
   `transform-origin: bottom center` (shrinks toward its feet, i.e. into the

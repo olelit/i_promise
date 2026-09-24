@@ -272,8 +272,10 @@ onUnmounted(() => {
     <main class="content">
       <div class="pet-area">
         <div class="pet-wrap">
-          <SpeechBubble :message="phrase" />
           <Tamagotchi :mood="current.mood" :away="away" />
+        </div>
+        <div class="bubble-anchor">
+          <SpeechBubble :message="phrase" />
         </div>
       </div>
       <MoodControls
@@ -366,6 +368,26 @@ body {
   left: 50%;
   bottom: 32.5vh;
   transform: translateX(-50%);
+}
+
+.bubble-anchor {
+  position: fixed;
+  left: 50%;
+  bottom: calc(32.5vh + 250px);
+  width: 0;
+  height: 0;
+  transform: translateX(-50%);
+  z-index: 3;
+}
+
+@media (min-aspect-ratio: 4/7) {
+  .pet-wrap {
+    bottom: calc(50vh - 30vw - 3px);
+  }
+
+  .bubble-anchor {
+    bottom: calc(50vh - 30vw + 247px);
+  }
 }
 
 .task-button {

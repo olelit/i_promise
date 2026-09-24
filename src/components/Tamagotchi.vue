@@ -178,6 +178,10 @@ const crouchStyle = computed(() => ({
     animation: none;
   }
 
+  .exit {
+    transition: none;
+  }
+
   .face path,
   .face ellipse,
   .face circle,
