@@ -31,8 +31,5 @@ All persistence must go through `src/storage.ts`.
   `Tamagotchi.vue` is intentionally fixed.
 - Game logic lives in `src/tamagotchi.ts` as pure functions; components stay
   presentational.
-- The 3D character uses `three`, imported only by `src/three/character.ts` and
-  `src/components/Tamagotchi3D.vue`; the component is lazily loaded and must
-  fall back to the SVG `Tamagotchi.vue` when WebGL is unavailable.
 - No backend or network calls; outside Telegram the app runs in browser mode
   (localStorage + dev controls).

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import {
   computed,
-  defineAsyncComponent,
   onMounted,
   onUnmounted,
   ref,
@@ -9,7 +8,6 @@ import {
   watchEffect,
 } from 'vue'
 import { getWebApp, isTelegram, type TelegramThemeParams } from './telegram'
-import { isWebglAvailable } from './webgl'
 import {
   abandonTask,
   applyDecay,
@@ -35,17 +33,6 @@ import MoodControls from './components/MoodControls.vue'
 import SpeechBubble from './components/SpeechBubble.vue'
 import TaskCreateDialog from './components/TaskCreateDialog.vue'
 import TaskInfoDialog from './components/TaskInfoDialog.vue'
-
-const use3d = ref(isWebglAvailable())
-
-const Tamagotchi3D = defineAsyncComponent({
-  loader: () => import('./components/Tamagotchi3D.vue'),
-  loadingComponent: Tamagotchi,
-  onError(_error, _retry, fail) {
-    use3d.value = false
-    fail()
-  },
-})
 
 const webApp = getWebApp()
 const inTelegram = isTelegram()
@@ -281,13 +268,7 @@ onUnmounted(() => {
       <MoodIndicator :mood="current.mood" />
       <div class="pet-wrap">
         <SpeechBubble :message="phrase" />
-        <Tamagotchi3D
-          v-if="use3d"
-          :mood="current.mood"
-          :away="away"
-          @unsupported="use3d = false"
-        />
-        <Tamagotchi v-else :mood="current.mood" :away="away" />
+        <Tamagotchi :mood="current.mood" :away="away" />
       </div>
       <MoodControls
         :remaining-ms="remainingMs"
