@@ -100,6 +100,17 @@ function handleFeedBlocked(reason: 'cooldown' | 'full'): void {
   say(reason === 'full' ? 'feedAtCap' : 'feedCooldown')
 }
 
+function handleSetMood(mood: number): void {
+  now.value = Date.now()
+  state.value = {
+    ...state.value,
+    mood,
+    lastSeen: now.value,
+    awayUntil: mood <= MOOD_MIN ? now.value + AWAY_DURATION_MS : null,
+  }
+  void saveState(state.value)
+}
+
 function handleTaskStart(input: { hours: number; description: string }): void {
   now.value = Date.now()
   state.value = startTask(current.value, input, now.value)
@@ -158,31 +169,6 @@ function handleMainButton(): void {
   } else {
     infoOpen.value = true
   }
-}
-
-const TEST_MOODS = [100, 50, 0, -50] as const
-const testStep = ref(0)
-
-function handleTestAnimation(): void {
-  now.value = Date.now()
-  const step = testStep.value % (TEST_MOODS.length + 1)
-  testStep.value = step + 1
-  if (step === TEST_MOODS.length) {
-    state.value = {
-      ...state.value,
-      mood: MOOD_MIN,
-      lastSeen: now.value,
-      awayUntil: now.value + AWAY_DURATION_MS,
-    }
-  } else {
-    state.value = {
-      ...state.value,
-      mood: TEST_MOODS[step],
-      lastSeen: now.value,
-      awayUntil: null,
-    }
-  }
-  void saveState(state.value)
 }
 
 function applyTheme(): void {
@@ -264,7 +250,7 @@ onUnmounted(() => {
     <div v-if="!inTelegram" class="banner">
       Приложение открыто не в Telegram: настроение хранится локально в браузере.
     </div>
-    <MoodIndicator :mood="current.mood" />
+    <MoodIndicator :mood="current.mood" interactive @set-mood="handleSetMood" />
     <main class="content">
       <div class="pet-area">
         <div class="pet-wrap">
@@ -279,15 +265,6 @@ onUnmounted(() => {
         @feed="handleFeed"
         @feed-blocked="handleFeedBlocked"
       />
-      <button
-        v-if="!inTelegram"
-        class="test-button"
-        type="button"
-        title="Переключает состояния: 100 → 50 → 0 → −50 → уход"
-        @click="handleTestAnimation"
-      >
-        Тест анимаций
-      </button>
       <button
         v-if="!inTelegram"
         class="task-button"
@@ -368,16 +345,6 @@ body {
 .pet-wrap {
   position: relative;
   margin-top: 60px;
-}
-
-.test-button {
-  padding: 8px 14px;
-  border: none;
-  border-radius: 10px;
-  background: var(--tg-secondary-bg);
-  color: var(--tg-hint);
-  font-size: 13px;
-  cursor: pointer;
 }
 
 .task-button {
