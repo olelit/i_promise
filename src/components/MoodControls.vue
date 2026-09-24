@@ -38,14 +38,11 @@ function handleWrapClick(): void {
     <p v-if="remainingMs !== null" class="away">
       Он ушёл. Вернётся через {{ formatRemaining(remainingMs) }}
     </p>
-    <template v-else>
-      <p class="hint">Настроение падает само. Покорми раз в день, чтобы поднять.</p>
-      <div class="feed-wrap" @click="handleWrapClick">
-        <button class="feed" type="button" :disabled="blockReason !== null" @click.stop="handleFeed">
-          {{ feedLabel }}
-        </button>
-      </div>
-    </template>
+    <div v-else class="feed-wrap" @click="handleWrapClick">
+      <button class="feed" type="button" :disabled="blockReason !== null" @click.stop="handleFeed">
+        {{ feedLabel }}
+      </button>
+    </div>
   </section>
 </template>
 
@@ -56,14 +53,6 @@ function handleWrapClick(): void {
   flex-direction: column;
   align-items: center;
   gap: 12px;
-}
-
-.hint {
-  margin: 0;
-  color: var(--tg-hint);
-  font-size: 13px;
-  line-height: 1.5;
-  text-align: center;
 }
 
 .away {

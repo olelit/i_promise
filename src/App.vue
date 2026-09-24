@@ -361,8 +361,10 @@ body {
 }
 
 .pet-wrap {
-  position: relative;
-  margin-top: 60px;
+  position: fixed;
+  left: 50%;
+  bottom: 32.5vh;
+  transform: translateX(-50%);
 }
 
 .task-button {
