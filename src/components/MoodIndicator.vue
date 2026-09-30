@@ -1,18 +1,23 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { MOOD_MAX, MOOD_MIN } from '../tamagotchi'
+import { PALETTE } from '../pixel/palette'
 
 const props = defineProps<{ mood: number; interactive?: boolean }>()
 const emit = defineEmits<{ setMood: [mood: number] }>()
 
+const SEGMENTS = 20
+
 const fraction = computed(() =>
   Math.min(1, Math.max(0, (props.mood - MOOD_MIN) / (MOOD_MAX - MOOD_MIN))),
 )
-const hue = computed(() => 120 * Math.min(1, Math.max(0, props.mood / MOOD_MAX)))
-const fillStyle = computed(() => ({
-  width: `${fraction.value * 100}%`,
-  background: `hsl(${hue.value}, 70%, 45%)`,
-}))
+const lit = computed(() => Math.round(fraction.value * SEGMENTS))
+const segments = computed(() =>
+  Array.from({ length: SEGMENTS }, (_, index) => {
+    const value = MOOD_MIN + ((index + 0.5) * (MOOD_MAX - MOOD_MIN)) / SEGMENTS
+    return value < 0 ? PALETTE.r : value <= 50 ? PALETTE.S : PALETTE.T
+  }),
+)
 
 function handleInput(event: Event): void {
   emit('setMood', Number((event.target as HTMLInputElement).value))
@@ -30,7 +35,16 @@ function handleInput(event: Event): void {
       :aria-valuemax="MOOD_MAX"
       :aria-valuenow="Math.round(mood)"
     >
-      <div class="fill" :style="fillStyle"></div>
+      <div class="frame" :style="{ background: PALETTE.x }"></div>
+      <div class="bevel" :style="{ background: PALETTE.e }"></div>
+      <div class="track" :style="{ background: PALETTE.q }">
+        <span
+          v-for="(color, index) in segments"
+          :key="index"
+          class="segment"
+          :style="index < lit ? { background: color } : undefined"
+        ></span>
+      </div>
     </div>
     <input
       v-if="interactive"
@@ -55,17 +69,47 @@ function handleInput(event: Event): void {
 }
 
 .meter {
+  position: relative;
   width: 100%;
-  height: 14px;
-  border-radius: 7px;
-  background: var(--tg-secondary-bg);
-  overflow: hidden;
+  height: 22px;
 }
 
-.fill {
-  height: 100%;
-  border-radius: 7px;
-  transition: width 0.2s ease, background 0.6s ease;
+.frame,
+.bevel {
+  position: absolute;
+  clip-path: polygon(
+    2px 0,
+    calc(100% - 2px) 0,
+    calc(100% - 2px) 2px,
+    100% 2px,
+    100% calc(100% - 2px),
+    calc(100% - 2px) calc(100% - 2px),
+    calc(100% - 2px) 100%,
+    2px 100%,
+    2px calc(100% - 2px),
+    0 calc(100% - 2px),
+    0 2px,
+    2px 2px
+  );
+}
+
+.frame {
+  inset: 0;
+}
+
+.bevel {
+  inset: 2px;
+}
+
+.track {
+  position: absolute;
+  inset: 4px;
+  display: flex;
+  gap: 1px;
+}
+
+.segment {
+  flex: 1;
 }
 
 .range {
