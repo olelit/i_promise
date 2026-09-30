@@ -1,5 +1,26 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import PixelSprite from './PixelSprite.vue'
+import { PALETTE } from '../pixel/palette'
+import {
+  BASEBOARD,
+  DOOR_FRAME,
+  DOOR_OPENING,
+  FLOOR,
+  MOON_MAP,
+  MOON_POS,
+  RUG,
+  RUG_MAP,
+  SUN_MAP,
+  SUN_POS,
+  TREE_MAP,
+  TREE_POS,
+  WALL,
+  WINDOW_BAR_H,
+  WINDOW_BAR_V,
+  WINDOW_FRAME,
+  WINDOW_PANE,
+} from '../pixel/room'
 
 const props = defineProps<{ away: boolean; front?: boolean; now: number }>()
 
@@ -24,37 +45,110 @@ const nightOpacity = computed(() => 0.45 * (1 - daylight.value))
 
 <template>
   <div class="room" :class="{ front }" aria-hidden="true">
-    <svg class="scene" viewBox="0 0 400 700" preserveAspectRatio="xMidYMid slice">
+    <svg
+      class="scene"
+      viewBox="0 0 400 700"
+      preserveAspectRatio="xMidYMid slice"
+      shape-rendering="crispEdges"
+    >
       <template v-if="!front">
         <defs>
           <clipPath id="room-window-pane">
-            <rect x="24" y="154" width="64" height="112" />
+            <rect
+              :x="WINDOW_PANE.x"
+              :y="WINDOW_PANE.y"
+              :width="WINDOW_PANE.width"
+              :height="WINDOW_PANE.height"
+            />
           </clipPath>
           <clipPath id="room-door-opening">
-            <rect x="120" y="192" width="160" height="288" />
+            <rect
+              :x="DOOR_OPENING.x"
+              :y="DOOR_OPENING.y"
+              :width="DOOR_OPENING.width"
+              :height="DOOR_OPENING.height"
+            />
           </clipPath>
         </defs>
-        <rect x="0" y="0" width="400" height="700" fill="#f3e9dc" />
-        <rect x="0" y="470" width="400" height="230" fill="#e2c49c" />
-        <rect x="0" y="466" width="400" height="8" fill="#cfa87c" />
-        <rect x="108" y="180" width="184" height="300" rx="8" fill="#8c5a3b" />
+        <rect :x="WALL.x" :y="WALL.y" :width="WALL.width" :height="WALL.height" :fill="PALETTE.W" />
+        <rect :x="FLOOR.x" :y="FLOOR.y" :width="FLOOR.width" :height="FLOOR.height" :fill="PALETTE.F" />
+        <rect
+          :x="BASEBOARD.x"
+          :y="BASEBOARD.y"
+          :width="BASEBOARD.width"
+          :height="BASEBOARD.height"
+          :fill="PALETTE.B"
+        />
+        <rect
+          :x="DOOR_FRAME.x"
+          :y="DOOR_FRAME.y"
+          :width="DOOR_FRAME.width"
+          :height="DOOR_FRAME.height"
+          :fill="PALETTE.D"
+        />
         <g clip-path="url(#room-door-opening)">
-          <rect x="120" y="192" width="160" height="288" fill="#9ec9e2" />
-          <rect x="120" y="372" width="160" height="108" fill="#8fbf7f" />
-          <circle cx="269" cy="338" r="9" fill="#6da85f" />
-          <rect x="267" y="338" width="4" height="34" fill="#7a5a3a" />
+          <rect
+            :x="DOOR_OPENING.x"
+            :y="DOOR_OPENING.y"
+            :width="DOOR_OPENING.width"
+            :height="DOOR_OPENING.height"
+            :fill="PALETTE.O"
+          />
+          <rect
+            :x="DOOR_OPENING.x"
+            y="372"
+            :width="DOOR_OPENING.width"
+            height="108"
+            :fill="PALETTE.G"
+          />
+          <PixelSprite :map="TREE_MAP" :x="TREE_POS.x" :y="TREE_POS.y" :scale="2" />
         </g>
+        <rect
+          :x="WINDOW_FRAME.x"
+          :y="WINDOW_FRAME.y"
+          :width="WINDOW_FRAME.width"
+          :height="WINDOW_FRAME.height"
+          :fill="PALETTE.B"
+        />
         <g clip-path="url(#room-window-pane)">
-          <rect x="20" y="150" width="72" height="120" fill="#bcd8e8" />
-          <circle cx="44" cy="166" r="22" fill="#f4d35e" :opacity="daylight" />
-          <circle cx="44" cy="166" r="18" fill="#e8eef7" :opacity="1 - daylight" />
-          <circle cx="38" cy="160" r="4" fill="#cbd6e6" :opacity="1 - daylight" />
+          <rect
+            :x="WINDOW_PANE.x"
+            :y="WINDOW_PANE.y"
+            :width="WINDOW_PANE.width"
+            :height="WINDOW_PANE.height"
+            :fill="PALETTE.K"
+          />
+          <PixelSprite
+            :map="SUN_MAP"
+            :x="SUN_POS.x"
+            :y="SUN_POS.y"
+            :scale="2"
+            :opacity="daylight"
+          />
+          <PixelSprite
+            :map="MOON_MAP"
+            :x="MOON_POS.x"
+            :y="MOON_POS.y"
+            :scale="2"
+            :opacity="1 - daylight"
+          />
         </g>
-        <rect x="20" y="150" width="72" height="120" rx="10" fill="none" stroke="#cfa87c" stroke-width="8" />
-        <line x1="56" y1="150" x2="56" y2="270" stroke="#cfa87c" stroke-width="6" />
-        <line x1="20" y1="210" x2="92" y2="210" stroke="#cfa87c" stroke-width="6" />
-        <ellipse cx="200" cy="495" rx="150" ry="38" fill="#cfe6d4" />
-        <rect x="0" y="0" width="400" height="700" fill="#0b1a33" :opacity="nightOpacity" />
+        <rect
+          :x="WINDOW_BAR_V.x"
+          :y="WINDOW_BAR_V.y"
+          :width="WINDOW_BAR_V.width"
+          :height="WINDOW_BAR_V.height"
+          :fill="PALETTE.B"
+        />
+        <rect
+          :x="WINDOW_BAR_H.x"
+          :y="WINDOW_BAR_H.y"
+          :width="WINDOW_BAR_H.width"
+          :height="WINDOW_BAR_H.height"
+          :fill="PALETTE.B"
+        />
+        <PixelSprite :map="RUG_MAP" :x="RUG.x" :y="RUG.y" :scale="2" />
+        <rect x="0" y="0" width="400" height="700" :fill="PALETTE.N" :opacity="nightOpacity" />
       </template>
       <g v-else class="door front-door" :class="{ closed: away }">
         <rect x="120" y="192" width="160" height="288" rx="4" fill="#b07b52" />
