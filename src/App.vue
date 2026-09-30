@@ -27,6 +27,7 @@ import {
 } from './tamagotchi'
 import { loadState, saveState } from './storage'
 import { pickPhrase, type PhraseEvent } from './phrases'
+import { WALK_MS } from './pixel/character'
 import Tamagotchi from './components/Tamagotchi.vue'
 import RoomScene from './components/RoomScene.vue'
 import MoodIndicator from './components/MoodIndicator.vue'
@@ -63,6 +64,28 @@ function say(event: PhraseEvent): void {
   phraseId += 1
   phrase.value = { text: pickPhrase(event), id: phraseId }
 }
+
+const bubbleOff = ref(false)
+let bubbleOffTimer: number | undefined
+
+watch(away, (value) => {
+  if (bubbleOffTimer !== undefined) {
+    window.clearTimeout(bubbleOffTimer)
+    bubbleOffTimer = undefined
+  }
+  if (!value) {
+    bubbleOff.value = false
+    return
+  }
+  if (!ready.value) {
+    bubbleOff.value = true
+    return
+  }
+  bubbleOffTimer = window.setTimeout(() => {
+    bubbleOff.value = true
+    bubbleOffTimer = undefined
+  }, WALK_MS)
+})
 
 let timer: number | undefined
 let saveTimer: number | undefined
@@ -262,6 +285,9 @@ onUnmounted(() => {
     window.clearTimeout(saveTimer)
     void saveState(state.value)
   }
+  if (bubbleOffTimer !== undefined) {
+    window.clearTimeout(bubbleOffTimer)
+  }
   document.removeEventListener('visibilitychange', handleVisibility)
 })
 </script>
@@ -279,7 +305,7 @@ onUnmounted(() => {
           <Tamagotchi :mood="current.mood" :away="away" :animate="ready" />
         </div>
         <div class="bubble-anchor">
-          <SpeechBubble :message="phrase" />
+          <SpeechBubble v-if="!bubbleOff" :message="phrase" />
         </div>
       </div>
       <MoodControls

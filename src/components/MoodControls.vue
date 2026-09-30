@@ -57,10 +57,12 @@ function handleWrapClick(): void {
 
 .away {
   margin: 0;
-  color: var(--tg-hint);
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: var(--tg-secondary-bg);
+  color: var(--tg-text);
   font-size: 15px;
   text-align: center;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
 }
 
 .feed-wrap {
