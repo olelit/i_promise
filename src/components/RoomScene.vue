@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onUnmounted, ref, watch } from 'vue'
 import PixelSprite from './PixelSprite.vue'
 import { PALETTE } from '../pixel/palette'
 import {
   BASEBOARD,
   DOOR_FRAME,
+  DOOR_LEAF_WIDTHS,
   DOOR_OPENING,
+  DOOR_STEP_MS,
   FLOOR,
   MOON_MAP,
   MOON_POS,
@@ -21,6 +23,7 @@ import {
   WINDOW_FRAME,
   WINDOW_PANE,
 } from '../pixel/room'
+import { WALK_MS } from '../pixel/character'
 
 const props = defineProps<{ away: boolean; front?: boolean; now: number }>()
 
@@ -41,6 +44,59 @@ function daylightAt(timestamp: number): number {
 
 const daylight = computed(() => daylightAt(props.now))
 const nightOpacity = computed(() => 0.45 * (1 - daylight.value))
+
+const reducedMotion =
+  typeof window !== 'undefined' &&
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+const doorFrame = ref(props.away ? DOOR_LEAF_WIDTHS.length - 1 : 0)
+const leafWidth = computed(() => DOOR_LEAF_WIDTHS[doorFrame.value])
+
+let doorTimer: number | undefined
+let doorDelay: number | undefined
+
+function clearDoorTimers(): void {
+  if (doorTimer !== undefined) {
+    window.clearInterval(doorTimer)
+    doorTimer = undefined
+  }
+  if (doorDelay !== undefined) {
+    window.clearTimeout(doorDelay)
+    doorDelay = undefined
+  }
+}
+
+watch(
+  () => props.away,
+  (away) => {
+    clearDoorTimers()
+    if (reducedMotion) {
+      doorFrame.value = away ? DOOR_LEAF_WIDTHS.length - 1 : 0
+      return
+    }
+    if (away) {
+      doorDelay = window.setTimeout(() => {
+        doorTimer = window.setInterval(() => {
+          if (doorFrame.value < DOOR_LEAF_WIDTHS.length - 1) {
+            doorFrame.value += 1
+          } else {
+            clearDoorTimers()
+          }
+        }, DOOR_STEP_MS)
+      }, WALK_MS)
+    } else if (doorFrame.value > 0) {
+      doorTimer = window.setInterval(() => {
+        if (doorFrame.value > 0) {
+          doorFrame.value -= 1
+        } else {
+          clearDoorTimers()
+        }
+      }, DOOR_STEP_MS)
+    }
+  },
+)
+
+onUnmounted(clearDoorTimers)
 </script>
 
 <template>
@@ -150,9 +206,31 @@ const nightOpacity = computed(() => 0.45 * (1 - daylight.value))
         <PixelSprite :map="RUG_MAP" :x="RUG.x" :y="RUG.y" :scale="2" />
         <rect x="0" y="0" width="400" height="700" :fill="PALETTE.N" :opacity="nightOpacity" />
       </template>
-      <g v-else class="door front-door" :class="{ closed: away }">
-        <rect x="120" y="192" width="160" height="288" rx="4" fill="#b07b52" />
-        <circle cx="264" cy="350" r="6" fill="#f4d35e" />
+      <g v-else>
+        <rect
+          v-if="leafWidth > 0"
+          :x="DOOR_OPENING.x"
+          :y="DOOR_OPENING.y"
+          :width="leafWidth"
+          :height="DOOR_OPENING.height"
+          :fill="PALETTE.L"
+        />
+        <rect
+          v-if="leafWidth > 0 && leafWidth < DOOR_OPENING.width"
+          :x="DOOR_OPENING.x + leafWidth - 4"
+          :y="DOOR_OPENING.y"
+          width="4"
+          :height="DOOR_OPENING.height"
+          :fill="PALETTE.D"
+        />
+        <rect
+          v-if="leafWidth === DOOR_OPENING.width"
+          x="260"
+          y="340"
+          width="8"
+          height="8"
+          :fill="PALETTE.S"
+        />
       </g>
     </svg>
   </div>
@@ -174,31 +252,5 @@ const nightOpacity = computed(() => 0.45 * (1 - daylight.value))
   width: 100%;
   height: 100%;
   display: block;
-}
-
-.door {
-  transform-box: fill-box;
-  transform-origin: left center;
-}
-
-.front-door {
-  transform: scaleX(0.18);
-  opacity: 0;
-  transition: transform 0.5s ease;
-}
-
-.front-door.closed {
-  transform: scaleX(1);
-  opacity: 1;
-  transition:
-    transform 0.5s ease 0.7s,
-    opacity 0.15s linear 0.7s;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .front-door,
-  .front-door.closed {
-    transition: none;
-  }
 }
 </style>
