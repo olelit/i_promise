@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {
   computed,
+  nextTick,
   onMounted,
   onUnmounted,
   ref,
@@ -41,6 +42,7 @@ const state = ref<TamagotchiState>(createInitialState(Date.now()))
 const now = ref(Date.now())
 const createOpen = ref(false)
 const infoOpen = ref(false)
+const ready = ref(false)
 
 const current = computed(() => applyDecay(state.value, now.value))
 const away = computed(() => current.value.awayUntil !== null || current.value.mood <= MOOD_MIN)
@@ -243,6 +245,8 @@ onMounted(async () => {
   now.value = Date.now()
   say('greeting')
   commitTransitions()
+  await nextTick()
+  ready.value = true
   timer = window.setInterval(tick, TICK_MS)
   document.addEventListener('visibilitychange', handleVisibility)
 })
@@ -264,7 +268,7 @@ onUnmounted(() => {
 
 <template>
   <div class="app" :style="themeStyle">
-    <RoomScene :away="away" :now="now" />
+    <RoomScene :away="away" :now="now" :animate="ready" />
     <div v-if="!inTelegram" class="banner">
       Приложение открыто не в Telegram: настроение хранится локально в браузере.
     </div>
@@ -272,7 +276,7 @@ onUnmounted(() => {
     <main class="content">
       <div class="pet-area">
         <div class="pet-wrap">
-          <Tamagotchi :mood="current.mood" :away="away" />
+          <Tamagotchi :mood="current.mood" :away="away" :animate="ready" />
         </div>
         <div class="bubble-anchor">
           <SpeechBubble :message="phrase" />
@@ -294,7 +298,7 @@ onUnmounted(() => {
         {{ task === null ? 'Начать задачу' : 'Задача' }}
       </button>
     </main>
-    <RoomScene :away="away" :now="now" front />
+    <RoomScene :away="away" :now="now" front :animate="ready" />
     <TaskCreateDialog v-if="createOpen" @start="handleTaskStart" @close="createOpen = false" />
     <TaskInfoDialog
       v-if="infoOpen && task !== null"

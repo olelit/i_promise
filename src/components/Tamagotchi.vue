@@ -9,7 +9,7 @@ import {
   WALK_MS,
 } from '../pixel/character'
 
-const props = defineProps<{ mood: number; away: boolean }>()
+const props = defineProps<{ mood: number; away: boolean; animate?: boolean }>()
 
 const state = computed(() => moodState(props.mood))
 const walking = ref(false)
@@ -33,6 +33,10 @@ watch(
     stopWalk()
     if (walkTimer !== undefined) {
       window.clearTimeout(walkTimer)
+    }
+    if (props.animate === false) {
+      walking.value = false
+      return
     }
     walkFrame.value = away ? 0 : 1
     walking.value = true
@@ -68,7 +72,7 @@ const map = computed(() =>
 
 <template>
   <div class="scene">
-    <div class="walk" :class="{ away }">
+    <div class="walk" :class="{ away, instant: animate === false }">
       <Transition name="sprite">
         <svg :key="key" class="layer" viewBox="0 0 48 48" aria-hidden="true">
           <PixelSprite :map="map" />
@@ -118,6 +122,10 @@ const map = computed(() =>
 .sprite-enter-from,
 .sprite-leave-to {
   opacity: 0;
+}
+
+.walk.instant {
+  transition: none;
 }
 
 @media (prefers-reduced-motion: reduce) {

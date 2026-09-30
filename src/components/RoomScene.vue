@@ -25,7 +25,7 @@ import {
 } from '../pixel/room'
 import { WALK_MS } from '../pixel/character'
 
-const props = defineProps<{ away: boolean; front?: boolean; now: number }>()
+const props = defineProps<{ away: boolean; front?: boolean; now: number; animate?: boolean }>()
 
 function daylightAt(timestamp: number): number {
   const date = new Date(timestamp)
@@ -70,6 +70,10 @@ watch(
   () => props.away,
   (away) => {
     clearDoorTimers()
+    if (props.animate === false) {
+      doorFrame.value = away ? DOOR_LEAF_WIDTHS.length - 1 : 0
+      return
+    }
     if (reducedMotion) {
       doorFrame.value = away ? DOOR_LEAF_WIDTHS.length - 1 : 0
       return
