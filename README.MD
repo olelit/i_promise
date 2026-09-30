@@ -123,6 +123,8 @@ export default defineConfig({
 - `src/pixel/character.ts` — спрайты персонажа по состояниям настроения
 - `src/pixel/room.ts` — геометрия комнаты и карты ковра, дерева, солнца, луны
 - `src/components/PixelSprite.vue` — рендер пиксельной карты в SVG
+- `src/components/Tamagotchi.vue` — пиксельные спрайты персонажа, дыхание и ходьба к двери
+- `src/components/RoomScene.vue` — пиксельная комната, день/ночь и кадры закрытия двери
 - `src/components/SpeechBubble.vue` — облако с репликой над персонажем
 - `src/components/MoodIndicator.vue` — горизонтальный индикатор настроения сверху
 - `src/components/MoodControls.vue` — кнопка ПОКОРМИТЬ и таймеры
