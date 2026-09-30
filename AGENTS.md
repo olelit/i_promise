@@ -25,10 +25,13 @@ All persistence must go through `src/storage.ts`.
 ## Conventions
 
 - Vue 3 SFCs with `<script setup lang="ts">`.
-- UI chrome colors come only from the Telegram theme CSS custom properties
+- The game world (room, character, mood bar, speech bubble) uses the fixed
+  pixel palette from `src/pixel/palette.ts`; pixel maps live in `src/pixel/`
+  and render to SVG with `shape-rendering: crispEdges`.
+- Native chrome (feed button, task dialogs, browser banner, Telegram
+  MainButton) uses only the Telegram theme CSS custom properties
   (`--tg-bg`, `--tg-text`, `--tg-hint`, `--tg-button`, `--tg-button-text`,
-  `--tg-secondary-bg`) defined in `src/App.vue`. The character palette in
-  `Tamagotchi.vue` is intentionally fixed.
+  `--tg-secondary-bg`) defined in `src/App.vue`.
 - Game logic lives in `src/tamagotchi.ts` as pure functions; components stay
   presentational.
 - No backend or network calls; outside Telegram the app runs in browser mode

@@ -1,7 +1,16 @@
 <script setup lang="ts">
 import { onUnmounted, ref, watch } from 'vue'
+import { PALETTE } from '../pixel/palette'
 
 const props = defineProps<{ message: { text: string; id: number } | null }>()
+
+const bubbleStyle = {
+  '--bubble-frame': PALETTE.x,
+  background: PALETTE.W,
+  color: PALETTE.d,
+  borderColor: PALETTE.x,
+  boxShadow: `inset 0 0 0 2px ${PALETTE.e}`,
+}
 
 const visible = ref(false)
 let timer: number | undefined
@@ -33,7 +42,9 @@ onUnmounted(() => {
 
 <template>
   <Transition name="bubble">
-    <p v-if="visible && message !== null" class="bubble">{{ message.text }}</p>
+    <p v-if="visible && message !== null" class="bubble" :style="bubbleStyle">
+      {{ message.text }}
+    </p>
   </Transition>
 </template>
 
@@ -45,14 +56,12 @@ onUnmounted(() => {
   transform: translateX(-50%);
   margin: 0;
   padding: 8px 12px;
-  border-radius: 12px;
-  background: var(--tg-secondary-bg);
-  color: var(--tg-text);
+  border: 4px solid;
+  border-radius: 0;
   font-size: 14px;
   line-height: 1.3;
   max-width: 220px;
   text-align: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .bubble::after {
@@ -61,8 +70,23 @@ onUnmounted(() => {
   top: 100%;
   left: 50%;
   transform: translateX(-50%);
-  border: 6px solid transparent;
-  border-top-color: var(--tg-secondary-bg);
+  width: 16px;
+  height: 9px;
+  background: var(--bubble-frame);
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% 33.3%,
+    87.5% 33.3%,
+    87.5% 66.6%,
+    62.5% 66.6%,
+    62.5% 100%,
+    37.5% 100%,
+    37.5% 66.6%,
+    12.5% 66.6%,
+    12.5% 33.3%,
+    0 33.3%
+  );
 }
 
 .bubble-enter-active,
