@@ -16,6 +16,7 @@ const props = defineProps<{ mood: number; away: boolean; animate?: boolean }>()
 const state = computed(() => moodState(props.mood))
 const walking = ref(false)
 const hidden = ref(false)
+const atDoor = ref(props.away)
 const walkFrame = ref<0 | 1>(0)
 const breath = ref<0 | 1>(0)
 
@@ -61,18 +62,22 @@ watch(
   (away) => {
     clearTimers()
     if (props.animate === false) {
+      atDoor.value = away
       walking.value = false
       hidden.value = away
       return
     }
     if (away) {
+      atDoor.value = true
       hidden.value = false
       startWalk(true)
     } else if (!hidden.value) {
+      atDoor.value = false
       startWalk(false)
     } else {
       delayTimer = window.setTimeout(() => {
         delayTimer = undefined
+        atDoor.value = false
         hidden.value = false
         startWalk(false)
       }, DOOR_OPEN_MS)
@@ -99,7 +104,7 @@ const map = computed(() =>
 
 <template>
   <div class="scene">
-    <div class="walk" :class="{ away, instant: animate === false, hidden }">
+    <div class="walk" :class="{ away: atDoor, instant: animate === false, hidden }">
       <Transition name="sprite">
         <svg :key="key" class="layer" viewBox="0 0 48 48" aria-hidden="true">
           <PixelSprite :map="map" />
