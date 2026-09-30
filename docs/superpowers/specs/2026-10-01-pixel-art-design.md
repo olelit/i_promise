@@ -51,7 +51,7 @@ cycle to the door. Make the mood bar taller and give it a stepped pixel frame.
   `y=524..596`. The door threshold is at `y=480`, so the rug clears it by
   ~44 units (22 virtual pixels).
 - Character stands on the rug: `.pet-wrap` bottom moves from `32.5vh` to
-  `~20vh`; the wide-screen query becomes `calc(50vh - 52.5vw + 2px)`;
+  `~20vh`; the wide-screen query becomes `calc(50vh - 52.5vw)`;
   `.bubble-anchor` keeps its `+250px` offset.
 - Door closing: the front leaf is drawn from primitives (no huge map); the
   closing animation uses 3 discrete frames (leaf at ~33 %, ~66 %, 100 % width)
@@ -71,7 +71,8 @@ cycle to the door. Make the mood bar taller and give it a stepped pixel frame.
   - back, mood ≤ 0: standing (0…−33), hunched (−33…−66), crouched
     (−66…−100).
 - Idle breathing: a second frame per pose, derived by shifting the whole map
-  down one row (the bottom row becomes empty); frames swap with `steps()`
+  down one row (the top row becomes empty and the bottom row is discarded);
+  frames swap with `steps()`
   timing, so the motion stays on the pixel grid.
 - Walk: two back-view walk maps (legs swapped), reused for exit and return.
 - Away (mood ≤ −100) keeps the existing `awayUntil` logic.

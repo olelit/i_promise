@@ -18,6 +18,7 @@ export type MoodState =
 export const SPRITE_SIZE = 48
 export const WALK_MS = 600
 export const WALK_FRAME_MS = 150
+export const BREATH_MS = 1200
 
 export function moodState(mood: number): MoodState {
   if (mood > 67) {

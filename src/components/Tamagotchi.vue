@@ -2,6 +2,7 @@
 import { computed, onUnmounted, ref, watch } from 'vue'
 import PixelSprite from './PixelSprite.vue'
 import {
+  BREATH_MS,
   characterMap,
   moodState,
   walkMap,
@@ -52,7 +53,7 @@ watch(
 
 breathTimer = window.setInterval(() => {
   breath.value = breath.value === 0 ? 1 : 0
-}, 1200)
+}, BREATH_MS)
 
 onUnmounted(() => {
   stopWalk()

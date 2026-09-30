@@ -4,13 +4,18 @@ import PixelSprite from './PixelSprite.vue'
 import { PALETTE } from '../pixel/palette'
 import {
   BASEBOARD,
+  DOOR_EDGE,
   DOOR_FRAME,
+  DOOR_GRASS,
   DOOR_LEAF_WIDTHS,
   DOOR_OPENING,
   DOOR_STEP_MS,
   FLOOR,
+  KNOB,
   MOON_MAP,
   MOON_POS,
+  ROOM_HEIGHT,
+  ROOM_WIDTH,
   RUG,
   RUG_MAP,
   SUN_MAP,
@@ -107,7 +112,7 @@ onUnmounted(clearDoorTimers)
   <div class="room" :class="{ front }" aria-hidden="true">
     <svg
       class="scene"
-      viewBox="0 0 400 700"
+      :viewBox="`0 0 ${ROOM_WIDTH} ${ROOM_HEIGHT}`"
       preserveAspectRatio="xMidYMid slice"
       shape-rendering="crispEdges"
     >
@@ -156,9 +161,9 @@ onUnmounted(clearDoorTimers)
           />
           <rect
             :x="DOOR_OPENING.x"
-            y="372"
+            :y="DOOR_GRASS.y"
             :width="DOOR_OPENING.width"
-            height="108"
+            :height="DOOR_GRASS.height"
             :fill="PALETTE.G"
           />
           <PixelSprite :map="TREE_MAP" :x="TREE_POS.x" :y="TREE_POS.y" :scale="2" />
@@ -221,18 +226,18 @@ onUnmounted(clearDoorTimers)
         />
         <rect
           v-if="leafWidth > 0 && leafWidth < DOOR_OPENING.width"
-          :x="DOOR_OPENING.x + leafWidth - 4"
+          :x="DOOR_OPENING.x + leafWidth - DOOR_EDGE"
           :y="DOOR_OPENING.y"
-          width="4"
+          :width="DOOR_EDGE"
           :height="DOOR_OPENING.height"
           :fill="PALETTE.D"
         />
         <rect
           v-if="leafWidth === DOOR_OPENING.width"
-          x="260"
-          y="340"
-          width="8"
-          height="8"
+          :x="KNOB.x"
+          :y="KNOB.y"
+          :width="KNOB.width"
+          :height="KNOB.height"
           :fill="PALETTE.S"
         />
       </g>

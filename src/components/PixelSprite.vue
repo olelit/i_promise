@@ -14,7 +14,7 @@ const props = defineProps<{
 const paths = computed(() => {
   const byChar = new Map<string, string[]>()
   props.map.rows.forEach((row, y) => {
-    if (row.length !== props.map.width) {
+    if (import.meta.env.DEV && row.length !== props.map.width) {
       throw new Error(`Pixel map row ${y} is ${row.length} wide, expected ${props.map.width}`)
     }
     let x = 0
@@ -28,7 +28,7 @@ const paths = computed(() => {
       while (end + 1 < props.map.width && row[end + 1] === ch) {
         end += 1
       }
-      if (PALETTE[ch] === undefined) {
+      if (import.meta.env.DEV && PALETTE[ch] === undefined) {
         throw new Error(`Unknown palette character "${ch}"`)
       }
       const segments = byChar.get(ch) ?? []
