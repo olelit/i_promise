@@ -359,14 +359,14 @@ body {
 .pet-wrap {
   position: fixed;
   left: 50%;
-  bottom: 32.5vh;
+  bottom: 20vh;
   transform: translateX(-50%);
 }
 
 .bubble-anchor {
   position: fixed;
   left: 50%;
-  bottom: calc(32.5vh + 250px);
+  bottom: calc(20vh + 250px);
   width: 0;
   height: 0;
   transform: translateX(-50%);
@@ -375,11 +375,11 @@ body {
 
 @media (min-aspect-ratio: 4/7) {
   .pet-wrap {
-    bottom: calc(50vh - 30vw - 3px);
+    bottom: calc(50vh - 52.5vw);
   }
 
   .bubble-anchor {
-    bottom: calc(50vh - 30vw + 247px);
+    bottom: calc(50vh - 52.5vw + 250px);
   }
 }
 
