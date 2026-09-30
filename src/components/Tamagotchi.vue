@@ -9,15 +9,18 @@ import {
   WALK_FRAME_MS,
   WALK_MS,
 } from '../pixel/character'
+import { DOOR_OPEN_MS } from '../pixel/room'
 
 const props = defineProps<{ mood: number; away: boolean; animate?: boolean }>()
 
 const state = computed(() => moodState(props.mood))
 const walking = ref(false)
+const hidden = ref(false)
 const walkFrame = ref<0 | 1>(0)
 const breath = ref<0 | 1>(0)
 
 let walkTimer: number | undefined
+let delayTimer: number | undefined
 let frameTimer: number | undefined
 let breathTimer: number | undefined
 
@@ -26,28 +29,54 @@ function stopWalk(): void {
     window.clearInterval(frameTimer)
     frameTimer = undefined
   }
+  if (walkTimer !== undefined) {
+    window.clearTimeout(walkTimer)
+    walkTimer = undefined
+  }
+}
+
+function clearTimers(): void {
+  stopWalk()
+  if (delayTimer !== undefined) {
+    window.clearTimeout(delayTimer)
+    delayTimer = undefined
+  }
+}
+
+function startWalk(leaving: boolean): void {
+  walkFrame.value = leaving ? 0 : 1
+  walking.value = true
+  frameTimer = window.setInterval(() => {
+    walkFrame.value = walkFrame.value === 0 ? 1 : 0
+  }, WALK_FRAME_MS)
+  walkTimer = window.setTimeout(() => {
+    walking.value = false
+    stopWalk()
+    hidden.value = leaving
+  }, WALK_MS)
 }
 
 watch(
   () => props.away,
   (away) => {
-    stopWalk()
-    if (walkTimer !== undefined) {
-      window.clearTimeout(walkTimer)
-    }
+    clearTimers()
     if (props.animate === false) {
       walking.value = false
+      hidden.value = away
       return
     }
-    walkFrame.value = away ? 0 : 1
-    walking.value = true
-    frameTimer = window.setInterval(() => {
-      walkFrame.value = walkFrame.value === 0 ? 1 : 0
-    }, WALK_FRAME_MS)
-    walkTimer = window.setTimeout(() => {
-      walking.value = false
-      stopWalk()
-    }, WALK_MS)
+    if (away) {
+      hidden.value = false
+      startWalk(true)
+    } else if (!hidden.value) {
+      startWalk(false)
+    } else {
+      delayTimer = window.setTimeout(() => {
+        delayTimer = undefined
+        hidden.value = false
+        startWalk(false)
+      }, DOOR_OPEN_MS)
+    }
   },
 )
 
@@ -56,10 +85,7 @@ breathTimer = window.setInterval(() => {
 }, BREATH_MS)
 
 onUnmounted(() => {
-  stopWalk()
-  if (walkTimer !== undefined) {
-    window.clearTimeout(walkTimer)
-  }
+  clearTimers()
   if (breathTimer !== undefined) {
     window.clearInterval(breathTimer)
   }
@@ -73,7 +99,7 @@ const map = computed(() =>
 
 <template>
   <div class="scene">
-    <div class="walk" :class="{ away, instant: animate === false }">
+    <div class="walk" :class="{ away, instant: animate === false, hidden }">
       <Transition name="sprite">
         <svg :key="key" class="layer" viewBox="0 0 48 48" aria-hidden="true">
           <PixelSprite :map="map" />
@@ -127,6 +153,10 @@ const map = computed(() =>
 
 .walk.instant {
   transition: none;
+}
+
+.walk.hidden {
+  opacity: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {

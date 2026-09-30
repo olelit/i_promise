@@ -19,6 +19,7 @@ export const MOON_POS = { x: 24, y: 146 }
 export const TREE_POS = { x: 244, y: 320 }
 export const DOOR_LEAF_WIDTHS = [0, 52, 106, 160]
 export const DOOR_STEP_MS = 150
+export const DOOR_OPEN_MS = (DOOR_LEAF_WIDTHS.length - 2) * DOOR_STEP_MS
 export const DOOR_GRASS = { y: 372, height: 108 }
 export const DOOR_EDGE = 4
 export const KNOB = { x: 260, y: 340, width: 8, height: 8 }
