@@ -23,10 +23,8 @@ import {
   TREE_MAP,
   TREE_POS,
   WALL,
-  WINDOW_BAR_H,
-  WINDOW_BAR_V,
-  WINDOW_FRAME,
-  WINDOW_PANE,
+  WINDOW,
+  WINDOW_MAP,
 } from '../pixel/room'
 import { WALK_MS } from '../pixel/character'
 
@@ -118,14 +116,6 @@ onUnmounted(clearDoorTimers)
     >
       <template v-if="!front">
         <defs>
-          <clipPath id="room-window-pane">
-            <rect
-              :x="WINDOW_PANE.x"
-              :y="WINDOW_PANE.y"
-              :width="WINDOW_PANE.width"
-              :height="WINDOW_PANE.height"
-            />
-          </clipPath>
           <clipPath id="room-door-opening">
             <rect
               :x="DOOR_OPENING.x"
@@ -168,49 +158,20 @@ onUnmounted(clearDoorTimers)
           />
           <PixelSprite :map="TREE_MAP" :x="TREE_POS.x" :y="TREE_POS.y" :scale="2" />
         </g>
-        <rect
-          :x="WINDOW_FRAME.x"
-          :y="WINDOW_FRAME.y"
-          :width="WINDOW_FRAME.width"
-          :height="WINDOW_FRAME.height"
-          :fill="PALETTE.B"
+        <PixelSprite :map="WINDOW_MAP" :x="WINDOW.x" :y="WINDOW.y" :scale="2" />
+        <PixelSprite
+          :map="SUN_MAP"
+          :x="SUN_POS.x"
+          :y="SUN_POS.y"
+          :scale="2"
+          :opacity="daylight"
         />
-        <g clip-path="url(#room-window-pane)">
-          <rect
-            :x="WINDOW_PANE.x"
-            :y="WINDOW_PANE.y"
-            :width="WINDOW_PANE.width"
-            :height="WINDOW_PANE.height"
-            :fill="PALETTE.K"
-          />
-          <PixelSprite
-            :map="SUN_MAP"
-            :x="SUN_POS.x"
-            :y="SUN_POS.y"
-            :scale="2"
-            :opacity="daylight"
-          />
-          <PixelSprite
-            :map="MOON_MAP"
-            :x="MOON_POS.x"
-            :y="MOON_POS.y"
-            :scale="2"
-            :opacity="1 - daylight"
-          />
-        </g>
-        <rect
-          :x="WINDOW_BAR_V.x"
-          :y="WINDOW_BAR_V.y"
-          :width="WINDOW_BAR_V.width"
-          :height="WINDOW_BAR_V.height"
-          :fill="PALETTE.B"
-        />
-        <rect
-          :x="WINDOW_BAR_H.x"
-          :y="WINDOW_BAR_H.y"
-          :width="WINDOW_BAR_H.width"
-          :height="WINDOW_BAR_H.height"
-          :fill="PALETTE.B"
+        <PixelSprite
+          :map="MOON_MAP"
+          :x="MOON_POS.x"
+          :y="MOON_POS.y"
+          :scale="2"
+          :opacity="1 - daylight"
         />
         <PixelSprite :map="RUG_MAP" :x="RUG.x" :y="RUG.y" :scale="2" />
         <rect x="0" y="0" width="400" height="700" :fill="PALETTE.N" :opacity="nightOpacity" />

@@ -7,22 +7,19 @@ export const ART_SCALE = 2
 export const WALL = { x: 0, y: 0, width: 400, height: 700 }
 export const FLOOR = { x: 0, y: 470, width: 400, height: 230 }
 export const BASEBOARD = { x: 0, y: 466, width: 400, height: 8 }
-export const DOOR_FRAME = { x: 108, y: 180, width: 184, height: 300 }
-export const DOOR_OPENING = { x: 120, y: 192, width: 160, height: 288 }
-export const WINDOW_FRAME = { x: 20, y: 150, width: 72, height: 120 }
-export const WINDOW_PANE = { x: 24, y: 154, width: 64, height: 112 }
-export const WINDOW_BAR_V = { x: 52, y: 154, width: 8, height: 112 }
-export const WINDOW_BAR_H = { x: 24, y: 206, width: 64, height: 8 }
+export const DOOR_FRAME = { x: 204, y: 180, width: 184, height: 300 }
+export const DOOR_OPENING = { x: 216, y: 192, width: 160, height: 288 }
+export const WINDOW = { x: 16, y: 170, width: 80, height: 80 }
 export const RUG = { x: 60, y: 524, width: 280, height: 72 }
-export const SUN_POS = { x: 20, y: 142 }
-export const MOON_POS = { x: 24, y: 146 }
-export const TREE_POS = { x: 244, y: 320 }
+export const SUN_POS = { x: 40, y: 194 }
+export const MOON_POS = { x: 42, y: 196 }
+export const TREE_POS = { x: 340, y: 320 }
 export const DOOR_LEAF_WIDTHS = [0, 52, 106, 160]
 export const DOOR_STEP_MS = 150
 export const DOOR_OPEN_MS = (DOOR_LEAF_WIDTHS.length - 2) * DOOR_STEP_MS
 export const DOOR_GRASS = { y: 372, height: 108 }
 export const DOOR_EDGE = 4
-export const KNOB = { x: 260, y: 340, width: 8, height: 8 }
+export const KNOB = { x: 356, y: 340, width: 8, height: 8 }
 
 export const RUG_MAP: PixelMap = (() => {
   const canvas = createCanvas(RUG.width / ART_SCALE, RUG.height / ART_SCALE)
@@ -30,17 +27,25 @@ export const RUG_MAP: PixelMap = (() => {
   return toPixelMap(canvas)
 })()
 
+export const WINDOW_MAP: PixelMap = (() => {
+  const canvas = createCanvas(40, 40)
+  fillEllipse(canvas, 20, 20, 20, 20, 'D')
+  fillEllipse(canvas, 20, 20, 18, 18, 'B')
+  fillEllipse(canvas, 20, 20, 16, 16, 'K')
+  return toPixelMap(canvas)
+})()
+
 export const SUN_MAP: PixelMap = (() => {
-  const canvas = createCanvas(24, 24)
-  fillEllipse(canvas, 12, 12, 12, 12, 'S')
+  const canvas = createCanvas(16, 16)
+  fillEllipse(canvas, 8, 8, 8, 8, 'S')
   return toPixelMap(canvas)
 })()
 
 export const MOON_MAP: PixelMap = (() => {
-  const canvas = createCanvas(20, 20)
-  fillEllipse(canvas, 10, 10, 10, 10, 'M')
-  fillEllipse(canvas, 7, 7, 2, 2, 'C')
-  fillEllipse(canvas, 12, 12, 1, 1, 'C')
+  const canvas = createCanvas(14, 14)
+  fillEllipse(canvas, 7, 7, 7, 7, 'M')
+  fillEllipse(canvas, 5, 5, 1, 1, 'C')
+  fillEllipse(canvas, 8, 9, 1, 1, 'C')
   return toPixelMap(canvas)
 })()
 
