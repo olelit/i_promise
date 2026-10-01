@@ -26,8 +26,9 @@ other language gets English.
   (`{ ru, en }` entries, including parameterized functions for strings with
   values) and the accessor `m(entry)` that returns the entry for the current
   locale.
-- `src/tamagotchi.ts`: `formatRemaining(ms, locale)` gains the locale
-  parameter and returns localized time text.
+- `formatRemaining(ms)` moves from `src/tamagotchi.ts` to `src/i18n.ts`
+  (it is presentation formatting) and returns localized time text; the two
+  components that use it import it from the catalog module.
 - `src/pixel/skins.ts`: the `name` field moves out; skin names live in the
   i18n catalog (`SKIN_NAMES` keyed by `SkinId`, accessor `skinName(id)`).
 - `src/phrases.ts`: the phrase catalog becomes
