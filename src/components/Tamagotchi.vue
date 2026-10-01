@@ -214,7 +214,7 @@ const timingStyle = computed(() => ({
           hidden,
         }"
       >
-        <Transition name="sprite">
+        <Transition name="sprite" mode="in-out">
           <svg :key="key" class="layer" viewBox="0 0 48 48" aria-hidden="true">
             <PixelSprite :map="map" :palette="colors" />
           </svg>
@@ -281,14 +281,17 @@ const timingStyle = computed(() => ({
   display: block;
 }
 
-.sprite-enter-active,
-.sprite-leave-active {
+.sprite-enter-active {
   transition: opacity 0.15s ease;
+  z-index: 1;
 }
 
-.sprite-enter-from,
-.sprite-leave-to {
+.sprite-enter-from {
   opacity: 0;
+}
+
+.sprite-leave-active {
+  transition: none;
 }
 
 .instant {
