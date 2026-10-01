@@ -1,7 +1,7 @@
 # Tamagotchi: Localization (Russian / English) — Design
 
 Date: 2026-10-01
-Status: Draft (pending user review)
+Status: Approved
 
 Stage 14.
 
