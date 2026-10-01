@@ -7,7 +7,7 @@ function detectLocale(): Locale {
   const code =
     getWebApp()?.initDataUnsafe?.user?.language_code ??
     (typeof navigator === 'undefined' ? '' : navigator.language)
-  return code.toLowerCase().startsWith('ru') ? 'ru' : 'en'
+  return code.toLowerCase().split('-')[0] === 'ru' ? 'ru' : 'en'
 }
 
 export const locale: Locale = detectLocale()
@@ -17,6 +17,7 @@ export function m<T>(entry: { ru: T; en: T }): T {
 }
 
 export const messages = {
+  appTitle: { ru: 'Тамагочи', en: 'Tamagotchi' },
   banner: {
     ru: 'Приложение открыто не в Telegram: настроение хранится локально в браузере.',
     en: 'The app is open outside Telegram: mood is stored locally in the browser.',
@@ -32,7 +33,7 @@ export const messages = {
   },
   away: {
     ru: (time: string) => `Он ушёл. Вернётся через ${time}`,
-    en: (time: string) => `It's away. Back in ${time}`,
+    en: (time: string) => `It ran away. Back in ${time}`,
   },
   mood: { ru: 'Настроение', en: 'Mood' },
   newTaskTitle: { ru: 'Начать задачу', en: 'New task' },
@@ -58,7 +59,7 @@ export const messages = {
   done: { ru: 'Выполнено', en: 'Done' },
   extend: { ru: '+1 час', en: '+1 hour' },
   abandon: { ru: 'Отказаться', en: 'Abandon' },
-  abandonConfirm: { ru: 'Точно отказаться?', en: 'Abandon for sure?' },
+  abandonConfirm: { ru: 'Точно отказаться?', en: 'Really abandon?' },
   close: { ru: 'Закрыть', en: 'Close' },
   lessThanMinute: { ru: 'меньше минуты', en: 'less than a minute' },
   minutes: {

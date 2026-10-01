@@ -1,12 +1,39 @@
 <script setup lang="ts">
+import { onMounted, onUnmounted, ref, useId } from 'vue'
+
 defineProps<{ title: string }>()
 const emit = defineEmits<{ close: [] }>()
+
+const titleId = useId()
+const panel = ref<HTMLElement | null>(null)
+
+function handleKey(event: KeyboardEvent): void {
+  if (event.key === 'Escape') {
+    emit('close')
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('keydown', handleKey)
+  panel.value?.focus()
+})
+
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleKey)
+})
 </script>
 
 <template>
   <div class="overlay" @click.self="emit('close')">
-    <section class="panel" role="dialog" aria-modal="true">
-      <h2 class="title">{{ title }}</h2>
+    <section
+      ref="panel"
+      class="panel"
+      role="dialog"
+      aria-modal="true"
+      :aria-labelledby="titleId"
+      tabindex="-1"
+    >
+      <h2 :id="titleId" class="title">{{ title }}</h2>
       <slot />
     </section>
   </div>

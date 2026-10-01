@@ -235,6 +235,9 @@ function handleTaskAbandon(): void {
 }
 
 function handleMainButton(): void {
+  if (createOpen.value || infoOpen.value || skinOpen.value || rulesOpen.value) {
+    return
+  }
   if (task.value === null) {
     createOpen.value = true
   } else {
@@ -261,7 +264,11 @@ watchEffect(() => {
     return
   }
   webApp.MainButton.setText(m(task.value === null ? messages.taskButton : messages.taskButtonActive))
-  webApp.MainButton.show()
+  if (createOpen.value || infoOpen.value || skinOpen.value || rulesOpen.value) {
+    webApp.MainButton.hide()
+  } else {
+    webApp.MainButton.show()
+  }
 })
 
 watch(task, (value) => {
