@@ -5,82 +5,145 @@ import {
   BREATH_MS,
   characterMap,
   moodState,
+  profileWalkMap,
   walkMap,
   WALK_FRAME_MS,
-  WALK_MS,
+  TURN_MS,
+  WALK_H_MS,
+  WALK_V_MS,
+  LEAVE_MS,
+  type MoodState,
 } from '../pixel/character'
 import { DOOR_OPEN_MS } from '../pixel/room'
 
 const props = defineProps<{ mood: number; away: boolean; animate?: boolean }>()
 
-const state = computed(() => moodState(props.mood))
-const walking = ref(false)
+type Phase =
+  | 'idle'
+  | 'out-turn'
+  | 'out-h'
+  | 'out-turn2'
+  | 'out-v'
+  | 'in-v'
+  | 'in-turn'
+  | 'in-h'
+  | 'in-turn2'
+  | 'reset'
+
+const state = computed<MoodState>(() => moodState(props.mood))
+const phase = ref<Phase>('idle')
 const hidden = ref(false)
 const atDoor = ref(props.away)
 const walkFrame = ref<0 | 1>(0)
 const breath = ref<0 | 1>(0)
 
-let walkTimer: number | undefined
-let delayTimer: number | undefined
+let phaseTimer: number | undefined
 let frameTimer: number | undefined
 let breathTimer: number | undefined
 
-function stopWalk(): void {
+function clearFrames(): void {
   if (frameTimer !== undefined) {
     window.clearInterval(frameTimer)
     frameTimer = undefined
   }
-  if (walkTimer !== undefined) {
-    window.clearTimeout(walkTimer)
-    walkTimer = undefined
-  }
 }
 
-function clearTimers(): void {
-  stopWalk()
-  if (delayTimer !== undefined) {
-    window.clearTimeout(delayTimer)
-    delayTimer = undefined
+function clearPhase(): void {
+  if (phaseTimer !== undefined) {
+    window.clearTimeout(phaseTimer)
+    phaseTimer = undefined
   }
+  clearFrames()
 }
 
-function startWalk(leaving: boolean): void {
-  walkFrame.value = leaving ? 0 : 1
-  walking.value = true
+function startFrames(): void {
+  clearFrames()
   frameTimer = window.setInterval(() => {
     walkFrame.value = walkFrame.value === 0 ? 1 : 0
   }, WALK_FRAME_MS)
-  walkTimer = window.setTimeout(() => {
-    walking.value = false
-    stopWalk()
-    hidden.value = leaving
-  }, WALK_MS)
+}
+
+function later(ms: number, next: () => void): void {
+  phaseTimer = window.setTimeout(() => {
+    phaseTimer = undefined
+    next()
+  }, ms)
+}
+
+function leave(): void {
+  hidden.value = false
+  atDoor.value = true
+  phase.value = 'out-turn'
+  later(TURN_MS, () => {
+    phase.value = 'out-h'
+    startFrames()
+    later(WALK_H_MS, () => {
+      clearFrames()
+      phase.value = 'out-turn2'
+      later(TURN_MS, () => {
+        phase.value = 'out-v'
+        startFrames()
+        later(WALK_V_MS, () => {
+          clearFrames()
+          phase.value = 'idle'
+          hidden.value = true
+        })
+      })
+    })
+  })
+}
+
+function returnHome(): void {
+  later(DOOR_OPEN_MS, () => {
+    hidden.value = false
+    atDoor.value = false
+    phase.value = 'in-v'
+    startFrames()
+    later(WALK_V_MS, () => {
+      clearFrames()
+      phase.value = 'in-turn'
+      later(TURN_MS, () => {
+        phase.value = 'in-h'
+        startFrames()
+        later(WALK_H_MS, () => {
+          clearFrames()
+          phase.value = 'in-turn2'
+          later(TURN_MS, () => {
+            phase.value = 'idle'
+          })
+        })
+      })
+    })
+  })
+}
+
+function resetHome(): void {
+  hidden.value = false
+  atDoor.value = false
+  phase.value = 'reset'
+  startFrames()
+  later(WALK_H_MS, () => {
+    clearFrames()
+    phase.value = 'idle'
+  })
 }
 
 watch(
   () => props.away,
   (away) => {
-    clearTimers()
+    clearPhase()
     if (props.animate === false) {
-      atDoor.value = away
-      walking.value = false
+      phase.value = 'idle'
       hidden.value = away
+      atDoor.value = away
       return
     }
     if (away) {
-      atDoor.value = true
-      hidden.value = false
-      startWalk(true)
-    } else if (!hidden.value) {
-      atDoor.value = false
-      startWalk(false)
+      leave()
+    } else if (hidden.value) {
+      returnHome()
     } else {
-      delayTimer = window.setTimeout(() => {
-        delayTimer = undefined
-        atDoor.value = false
-        hidden.value = false
-        startWalk(false)
-      }, DOOR_OPEN_MS)
+      resetHome()
     }
   },
 )
@@ -90,26 +153,71 @@ breathTimer = window.setInterval(() => {
 }, BREATH_MS)
 
 onUnmounted(() => {
-  clearTimers()
+  clearPhase()
   if (breathTimer !== undefined) {
     window.clearInterval(breathTimer)
   }
 })
 
-const key = computed(() => (walking.value ? 'walk' : state.value))
-const map = computed(() =>
-  walking.value ? walkMap(walkFrame.value) : characterMap(state.value, breath.value),
-)
+const key = computed(() => {
+  if (phase.value === 'idle') {
+    return state.value
+  }
+  if (phase.value === 'out-turn2' || phase.value === 'out-v' || phase.value === 'in-v') {
+    return 'back'
+  }
+  return 'profile'
+})
+
+const map = computed(() => {
+  switch (phase.value) {
+    case 'out-turn':
+      return profileWalkMap(0, 1)
+    case 'out-h':
+      return profileWalkMap(walkFrame.value, 1)
+    case 'out-turn2':
+      return characterMap('backStand', 0)
+    case 'out-v':
+    case 'in-v':
+      return walkMap(walkFrame.value)
+    case 'in-turn':
+      return profileWalkMap(0, -1)
+    case 'in-h':
+    case 'reset':
+      return profileWalkMap(walkFrame.value, -1)
+    default:
+      return characterMap(state.value, breath.value)
+  }
+})
+
+const timingStyle = computed(() => ({
+  '--turn-ms': `${TURN_MS}ms`,
+  '--walk-h-ms': `${WALK_H_MS}ms`,
+  '--walk-v-ms': `${WALK_V_MS}ms`,
+}))
 </script>
 
 <template>
-  <div class="scene">
-    <div class="walk" :class="{ away: atDoor, instant: animate === false, hidden }">
-      <Transition name="sprite">
-        <svg :key="key" class="layer" viewBox="0 0 48 48" aria-hidden="true">
-          <PixelSprite :map="map" />
-        </svg>
-      </Transition>
+  <div class="scene" :style="timingStyle">
+    <div
+      class="move-x"
+      :class="{ away: atDoor, reset: phase === 'reset', instant: animate === false }"
+    >
+      <div
+        class="move-y"
+        :class="{
+          away: atDoor,
+          reset: phase === 'reset',
+          instant: animate === false,
+          hidden,
+        }"
+      >
+        <Transition name="sprite">
+          <svg :key="key" class="layer" viewBox="0 0 48 48" aria-hidden="true">
+            <PixelSprite :map="map" />
+          </svg>
+        </Transition>
+      </div>
     </div>
   </div>
 </template>
@@ -121,21 +229,46 @@ const map = computed(() =>
   height: 240px;
 }
 
-.walk {
+.move-x,
+.move-y {
   width: 100%;
   height: 100%;
-  transform: translateY(0);
-  transition: transform 0.6s steps(3, end);
 }
 
-.walk.away {
+.move-x {
+  transform: translateX(0);
+  transition: transform var(--walk-h-ms) steps(3, end)
+    calc(var(--walk-v-ms) + var(--turn-ms));
+}
+
+.move-x.away {
+  transform: translateX(calc(96 / 700 * 100vh));
+  transition-delay: var(--turn-ms);
+}
+
+.move-y {
+  transform: translateY(0);
+  transition: transform var(--walk-v-ms) steps(2, end);
+}
+
+.move-y.away {
   transform: translateY(calc(-80 / 700 * 100vh));
+  transition-delay: calc(var(--turn-ms) + var(--walk-h-ms) + var(--turn-ms));
 }
 
 @media (min-aspect-ratio: 4/7) {
-  .walk.away {
+  .move-x.away {
+    transform: translateX(24vw);
+  }
+
+  .move-y.away {
     transform: translateY(-22.5vw);
   }
+}
+
+.move-x.reset,
+.move-y.reset {
+  transition-delay: 0s;
 }
 
 .layer {
@@ -156,16 +289,17 @@ const map = computed(() =>
   opacity: 0;
 }
 
-.walk.instant {
+.instant {
   transition: none;
 }
 
-.walk.hidden {
+.hidden {
   opacity: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .walk {
+  .move-x,
+  .move-y {
     transition: none;
   }
 

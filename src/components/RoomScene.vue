@@ -26,7 +26,7 @@ import {
   WINDOW,
   WINDOW_MAP,
 } from '../pixel/room'
-import { WALK_MS } from '../pixel/character'
+import { LEAVE_MS } from '../pixel/character'
 
 const props = defineProps<{ away: boolean; front?: boolean; now: number; animate?: boolean }>()
 
@@ -90,7 +90,7 @@ watch(
             clearDoorTimers()
           }
         }, DOOR_STEP_MS)
-      }, WALK_MS)
+      }, LEAVE_MS)
     } else if (doorFrame.value > 0) {
       doorTimer = window.setInterval(() => {
         if (doorFrame.value > 0) {

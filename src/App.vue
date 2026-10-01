@@ -27,7 +27,7 @@ import {
 } from './tamagotchi'
 import { loadState, saveState } from './storage'
 import { pickPhrase, type PhraseEvent } from './phrases'
-import { WALK_MS } from './pixel/character'
+import { LEAVE_MS } from './pixel/character'
 import Tamagotchi from './components/Tamagotchi.vue'
 import RoomScene from './components/RoomScene.vue'
 import MoodIndicator from './components/MoodIndicator.vue'
@@ -84,7 +84,7 @@ watch(away, (value) => {
   bubbleOffTimer = window.setTimeout(() => {
     bubbleOff.value = true
     bubbleOffTimer = undefined
-  }, WALK_MS)
+  }, LEAVE_MS)
 })
 
 let timer: number | undefined

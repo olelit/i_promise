@@ -1,6 +1,8 @@
 import {
   createCanvas,
   fillEllipse,
+  mirrorX,
+  setPixel,
   shiftDown,
   stamp,
   toPixelMap,
@@ -16,8 +18,11 @@ export type MoodState =
   | 'backCrouch'
 
 export const SPRITE_SIZE = 48
-export const WALK_MS = 600
 export const WALK_FRAME_MS = 150
+export const TURN_MS = 150
+export const WALK_H_MS = 600
+export const WALK_V_MS = 400
+export const LEAVE_MS = TURN_MS + WALK_H_MS + TURN_MS + WALK_V_MS
 export const BREATH_MS = 1200
 
 export function moodState(mood: number): MoodState {
@@ -149,4 +154,33 @@ export function walkMap(frame: 0 | 1): PixelMap {
   const canvas =
     frame === 0 ? drawBody(STAND, 43, 45, true) : drawBody(STAND, 45, 43, true)
   return toPixelMap(canvas)
+}
+
+const PROFILE_EYE = ['ww', 'wd', 'ww']
+
+function drawProfile(frame: 0 | 1): string[][] {
+  const canvas = createCanvas(SPRITE_SIZE, SPRITE_SIZE)
+  fillEllipse(canvas, 24, 17, 11, 10, 'g')
+  fillEllipse(canvas, 29, 9, 5, 5, 'g')
+  fillEllipse(canvas, 29, 9, 2, 2, 'l')
+  fillEllipse(canvas, 34, 20, 2, 2, 'g')
+  setPixel(canvas, 36, 20, 'd')
+  stamp(canvas, PROFILE_EYE, 30, 14)
+  fillEllipse(canvas, 24, 36, 9, 10, 'g')
+  fillEllipse(canvas, 29, 39, 4, 6, 'l')
+  fillEllipse(canvas, 27, 36, 3, 5, 'g')
+  fillEllipse(canvas, 14, 41, 2, 1, 'l')
+  if (frame === 0) {
+    fillEllipse(canvas, 20, 44, 4, 3, 'g')
+    fillEllipse(canvas, 29, 43, 4, 3, 'g')
+  } else {
+    fillEllipse(canvas, 20, 43, 4, 3, 'g')
+    fillEllipse(canvas, 29, 44, 4, 3, 'g')
+  }
+  return canvas
+}
+
+export function profileWalkMap(frame: 0 | 1, facing: 1 | -1): PixelMap {
+  const canvas = drawProfile(frame)
+  return toPixelMap(facing === 1 ? canvas : mirrorX(canvas))
 }

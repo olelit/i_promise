@@ -64,6 +64,10 @@ export function shiftDown(canvas: string[][]): string[][] {
   return next
 }
 
+export function mirrorX(canvas: string[][]): string[][] {
+  return canvas.map((row) => [...row].reverse())
+}
+
 export function toPixelMap(canvas: string[][]): PixelMap {
   const width = canvas[0]?.length ?? 0
   const rows = canvas.map((row) => {
