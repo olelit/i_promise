@@ -40,11 +40,12 @@ const portrait = characterMap('happy', 0)
 
 .skin {
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 6px;
-  padding: 10px 6px;
+  padding: 10px 4px;
   border: 2px solid transparent;
   border-radius: 12px;
   background: var(--tg-secondary-bg);
@@ -58,8 +59,10 @@ const portrait = characterMap('happy', 0)
 }
 
 .preview {
-  width: 96px;
-  height: 96px;
+  width: 100%;
+  max-width: 96px;
+  height: auto;
+  aspect-ratio: 1;
   display: block;
 }
 
