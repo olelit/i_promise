@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { formatRemaining, type TamagotchiTask } from '../tamagotchi'
+import type { TamagotchiTask } from '../tamagotchi'
+import { formatRemaining, m, messages } from '../i18n'
 import Modal from './Modal.vue'
 
 const props = defineProps<{ task: TamagotchiTask; now: number }>()
@@ -9,7 +10,9 @@ const emit = defineEmits<{ complete: []; extend: []; abandon: []; close: [] }>()
 const confirming = ref(false)
 const remaining = computed(() => Math.max(0, props.task.deadline - props.now))
 const remainingLabel = computed(() =>
-  remaining.value > 0 ? `Осталось: ${formatRemaining(remaining.value)}` : 'Просрочено',
+  remaining.value > 0
+    ? m(messages.remaining)(formatRemaining(remaining.value))
+    : m(messages.overdue),
 )
 
 function handleAbandon(): void {
@@ -22,18 +25,18 @@ function handleAbandon(): void {
 </script>
 
 <template>
-  <Modal title="Задача" @close="emit('close')">
+  <Modal :title="m(messages.taskTitle)" @close="emit('close')">
     <p class="description">{{ task.description }}</p>
-    <p class="row">Часов: {{ task.hours }}</p>
+    <p class="row">{{ m(messages.taskHours)(task.hours) }}</p>
     <p class="row">{{ remainingLabel }}</p>
-    <p v-if="task.extensions > 0" class="row">Продлений: {{ task.extensions }}</p>
+    <p v-if="task.extensions > 0" class="row">{{ m(messages.taskExtensions)(task.extensions) }}</p>
     <div class="actions">
-      <button class="primary" type="button" @click="emit('complete')">Выполнено</button>
-      <button class="secondary" type="button" @click="emit('extend')">+1 час</button>
+      <button class="primary" type="button" @click="emit('complete')">{{ m(messages.done) }}</button>
+      <button class="secondary" type="button" @click="emit('extend')">{{ m(messages.extend) }}</button>
       <button class="danger" type="button" @click="handleAbandon">
-        {{ confirming ? 'Точно отказаться?' : 'Отказаться' }}
+        {{ confirming ? m(messages.abandonConfirm) : m(messages.abandon) }}
       </button>
-      <button class="secondary" type="button" @click="emit('close')">Закрыть</button>
+      <button class="secondary" type="button" @click="emit('close')">{{ m(messages.close) }}</button>
     </div>
   </Modal>
 </template>

@@ -3,6 +3,7 @@ import Modal from './Modal.vue'
 import PixelSprite from './PixelSprite.vue'
 import { characterMap } from '../pixel/character'
 import { SKINS, skinColors } from '../pixel/skins'
+import { m, messages, skinName } from '../i18n'
 import type { SkinId } from '../tamagotchi'
 
 defineProps<{ selected: SkinId }>()
@@ -12,7 +13,7 @@ const portrait = characterMap('happy', 0)
 </script>
 
 <template>
-  <Modal title="Скины" @close="emit('close')">
+  <Modal :title="m(messages.skins)" @close="emit('close')">
     <div class="skins">
       <button
         v-for="skin in SKINS"
@@ -26,7 +27,7 @@ const portrait = characterMap('happy', 0)
         <svg class="preview" viewBox="0 0 48 48" aria-hidden="true">
           <PixelSprite :map="portrait" :palette="skinColors(skin.id)" />
         </svg>
-        <span class="name">{{ skin.name }}</span>
+        <span class="name">{{ skinName(skin.id) }}</span>
       </button>
     </div>
   </Modal>

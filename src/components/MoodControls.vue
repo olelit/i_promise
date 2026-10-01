@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { formatRemaining } from '../tamagotchi'
+import { formatRemaining, m, messages } from '../i18n'
 import { getWebApp } from '../telegram'
 
 const props = defineProps<{
@@ -13,12 +13,12 @@ const webApp = getWebApp()
 
 const feedLabel = computed(() => {
   if (props.blockReason === 'cooldown' && props.nextFeedMs !== null) {
-    return `Покормить через ${formatRemaining(props.nextFeedMs)}`
+    return m(messages.feedCooldown)(formatRemaining(props.nextFeedMs))
   }
   if (props.blockReason === 'full') {
-    return 'Сыт'
+    return m(messages.full)
   }
-  return 'ПОКОРМИТЬ'
+  return m(messages.feed)
 })
 
 function handleFeed(): void {
@@ -36,7 +36,7 @@ function handleWrapClick(): void {
 <template>
   <section class="controls">
     <p v-if="remainingMs !== null" class="away">
-      Он ушёл. Вернётся через {{ formatRemaining(remainingMs) }}
+      {{ m(messages.away)(formatRemaining(remainingMs)) }}
     </p>
     <div v-else class="feed-wrap" @click="handleWrapClick">
       <button class="feed" type="button" :disabled="blockReason !== null" @click.stop="handleFeed">

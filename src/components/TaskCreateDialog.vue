@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { TASK_DESCRIPTION_MAX, TASK_MAX_HOURS, TASK_MIN_HOURS } from '../tamagotchi'
+import { m, messages } from '../i18n'
 import Modal from './Modal.vue'
 
 const emit = defineEmits<{ start: [input: { hours: number; description: string }]; close: [] }>()
@@ -28,23 +29,23 @@ function submit(): void {
 </script>
 
 <template>
-  <Modal title="Начать задачу" @close="emit('close')">
+  <Modal :title="m(messages.newTaskTitle)" @close="emit('close')">
     <label class="field">
-      <span>Сколько часов</span>
+      <span>{{ m(messages.hoursLabel) }}</span>
       <input v-model.number="hours" type="number" :min="TASK_MIN_HOURS" :max="TASK_MAX_HOURS" step="1" />
     </label>
     <label class="field">
-      <span>Краткое описание</span>
+      <span>{{ m(messages.descriptionLabel) }}</span>
       <input
         v-model="description"
         type="text"
         :maxlength="TASK_DESCRIPTION_MAX"
-        placeholder="Что нужно сделать?"
+        :placeholder="m(messages.descriptionPlaceholder)"
       />
     </label>
     <div class="actions">
-      <button class="secondary" type="button" @click="emit('close')">Отмена</button>
-      <button class="primary" type="button" :disabled="!valid" @click="submit">Начать</button>
+      <button class="secondary" type="button" @click="emit('close')">{{ m(messages.cancel) }}</button>
+      <button class="primary" type="button" :disabled="!valid" @click="submit">{{ m(messages.start) }}</button>
     </div>
   </Modal>
 </template>

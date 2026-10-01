@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { MOOD_MAX, MOOD_MIN } from '../tamagotchi'
 import { PALETTE } from '../pixel/palette'
+import { m, messages } from '../i18n'
 
 const props = defineProps<{ mood: number; interactive?: boolean }>()
 const emit = defineEmits<{ setMood: [mood: number] }>()
@@ -30,7 +31,7 @@ function handleInput(event: Event): void {
       class="meter"
       role="meter"
       :aria-hidden="interactive ? 'true' : undefined"
-      aria-label="Настроение"
+      :aria-label="m(messages.mood)"
       :aria-valuemin="MOOD_MIN"
       :aria-valuemax="MOOD_MAX"
       :aria-valuenow="Math.round(mood)"
@@ -54,7 +55,7 @@ function handleInput(event: Event): void {
       :max="MOOD_MAX"
       step="1"
       :value="Math.round(mood)"
-      aria-label="Настроение"
+      :aria-label="m(messages.mood)"
       @input="handleInput"
     />
   </div>

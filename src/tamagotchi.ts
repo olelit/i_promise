@@ -193,16 +193,3 @@ export function extendTask(state: TamagotchiState, now: number): TamagotchiState
 export function abandonTask(state: TamagotchiState, now: number): TamagotchiState {
   return { ...state, mood: 0, lastSeen: now, task: null }
 }
-
-export function formatRemaining(ms: number): string {
-  const minutes = Math.max(0, Math.ceil(ms / 60_000))
-  if (minutes < 1) {
-    return 'меньше минуты'
-  }
-  const hours = Math.floor(minutes / 60)
-  const rest = minutes % 60
-  if (hours === 0) {
-    return `${rest} мин`
-  }
-  return `${hours} ч ${rest} мин`
-}

@@ -26,6 +26,7 @@ import {
   type TamagotchiState,
 } from './tamagotchi'
 import { loadState, saveState } from './storage'
+import { m, messages } from './i18n'
 import { pickPhrase, type PhraseEvent } from './phrases'
 import { LEAVE_MS } from './pixel/character'
 import Tamagotchi from './components/Tamagotchi.vue'
@@ -248,7 +249,7 @@ watchEffect(() => {
   if (!webApp) {
     return
   }
-  webApp.MainButton.setText(task.value === null ? 'Начать задачу' : 'Задача')
+  webApp.MainButton.setText(m(task.value === null ? messages.taskButton : messages.taskButtonActive))
   webApp.MainButton.show()
 })
 
@@ -281,7 +282,7 @@ onMounted(async () => {
     webApp.onEvent('themeChanged', applyTheme)
     webApp.MainButton.onClick(handleMainButton)
     if (hasSecondaryButton && webApp?.SecondaryButton) {
-      webApp.SecondaryButton.setText('Скины')
+      webApp.SecondaryButton.setText(m(messages.skins))
       webApp.SecondaryButton.onClick(handleSkinButton)
       webApp.SecondaryButton.show()
     }
@@ -323,7 +324,7 @@ onUnmounted(() => {
   <div class="app" :style="themeStyle">
     <RoomScene :away="away" :now="now" :animate="ready" />
     <div v-if="!inTelegram" class="banner">
-      Приложение открыто не в Telegram: настроение хранится локально в браузере.
+      {{ m(messages.banner) }}
     </div>
     <MoodIndicator :mood="current.mood" interactive @set-mood="handleSetMood" />
     <main class="content">
@@ -349,9 +350,9 @@ onUnmounted(() => {
           type="button"
           @click="task === null ? (createOpen = true) : (infoOpen = true)"
         >
-          {{ task === null ? 'Начать задачу' : 'Задача' }}
+          {{ task === null ? m(messages.taskButton) : m(messages.taskButtonActive) }}
         </button>
-        <button class="task-button" type="button" @click="skinOpen = true">Скины</button>
+        <button class="task-button" type="button" @click="skinOpen = true">{{ m(messages.skins) }}</button>
       </div>
     </main>
     <RoomScene :away="away" :now="now" front :animate="ready" />
