@@ -380,7 +380,7 @@ git commit -m "Move the door to the right and make the window a porthole"
     `LEAVE_MS = TURN_MS + WALK_H_MS + TURN_MS + WALK_V_MS` in
     `character.ts`; `WALK_MS` is removed.
   - `Tamagotchi.vue` phases: `idle`, `out-turn`, `out-h`, `out-turn2`,
-    `out-v`, `in-v`, `in-turn`, `in-h`, `reset`.
+    `out-v`, `in-v`, `in-turn`, `in-h`, `in-turn2`, `reset`.
 
 - [ ] **Step 1: Add `mirrorX` to `src/pixel/canvas.ts`**
 
@@ -479,7 +479,6 @@ import {
   TURN_MS,
   WALK_H_MS,
   WALK_V_MS,
-  LEAVE_MS,
   type MoodState,
 } from '../pixel/character'
 import { DOOR_OPEN_MS } from '../pixel/room'
@@ -495,6 +494,7 @@ type Phase =
   | 'in-v'
   | 'in-turn'
   | 'in-h'
+  | 'in-turn2'
   | 'reset'
 
 const state = computed<MoodState>(() => moodState(props.mood))
@@ -627,7 +627,7 @@ onUnmounted(() => {
 })
 
 const key = computed(() => {
-  if (phase.value === 'idle') {
+  if (phase.value === 'idle' || phase.value === 'in-turn2') {
     return state.value
   }
   if (phase.value === 'out-turn2' || phase.value === 'out-v' || phase.value === 'in-v') {
