@@ -29,9 +29,16 @@ export const RUG_MAP: PixelMap = (() => {
 
 export const WINDOW_MAP: PixelMap = (() => {
   const canvas = createCanvas(40, 40)
-  fillEllipse(canvas, 20, 20, 20, 20, 'D')
-  fillEllipse(canvas, 20, 20, 18, 18, 'B')
-  fillEllipse(canvas, 20, 20, 16, 16, 'K')
+  fillRect(canvas, 0, 0, 40, 40, 'D')
+  fillRect(canvas, 2, 2, 36, 36, 'B')
+  fillRect(canvas, 4, 4, 32, 32, 'K')
+  return toPixelMap(canvas)
+})()
+
+export const WINDOW_BARS_MAP: PixelMap = (() => {
+  const canvas = createCanvas(40, 40)
+  fillRect(canvas, 18, 4, 4, 32, 'B')
+  fillRect(canvas, 4, 18, 32, 4, 'B')
   return toPixelMap(canvas)
 })()
 

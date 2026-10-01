@@ -1,4 +1,4 @@
-# Tamagotchi: Side Door, Profile Walk, Round Window — Design
+# Tamagotchi: Side Door, Profile Walk, Square Window — Design
 
 Date: 2026-10-01
 Status: Approved
@@ -9,7 +9,7 @@ Stage 11.
 
 Move the door to the right edge of the room, animate the character walking to
 it in profile (with turns at both ends), and replace the rectangular window
-with a round porthole. The rug and the character's home stay centered.
+with a square window. The rug and the character's home stay centered.
 
 ## 1. Room geometry
 
@@ -23,16 +23,18 @@ with a round porthole. The rug and the character's home stay centered.
 - The rug (`RUG = { x: 60, y: 524, width: 280, height: 72 }`) and the
   character's home (`x=200`) are unchanged.
 
-## 2. Round window
+## 2. Square window
 
 - Replace `WINDOW_FRAME`, `WINDOW_PANE`, `WINDOW_BAR_V`, `WINDOW_BAR_H` with
-  `WINDOW = { x: 16, y: 170, width: 80, height: 80 }` and `WINDOW_MAP`: a 40×40
-  pixel map drawn as `fillEllipse(20, 20, 20, 20, 'D')` (dark rim),
-  `fillEllipse(20, 20, 18, 18, 'B')` (beige frame) and
-  `fillEllipse(20, 20, 16, 16, 'K')` (sky).
+  `WINDOW = { x: 16, y: 170, width: 80, height: 80 }`, `WINDOW_MAP`: a 40×40
+  pixel map drawn as `fillRect(0, 0, 40, 40, 'D')` (dark rim),
+  `fillRect(2, 2, 36, 36, 'B')` (beige frame) and
+  `fillRect(4, 4, 32, 32, 'K')` (sky), plus `WINDOW_BARS_MAP`: a 40×40 map with
+  the cross bars `fillRect(18, 4, 4, 32, 'B')` and `fillRect(4, 18, 32, 4, 'B')`
+  drawn over the sky after the celestial bodies.
 - `SUN_MAP` becomes a 16×16 `'S'` circle at `SUN_POS = { x: 40, y: 194 }`;
   `MOON_MAP` becomes a 14×14 `'M'` circle with craters at
-  `MOON_POS = { x: 42, y: 196 }`. Both fit inside the sky disc, so the window
+  `MOON_POS = { x: 42, y: 196 }`. Both fit inside the sky square, so the window
   `clipPath` is removed; day/night crossfade stays.
 
 ## 3. Profile sprites
@@ -91,7 +93,7 @@ with a round porthole. The rug and the character's home stay centered.
 ## Verification
 
 - `npm run typecheck` and `npm run build` pass.
-- Headless screenshots: idle (door at the right edge, round porthole, rug
+- Headless screenshots: idle (door at the right edge, square window, rug
   centered), away (closed door, no character, no bubble), return (character
   back on the rug).
 - Manual: the character turns to profile, walks right to the door, turns back,

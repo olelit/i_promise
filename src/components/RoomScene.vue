@@ -24,6 +24,7 @@ import {
   TREE_POS,
   WALL,
   WINDOW,
+  WINDOW_BARS_MAP,
   WINDOW_MAP,
 } from '../pixel/room'
 import { LEAVE_MS } from '../pixel/character'
@@ -173,6 +174,7 @@ onUnmounted(clearDoorTimers)
           :scale="2"
           :opacity="1 - daylight"
         />
+        <PixelSprite :map="WINDOW_BARS_MAP" :x="WINDOW.x" :y="WINDOW.y" :scale="2" />
         <PixelSprite :map="RUG_MAP" :x="RUG.x" :y="RUG.y" :scale="2" />
         <rect x="0" y="0" width="400" height="700" :fill="PALETTE.N" :opacity="nightOpacity" />
       </template>
