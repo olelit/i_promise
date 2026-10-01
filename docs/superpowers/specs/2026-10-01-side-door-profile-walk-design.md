@@ -65,7 +65,8 @@ with a round porthole. The rug and the character's home stay centered.
   3. `700..850` turn: profile stand.
   4. `850..1450` walk-h-in: profile walk facing left, X back to 0 in
      `steps(3)`.
-  5. `1450`: idle mood sprite.
+  5. `1450..1600` turn: back stand.
+  6. `1600`: idle mood sprite.
 - Two wrappers around the sprite: `.move-x` (translateX, 0.6 s `steps(3)`) and
   `.move-y` (translateY, 0.4 s `steps(2)`). Phase delays live in CSS custom
   properties bound from the timing constants so the CSS and the phase machine
