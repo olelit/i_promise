@@ -48,6 +48,7 @@ const infoOpen = ref(false)
 const ready = ref(false)
 const skinOpen = ref(false)
 const hasSecondaryButton =
+  inTelegram &&
   webApp !== undefined &&
   webApp.isVersionAtLeast?.('7.10') === true &&
   webApp.SecondaryButton !== undefined
