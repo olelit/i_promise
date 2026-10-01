@@ -43,6 +43,8 @@ export interface TelegramMainButton {
   offClick(handler: () => void): void
 }
 
+export type TelegramSecondaryButton = TelegramMainButton
+
 export interface TelegramBackButton {
   isVisible: boolean
   show(): void
@@ -66,12 +68,14 @@ export interface TelegramWebApp {
   isExpanded: boolean
   version: string
   platform: string
+  isVersionAtLeast?(version: string): boolean
   ready(): void
   expand(): void
   close(): void
   onEvent(event: string, handler: () => void): void
   offEvent(event: string, handler: () => void): void
   MainButton: TelegramMainButton
+  SecondaryButton?: TelegramSecondaryButton
   BackButton: TelegramBackButton
   HapticFeedback: TelegramHapticFeedback
   CloudStorage?: TelegramCloudStorage

@@ -35,6 +35,8 @@ import MoodControls from './components/MoodControls.vue'
 import SpeechBubble from './components/SpeechBubble.vue'
 import TaskCreateDialog from './components/TaskCreateDialog.vue'
 import TaskInfoDialog from './components/TaskInfoDialog.vue'
+import SkinDialog from './components/SkinDialog.vue'
+import type { SkinId } from './tamagotchi'
 
 const webApp = getWebApp()
 const inTelegram = isTelegram()
@@ -44,6 +46,11 @@ const now = ref(Date.now())
 const createOpen = ref(false)
 const infoOpen = ref(false)
 const ready = ref(false)
+const skinOpen = ref(false)
+const hasSecondaryButton =
+  webApp !== undefined &&
+  webApp.isVersionAtLeast?.('7.10') === true &&
+  webApp.SecondaryButton !== undefined
 
 const current = computed(() => applyDecay(state.value, now.value))
 const away = computed(() => current.value.awayUntil !== null || current.value.mood <= MOOD_MIN)
@@ -134,6 +141,18 @@ function handleFeed(): void {
 
 function handleFeedBlocked(reason: 'cooldown' | 'full'): void {
   say(reason === 'full' ? 'feedAtCap' : 'feedCooldown')
+}
+
+function handleSkinSelect(skin: SkinId): void {
+  now.value = Date.now()
+  state.value = { ...current.value, skin, lastSeen: now.value }
+  void saveState(state.value)
+  skinOpen.value = false
+  webApp?.HapticFeedback.impactOccurred('light')
+}
+
+function handleSkinButton(): void {
+  skinOpen.value = true
 }
 
 function handleSetMood(mood: number): void {
@@ -260,6 +279,11 @@ onMounted(async () => {
     applyTheme()
     webApp.onEvent('themeChanged', applyTheme)
     webApp.MainButton.onClick(handleMainButton)
+    if (hasSecondaryButton && webApp?.SecondaryButton) {
+      webApp.SecondaryButton.setText('Скины')
+      webApp.SecondaryButton.onClick(handleSkinButton)
+      webApp.SecondaryButton.show()
+    }
   }
   const loaded = await loadState()
   if (loaded) {
@@ -278,6 +302,8 @@ onUnmounted(() => {
   webApp?.offEvent('themeChanged', applyTheme)
   webApp?.MainButton.offClick(handleMainButton)
   webApp?.MainButton.hide()
+  webApp?.SecondaryButton?.offClick(handleSkinButton)
+  webApp?.SecondaryButton?.hide()
   if (timer !== undefined) {
     window.clearInterval(timer)
   }
@@ -315,16 +341,20 @@ onUnmounted(() => {
         @feed="handleFeed"
         @feed-blocked="handleFeedBlocked"
       />
-      <button
-        v-if="!inTelegram"
-        class="task-button"
-        type="button"
-        @click="task === null ? (createOpen = true) : (infoOpen = true)"
-      >
-        {{ task === null ? 'Начать задачу' : 'Задача' }}
-      </button>
+      <div v-if="!inTelegram || !hasSecondaryButton" class="task-actions">
+        <button
+          v-if="!inTelegram"
+          class="task-button"
+          type="button"
+          @click="task === null ? (createOpen = true) : (infoOpen = true)"
+        >
+          {{ task === null ? 'Начать задачу' : 'Задача' }}
+        </button>
+        <button class="task-button" type="button" @click="skinOpen = true">Скины</button>
+      </div>
     </main>
     <RoomScene :away="away" :now="now" front :animate="ready" />
+    <SkinDialog v-if="skinOpen" :selected="current.skin" @select="handleSkinSelect" @close="skinOpen = false" />
     <TaskCreateDialog v-if="createOpen" @start="handleTaskStart" @close="createOpen = false" />
     <TaskInfoDialog
       v-if="infoOpen && task !== null"
@@ -411,6 +441,11 @@ body {
   .bubble-anchor {
     bottom: calc(50vh - 52.5vw + 250px);
   }
+}
+
+.task-actions {
+  display: flex;
+  gap: 10px;
 }
 
 .task-button {
