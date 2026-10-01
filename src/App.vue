@@ -37,6 +37,7 @@ import SpeechBubble from './components/SpeechBubble.vue'
 import TaskCreateDialog from './components/TaskCreateDialog.vue'
 import TaskInfoDialog from './components/TaskInfoDialog.vue'
 import SkinDialog from './components/SkinDialog.vue'
+import RulesDialog from './components/RulesDialog.vue'
 import type { SkinId } from './tamagotchi'
 
 const webApp = getWebApp()
@@ -48,6 +49,7 @@ const createOpen = ref(false)
 const infoOpen = ref(false)
 const ready = ref(false)
 const skinOpen = ref(false)
+const rulesOpen = ref(false)
 const hasSecondaryButton =
   inTelegram &&
   webApp !== undefined &&
@@ -157,6 +159,15 @@ function handleSkinButton(): void {
   skinOpen.value = true
 }
 
+function handleRulesClose(): void {
+  rulesOpen.value = false
+  if (!current.value.rulesSeen) {
+    now.value = Date.now()
+    state.value = { ...current.value, rulesSeen: true, lastSeen: now.value }
+    void saveState(state.value)
+  }
+}
+
 function handleSetMood(mood: number): void {
   now.value = Date.now()
   const before = current.value
@@ -259,6 +270,15 @@ watch(task, (value) => {
   }
 })
 
+watch(
+  [ready, () => current.value.rulesSeen],
+  ([isReady, seen]) => {
+    if (isReady && !seen) {
+      rulesOpen.value = true
+    }
+  },
+)
+
 function handleVisibility(): void {
   now.value = Date.now()
   if (document.visibilityState === 'hidden') {
@@ -343,7 +363,7 @@ onUnmounted(() => {
         @feed="handleFeed"
         @feed-blocked="handleFeedBlocked"
       />
-      <div v-if="!inTelegram || !hasSecondaryButton" class="task-actions">
+      <div class="task-actions">
         <button
           v-if="!inTelegram"
           class="task-button"
@@ -352,11 +372,22 @@ onUnmounted(() => {
         >
           {{ task === null ? m(messages.taskButton) : m(messages.taskButtonActive) }}
         </button>
-        <button class="task-button" type="button" @click="skinOpen = true">{{ m(messages.skins) }}</button>
+        <button
+          v-if="!hasSecondaryButton"
+          class="task-button"
+          type="button"
+          @click="skinOpen = true"
+        >
+          {{ m(messages.skins) }}
+        </button>
+        <button class="task-button" type="button" @click="rulesOpen = true">
+          {{ m(messages.rules) }}
+        </button>
       </div>
     </main>
     <RoomScene :away="away" :now="now" front :animate="ready" />
     <SkinDialog v-if="skinOpen" :selected="current.skin" @select="handleSkinSelect" @close="skinOpen = false" />
+    <RulesDialog v-if="rulesOpen" @close="handleRulesClose" />
     <TaskCreateDialog v-if="createOpen" @start="handleTaskStart" @close="createOpen = false" />
     <TaskInfoDialog
       v-if="infoOpen && task !== null"

@@ -27,6 +27,9 @@
 (`language_code`), в браузере — по `navigator.language`; все остальные языки
 получают английский.
 
+При первом запуске показывается окно с правилами; открыть его снова можно
+кнопкой «Правила» в нижнем ряду.
+
 ## Механика
 
 | Параметр | Значение |
@@ -136,6 +139,7 @@ export default defineConfig({
 - `src/components/RoomScene.vue` — пиксельная комната, день/ночь и кадры закрытия двери
 - `src/components/SpeechBubble.vue` — облако с репликой над персонажем
 - `src/components/SkinDialog.vue` — выбор скина персонажа
+- `src/components/RulesDialog.vue` — правила игры при первом запуске и по кнопке
 - `src/components/MoodIndicator.vue` — горизонтальный индикатор настроения сверху
 - `src/components/MoodControls.vue` — кнопка ПОКОРМИТЬ и таймеры
 - `src/components/Modal.vue` — общая модалка

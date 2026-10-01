@@ -69,6 +69,28 @@ export const messages = {
     ru: (hours: number, minutes: number) => `${hours} ч ${minutes} мин`,
     en: (hours: number, minutes: number) => `${hours} h ${minutes} min`,
   },
+  rules: { ru: 'Правила', en: 'Rules' },
+  gotIt: { ru: 'Понятно', en: 'Got it' },
+  rulesBullets: {
+    ru: [
+      'Настроение падает само: −20 в час.',
+      '«Покормить» — раз в 24 часа: +20, но не выше 20.',
+      'Задача сразу поднимает настроение (20 + 10 за каждый час), но пока она идёт, настроение падает быстрее.',
+      '«Выполнено» — настроение остаётся; «Отказаться» или просрочка — падает до 0.',
+      'На нуле персонаж отворачивается, при −100 уходит и вернётся через 2 часа.',
+      'Полоску настроения можно перетаскивать, чтобы посмотреть состояния.',
+      'Скины меняют палитру персонажа.',
+    ],
+    en: [
+      'Mood drops by itself: −20 per hour.',
+      '"Feed" once every 24 hours: +20, but not above 20.',
+      'A task raises mood at once (20 + 10 per hour), but while it runs mood drops faster.',
+      '"Done" keeps the mood; "Abandon" or an overdue task drops it to 0.',
+      'At zero the pet turns away; at −100 it leaves and comes back in 2 hours.',
+      'Drag the mood bar to preview the states.',
+      'Skins change the pet palette.',
+    ],
+  },
 }
 
 export const SKIN_NAMES: Record<SkinId, { ru: string; en: string }> = {

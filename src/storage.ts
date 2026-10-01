@@ -44,7 +44,8 @@ function isValidState(value: unknown): value is TamagotchiState {
     (typeof candidate.lastFedAt === 'number' && Number.isFinite(candidate.lastFedAt))
   const taskOk =
     candidate.task === undefined || candidate.task === null || isValidTask(candidate.task)
-  return moodOk && lastSeenOk && awayOk && lastFedOk && taskOk
+  const rulesSeenOk = candidate.rulesSeen === undefined || typeof candidate.rulesSeen === 'boolean'
+  return moodOk && lastSeenOk && awayOk && lastFedOk && taskOk && rulesSeenOk
 }
 
 function normalizeState(state: TamagotchiState): TamagotchiState {
@@ -53,6 +54,7 @@ function normalizeState(state: TamagotchiState): TamagotchiState {
     ...state,
     lastFedAt: state.lastFedAt ?? null,
     skin: isSkinId(state.skin) ? state.skin : 'classic',
+    rulesSeen: state.rulesSeen === true,
     task:
       task === null
         ? null
