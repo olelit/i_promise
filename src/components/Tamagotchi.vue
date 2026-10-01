@@ -14,8 +14,10 @@ import {
   type MoodState,
 } from '../pixel/character'
 import { DOOR_OPEN_MS } from '../pixel/room'
+import { skinColors } from '../pixel/skins'
+import type { SkinId } from '../tamagotchi'
 
-const props = defineProps<{ mood: number; away: boolean; animate?: boolean }>()
+const props = defineProps<{ mood: number; away: boolean; animate?: boolean; skin: SkinId }>()
 
 type Phase =
   | 'idle'
@@ -30,6 +32,7 @@ type Phase =
   | 'reset'
 
 const state = computed<MoodState>(() => moodState(props.mood))
+const colors = computed(() => skinColors(props.skin))
 const phase = ref<Phase>('idle')
 const hidden = ref(false)
 const atDoor = ref(props.away)
@@ -213,7 +216,7 @@ const timingStyle = computed(() => ({
       >
         <Transition name="sprite">
           <svg :key="key" class="layer" viewBox="0 0 48 48" aria-hidden="true">
-            <PixelSprite :map="map" />
+            <PixelSprite :map="map" :palette="colors" />
           </svg>
         </Transition>
       </div>

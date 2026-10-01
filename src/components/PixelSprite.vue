@@ -9,6 +9,7 @@ const props = defineProps<{
   y?: number
   scale?: number
   opacity?: number
+  palette?: Record<string, string>
 }>()
 
 const paths = computed(() => {
@@ -28,7 +29,8 @@ const paths = computed(() => {
       while (end + 1 < props.map.width && row[end + 1] === ch) {
         end += 1
       }
-      if (import.meta.env.DEV && PALETTE[ch] === undefined) {
+      const color = props.palette?.[ch] ?? PALETTE[ch]
+      if (import.meta.env.DEV && color === undefined) {
         throw new Error(`Unknown palette character "${ch}"`)
       }
       const segments = byChar.get(ch) ?? []
@@ -40,7 +42,7 @@ const paths = computed(() => {
   return [...byChar.entries()].map(([ch, segments]) => ({
     key: ch,
     d: segments.join(''),
-    fill: PALETTE[ch],
+    fill: props.palette?.[ch] ?? PALETTE[ch],
   }))
 })
 

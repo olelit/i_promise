@@ -302,7 +302,7 @@ onUnmounted(() => {
     <main class="content">
       <div class="pet-area">
         <div class="pet-wrap">
-          <Tamagotchi :mood="current.mood" :away="away" :animate="ready" />
+          <Tamagotchi :mood="current.mood" :away="away" :animate="ready" :skin="current.skin" />
         </div>
         <div class="bubble-anchor">
           <SpeechBubble v-if="!bubbleOff" :message="phrase" />

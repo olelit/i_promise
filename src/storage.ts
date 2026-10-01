@@ -1,5 +1,6 @@
 import { getWebApp, type TelegramCloudStorage } from './telegram'
 import {
+  isSkinId,
   TASK_DESCRIPTION_MAX,
   TASK_MAX_HOURS,
   TASK_MIN_HOURS,
@@ -43,7 +44,8 @@ function isValidState(value: unknown): value is TamagotchiState {
     (typeof candidate.lastFedAt === 'number' && Number.isFinite(candidate.lastFedAt))
   const taskOk =
     candidate.task === undefined || candidate.task === null || isValidTask(candidate.task)
-  return moodOk && lastSeenOk && awayOk && lastFedOk && taskOk
+  const skinOk = candidate.skin === undefined || isSkinId(candidate.skin)
+  return moodOk && lastSeenOk && awayOk && lastFedOk && taskOk && skinOk
 }
 
 function normalizeState(state: TamagotchiState): TamagotchiState {
@@ -51,6 +53,7 @@ function normalizeState(state: TamagotchiState): TamagotchiState {
   return {
     ...state,
     lastFedAt: state.lastFedAt ?? null,
+    skin: isSkinId(state.skin) ? state.skin : 'classic',
     task:
       task === null
         ? null

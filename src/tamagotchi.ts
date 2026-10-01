@@ -6,12 +6,21 @@ export interface TamagotchiTask {
   extensions: number
 }
 
+export type SkinId = 'classic' | 'sky' | 'rose'
+
+export const SKIN_IDS: readonly SkinId[] = ['classic', 'sky', 'rose']
+
+export function isSkinId(value: unknown): value is SkinId {
+  return typeof value === 'string' && (SKIN_IDS as readonly string[]).includes(value)
+}
+
 export interface TamagotchiState {
   mood: number
   lastSeen: number
   awayUntil: number | null
   lastFedAt: number | null
   task: TamagotchiTask | null
+  skin: SkinId
 }
 
 export const MOOD_MAX = 100
@@ -34,7 +43,14 @@ export const EXTENSION_MS = 3_600_000
 const HOUR_MS = 3_600_000
 
 export function createInitialState(now: number): TamagotchiState {
-  return { mood: INITIAL_MOOD, lastSeen: now, awayUntil: null, lastFedAt: null, task: null }
+  return {
+    mood: INITIAL_MOOD,
+    lastSeen: now,
+    awayUntil: null,
+    lastFedAt: null,
+    task: null,
+    skin: 'classic',
+  }
 }
 
 function decayRate(state: TamagotchiState): number {
@@ -46,7 +62,14 @@ function decayRate(state: TamagotchiState): number {
 
 export function applyDecay(state: TamagotchiState, now: number): TamagotchiState {
   if (state.task !== null && now >= state.task.deadline) {
-    return { mood: 0, lastSeen: now, awayUntil: null, lastFedAt: state.lastFedAt, task: null }
+    return {
+      mood: 0,
+      lastSeen: now,
+      awayUntil: null,
+      lastFedAt: state.lastFedAt,
+      task: null,
+      skin: state.skin,
+    }
   }
 
   if (state.awayUntil !== null) {
@@ -57,6 +80,7 @@ export function applyDecay(state: TamagotchiState, now: number): TamagotchiState
         awayUntil: null,
         lastFedAt: state.lastFedAt,
         task: state.task,
+        skin: state.skin,
       }
     }
     return state
@@ -72,10 +96,18 @@ export function applyDecay(state: TamagotchiState, now: number): TamagotchiState
       awayUntil: now + AWAY_DURATION_MS,
       lastFedAt: state.lastFedAt,
       task: state.task,
+      skin: state.skin,
     }
   }
 
-  return { mood, lastSeen: state.lastSeen, awayUntil: null, lastFedAt: state.lastFedAt, task: state.task }
+  return {
+    mood,
+    lastSeen: state.lastSeen,
+    awayUntil: null,
+    lastFedAt: state.lastFedAt,
+    task: state.task,
+    skin: state.skin,
+  }
 }
 
 export function feedCooldownRemaining(state: TamagotchiState, now: number): number | null {
@@ -112,6 +144,7 @@ export function feed(state: TamagotchiState, now: number): TamagotchiState {
     awayUntil: state.awayUntil,
     lastFedAt: now,
     task: state.task,
+    skin: state.skin,
   }
 }
 
@@ -134,6 +167,7 @@ export function startTask(
       deadline: now + hours * HOUR_MS,
       extensions: 0,
     },
+    skin: state.skin,
   }
 }
 
