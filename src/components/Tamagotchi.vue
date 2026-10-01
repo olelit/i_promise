@@ -11,7 +11,6 @@ import {
   TURN_MS,
   WALK_H_MS,
   WALK_V_MS,
-  LEAVE_MS,
   type MoodState,
 } from '../pixel/character'
 import { DOOR_OPEN_MS } from '../pixel/room'
@@ -160,7 +159,7 @@ onUnmounted(() => {
 })
 
 const key = computed(() => {
-  if (phase.value === 'idle') {
+  if (phase.value === 'idle' || phase.value === 'in-turn2') {
     return state.value
   }
   if (phase.value === 'out-turn2' || phase.value === 'out-v' || phase.value === 'in-v') {
