@@ -1,4 +1,4 @@
-import { safeEqual, sendRules } from './_rules.ts'
+import { safeEqual, sendRules } from './_rules'
 
 export const config = { runtime: 'edge' }
 
