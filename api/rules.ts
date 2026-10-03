@@ -86,7 +86,8 @@ export async function verifyInitData(
     return null
   }
   const authDate = Number(params.get('auth_date'))
-  if (!Number.isFinite(authDate) || Date.now() / 1000 - authDate > AUTH_MAX_AGE_SECONDS) {
+  const ageSeconds = Date.now() / 1000 - authDate
+  if (!Number.isFinite(authDate) || ageSeconds > AUTH_MAX_AGE_SECONDS || ageSeconds < -60) {
     return null
   }
   const rawUser = params.get('user')
@@ -134,10 +135,13 @@ export default async function handler(request: Request): Promise<Response> {
     body: JSON.stringify({
       chat_id: user.userId,
       text: RULES[language],
-      disable_web_page_preview: true,
     }),
   })
   if (!response.ok) {
+    return new Response('Telegram error', { status: 502 })
+  }
+  const result = (await response.json()) as { ok?: unknown }
+  if (result.ok !== true) {
     return new Response('Telegram error', { status: 502 })
   }
   return new Response(JSON.stringify({ ok: true }), {

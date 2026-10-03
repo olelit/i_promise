@@ -49,7 +49,7 @@ function isValidState(value: unknown): value is TamagotchiState {
 
 function normalizeState(state: TamagotchiState): TamagotchiState {
   const task = state.task ?? null
-  return {
+  const normalized: TamagotchiState & { rulesSeen?: unknown } = {
     ...state,
     lastFedAt: state.lastFedAt ?? null,
     skin: isSkinId(state.skin) ? state.skin : 'classic',
@@ -64,6 +64,8 @@ function normalizeState(state: TamagotchiState): TamagotchiState {
             description: task.description.slice(0, TASK_DESCRIPTION_MAX),
           },
   }
+  delete normalized.rulesSeen
+  return normalized
 }
 
 function parseState(raw: string | null | undefined): TamagotchiState | null {

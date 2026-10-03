@@ -158,7 +158,7 @@ function handleSkinButton(): void {
 }
 
 async function requestRules(): Promise<void> {
-  if (!inTelegram || webApp === undefined || current.value.rulesSent) {
+  if (!inTelegram || webApp === undefined || webApp.initData === '' || current.value.rulesSent) {
     return
   }
   try {
