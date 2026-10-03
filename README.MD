@@ -33,6 +33,9 @@
 идемпотентности нет, при сбое запроса попытка повторится при следующем
 запуске.
 
+Правила также можно получить командой `/rule` (или `/rules`, `/start`) в чате
+с ботом.
+
 ## Механика
 
 | Параметр | Значение |
@@ -102,9 +105,10 @@ lastFedAt, task, skin, rulesSent }`: настроение, время после
    # залей содержимое dist/ на хостинг
    ```
 
-2. В настройках проекта на Vercel добавь переменную окружения `BOT_TOKEN`
-   (токен из @BotFather) для Production и Preview и переразверни проект —
-   она нужна функции `api/rules.ts`.
+2. В настройках проекта на Vercel добавь переменные окружения `BOT_TOKEN`
+   (токен из @BotFather) и `WEBHOOK_SECRET` (любая случайная строка) для
+   Production и Preview и переразверни проект — они нужны функциям
+   `api/rules.ts` и `api/webhook.ts`.
 
 3. Укажи URL в BotFather:
    - `/newapp` — создать Mini App и указать URL; или
@@ -113,6 +117,11 @@ lastFedAt, task, skin, rulesSent }`: настроение, время после
 
 4. Открой бота в Telegram и нажми кнопку меню — приложение загрузится
    внутри Telegram, настроение начнёт храниться в CloudStorage.
+
+5. Настрой вебхук команд (один раз): открой в браузере
+   `https://api.telegram.org/bot<ТОКЕН>/setWebhook?url=https://<адрес>/api/webhook&secret_token=<СЕКРЕТ>`
+   (подставь токен бота и значение `WEBHOOK_SECRET`). После этого бот отвечает
+   правилами на `/rule`, `/rules` и `/start`.
 
 ### Хостинг в подкаталоге
 
@@ -149,6 +158,7 @@ export default defineConfig({
 - `src/components/SpeechBubble.vue` — облако с репликой над персонажем
 - `src/components/SkinDialog.vue` — выбор скина персонажа
 - `api/rules.ts` — Vercel-функция: проверяет `initData` и отправляет правила ботом
+- `api/webhook.ts` — команды бота: `/rule`, `/rules`, `/start` присылают правила
 - `src/components/MoodIndicator.vue` — горизонтальный индикатор настроения сверху
 - `src/components/MoodControls.vue` — кнопка ПОКОРМИТЬ и таймеры
 - `src/components/Modal.vue` — общая модалка

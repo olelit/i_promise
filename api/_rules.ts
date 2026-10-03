@@ -1,0 +1,60 @@
+export type RulesLanguage = 'ru' | 'en'
+
+export const RULES: Record<RulesLanguage, string> = {
+  ru: [
+    'Правила игры:',
+    '',
+    '• Настроение падает само: −20 в час.',
+    '• «Покормить» — раз в 24 часа: +20, но не выше 20.',
+    '• Задача сразу поднимает настроение (20 + 10 за каждый час), но пока она идёт, настроение падает быстрее.',
+    '• «Выполнено» — настроение остаётся; «Отказаться» или просрочка — падает до 0.',
+    '• На нуле персонаж отворачивается, при −100 уходит и вернётся через 2 часа.',
+    '• Полоску настроения можно перетаскивать, чтобы посмотреть состояния.',
+    '• Скины меняют палитру персонажа.',
+  ].join('\n'),
+  en: [
+    'Game rules:',
+    '',
+    '• Mood drops by itself: −20 per hour.',
+    '• "Feed" once every 24 hours: +20, but not above 20.',
+    '• A task raises mood at once (20 + 10 per hour), but while it runs mood drops faster.',
+    '• "Done" keeps the mood; "Abandon" or an overdue task drops it to 0.',
+    '• At zero the pet turns away; at −100 it leaves and comes back in 2 hours.',
+    '• Drag the mood bar to preview the states.',
+    '• Skins change the pet palette.',
+  ].join('\n'),
+}
+
+export function rulesLanguage(languageCode: string): RulesLanguage {
+  return languageCode.toLowerCase().split('-')[0] === 'ru' ? 'ru' : 'en'
+}
+
+export async function sendRules(
+  botToken: string,
+  chatId: number,
+  languageCode: string,
+): Promise<boolean> {
+  try {
+    const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text: RULES[rulesLanguage(languageCode)],
+      }),
+    })
+    if (!response.ok) {
+      console.error('sendMessage failed', response.status, await response.text())
+      return false
+    }
+    const result = (await response.json()) as { ok?: unknown }
+    if (result.ok !== true) {
+      console.error('sendMessage returned ok != true')
+      return false
+    }
+    return true
+  } catch {
+    console.error('sendMessage request failed')
+    return false
+  }
+}

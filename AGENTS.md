@@ -3,7 +3,8 @@
 ## Project
 
 Tamagotchi Telegram Mini App: Vue 3 + Vite + TypeScript; the only backend is
-the Vercel function that sends the rules. A single
+the Vercel functions that send the rules and answer the `/rule` command. A
+single
 parameter — mood (see README for mechanics).
 
 The Telegram WebApp API is loaded via the script tag in `index.html`
@@ -35,8 +36,9 @@ All persistence must go through `src/storage.ts`.
   `--tg-secondary-bg`) defined in `src/App.vue`.
 - Game logic lives in `src/tamagotchi.ts` as pure functions; components stay
   presentational.
-- No backend except the Vercel Edge Function `api/rules.ts`, which verifies
-  `initData` and sends the one-time rules message through the Bot API; no
-  other network calls. The bot token lives only in the `BOT_TOKEN`
-  environment variable on Vercel. Outside Telegram the app runs in browser
-  mode (localStorage + dev controls).
+- No backend except the Vercel Edge Functions `api/rules.ts` (verifies
+  `initData` and sends the one-time rules message) and `api/webhook.ts`
+  (answers `/rule`, `/rules` and `/start`); no other network calls. The bot
+  token and the webhook secret live only in the `BOT_TOKEN` and
+  `WEBHOOK_SECRET` environment variables on Vercel. Outside Telegram the app
+  runs in browser mode (localStorage + dev controls).
