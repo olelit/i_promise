@@ -1,7 +1,7 @@
 # Tamagotchi: Bot-Delivered Rules — Design
 
 Date: 2026-10-01
-Status: Draft (pending user review)
+Status: Approved
 
 Stage 15.
 
@@ -29,6 +29,10 @@ token never reaches the client.
 - `BOT_TOKEN` is a Vercel environment variable (Production and Preview). It is
   never committed and never sent to the client.
 - `initData` is never logged.
+- «Один раз на пользователя» обеспечивает клиентский флаг `rulesSent`;
+  серверной идемпотентности нет (базы данных нет), поэтому в пределах
+  24-часового окна повторная отправка того же `initData` может прислать
+  сообщение ещё раз.
 
 ## 2. Client
 
