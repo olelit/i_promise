@@ -341,3 +341,11 @@ git commit -m "Add bot commands that send the rules"
 - `_rules.ts` is not routed by Vercel because of the leading underscore.
 - `sendRules` never throws (fetch errors are caught), so both handlers stay
   deterministic and Telegram never gets a 5xx from a network hiccup.
+
+## Post-implementation fix
+
+Vercel Edge rejects imports with an explicit `.ts` extension ("referencing
+unsupported modules: ./_rules.ts"), so the API files import `./_rules` without
+an extension and `allowImportingTsExtensions` was removed from `tsconfig.json`.
+The local handler check uses Vite's `ssrLoadModule` instead of Node's type
+stripping.
