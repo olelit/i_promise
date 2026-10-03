@@ -21,7 +21,7 @@ export interface TamagotchiState {
   lastFedAt: number | null
   task: TamagotchiTask | null
   skin: SkinId
-  rulesSeen: boolean
+  rulesSent: boolean
 }
 
 export const MOOD_MAX = 100
@@ -51,7 +51,7 @@ export function createInitialState(now: number): TamagotchiState {
     lastFedAt: null,
     task: null,
     skin: 'classic',
-    rulesSeen: false,
+    rulesSent: false,
   }
 }
 
@@ -71,7 +71,7 @@ export function applyDecay(state: TamagotchiState, now: number): TamagotchiState
       lastFedAt: state.lastFedAt,
       task: null,
       skin: state.skin,
-      rulesSeen: state.rulesSeen,
+      rulesSent: state.rulesSent,
     }
   }
 
@@ -84,7 +84,7 @@ export function applyDecay(state: TamagotchiState, now: number): TamagotchiState
         lastFedAt: state.lastFedAt,
         task: state.task,
         skin: state.skin,
-        rulesSeen: state.rulesSeen,
+        rulesSent: state.rulesSent,
       }
     }
     return state
@@ -101,7 +101,7 @@ export function applyDecay(state: TamagotchiState, now: number): TamagotchiState
       lastFedAt: state.lastFedAt,
       task: state.task,
       skin: state.skin,
-      rulesSeen: state.rulesSeen,
+      rulesSent: state.rulesSent,
     }
   }
 
@@ -112,7 +112,7 @@ export function applyDecay(state: TamagotchiState, now: number): TamagotchiState
     lastFedAt: state.lastFedAt,
     task: state.task,
     skin: state.skin,
-    rulesSeen: state.rulesSeen,
+    rulesSent: state.rulesSent,
   }
 }
 
@@ -151,7 +151,7 @@ export function feed(state: TamagotchiState, now: number): TamagotchiState {
     lastFedAt: now,
     task: state.task,
     skin: state.skin,
-    rulesSeen: state.rulesSeen,
+    rulesSent: state.rulesSent,
   }
 }
 
@@ -175,7 +175,7 @@ export function startTask(
       extensions: 0,
     },
     skin: state.skin,
-    rulesSeen: state.rulesSeen,
+    rulesSent: state.rulesSent,
   }
 }
 

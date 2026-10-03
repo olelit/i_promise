@@ -53,7 +53,7 @@ function normalizeState(state: TamagotchiState): TamagotchiState {
     ...state,
     lastFedAt: state.lastFedAt ?? null,
     skin: isSkinId(state.skin) ? state.skin : 'classic',
-    rulesSeen: state.rulesSeen === true,
+    rulesSent: state.rulesSent === true,
     task:
       task === null
         ? null

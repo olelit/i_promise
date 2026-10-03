@@ -1,5 +1,8 @@
 # Tamagotchi: Rules Onboarding and Button — Design
 
+> Superseded by stage 15 (bot-delivered rules): the in-app dialog and button
+> were removed; the bot sends the rules message instead.
+
 Date: 2026-10-01
 Status: Approved
 
