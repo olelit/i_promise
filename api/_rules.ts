@@ -29,6 +29,17 @@ export function rulesLanguage(languageCode: string): RulesLanguage {
   return languageCode.toLowerCase().split('-')[0] === 'ru' ? 'ru' : 'en'
 }
 
+export function safeEqual(left: string, right: string): boolean {
+  if (left.length !== right.length) {
+    return false
+  }
+  let diff = 0
+  for (let index = 0; index < left.length; index += 1) {
+    diff |= left.charCodeAt(index) ^ right.charCodeAt(index)
+  }
+  return diff === 0
+}
+
 export async function sendRules(
   botToken: string,
   chatId: number,
@@ -47,9 +58,12 @@ export async function sendRules(
       console.error('sendMessage failed', response.status, await response.text())
       return false
     }
-    const result = (await response.json()) as { ok?: unknown }
+    const result = (await response.json()) as { ok?: unknown; description?: unknown }
     if (result.ok !== true) {
-      console.error('sendMessage returned ok != true')
+      console.error(
+        'sendMessage returned ok != true',
+        typeof result.description === 'string' ? result.description : '',
+      )
       return false
     }
     return true

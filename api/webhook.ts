@@ -1,4 +1,4 @@
-import { sendRules } from './_rules.ts'
+import { safeEqual, sendRules } from './_rules.ts'
 
 export const config = { runtime: 'edge' }
 
@@ -33,7 +33,7 @@ export default async function handler(request: Request): Promise<Response> {
   ) {
     return new Response('Server is not configured', { status: 500 })
   }
-  if (request.headers.get('x-telegram-bot-api-secret-token') !== webhookSecret) {
+  if (!safeEqual(request.headers.get('x-telegram-bot-api-secret-token') ?? '', webhookSecret)) {
     return new Response('Unauthorized', { status: 401 })
   }
   let update: TelegramUpdate

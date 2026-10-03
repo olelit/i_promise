@@ -1,4 +1,4 @@
-import { sendRules } from './_rules.ts'
+import { safeEqual, sendRules } from './_rules.ts'
 
 export const config = { runtime: 'edge' }
 
@@ -23,17 +23,6 @@ async function hmacSha256(
 
 function toHex(bytes: Uint8Array): string {
   return [...bytes].map((byte) => byte.toString(16).padStart(2, '0')).join('')
-}
-
-function safeEqual(left: string, right: string): boolean {
-  if (left.length !== right.length) {
-    return false
-  }
-  let diff = 0
-  for (let index = 0; index < left.length; index += 1) {
-    diff |= left.charCodeAt(index) ^ right.charCodeAt(index)
-  }
-  return diff === 0
 }
 
 export interface InitDataUser {

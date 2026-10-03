@@ -72,7 +72,8 @@
 lastFedAt, task, skin, rulesSent }`: настроение, время последнего
 взаимодействия, время возврата, время последнего кормления, активная задача,
 скин и признак отправленных правил. Базы данных нет; единственный серверный
-код — функция `api/rules.ts`. В браузерном режиме используется `localStorage`,
+код — функции `api/rules.ts` и `api/webhook.ts`. В браузерном режиме
+используется `localStorage`,
 чтобы состояние переживало перезагрузку страницы.
 
 Важно: подпись `initData` проверяется только в функции `api/rules.ts` — перед
@@ -96,9 +97,10 @@ lastFedAt, task, skin, rulesSent }`: настроение, время после
 
 ## Как подключить к боту
 
-1. Собери и выложи приложение на Vercel: функция `api/rules.ts` требует
-   serverless-хостинг. На чисто статических хостингах (например, GitHub
-   Pages) приложение работает, но правила ботом не отправляются.
+1. Собери и выложи приложение на Vercel: функции `api/rules.ts` и
+   `api/webhook.ts` требуют serverless-хостинг. На чисто статических
+   хостингах (например, GitHub Pages) приложение работает, но правила ботом
+   не отправляются.
 
    ```bash
    npm run build
@@ -106,9 +108,10 @@ lastFedAt, task, skin, rulesSent }`: настроение, время после
    ```
 
 2. В настройках проекта на Vercel добавь переменные окружения `BOT_TOKEN`
-   (токен из @BotFather) и `WEBHOOK_SECRET` (любая случайная строка) для
-   Production и Preview и переразверни проект — они нужны функциям
-   `api/rules.ts` и `api/webhook.ts`.
+   (токен из @BotFather) и `WEBHOOK_SECRET` — строка из символов
+   `A-Za-z0-9_-`, например результат `openssl rand -hex 32` — для Production
+   и Preview и переразверни проект: они нужны функциям `api/rules.ts` и
+   `api/webhook.ts`.
 
 3. Укажи URL в BotFather:
    - `/newapp` — создать Mini App и указать URL; или
@@ -118,10 +121,16 @@ lastFedAt, task, skin, rulesSent }`: настроение, время после
 4. Открой бота в Telegram и нажми кнопку меню — приложение загрузится
    внутри Telegram, настроение начнёт храниться в CloudStorage.
 
-5. Настрой вебхук команд (один раз): открой в браузере
-   `https://api.telegram.org/bot<ТОКЕН>/setWebhook?url=https://<адрес>/api/webhook&secret_token=<СЕКРЕТ>`
-   (подставь токен бота и значение `WEBHOOK_SECRET`). После этого бот отвечает
-   правилами на `/rule`, `/rules` и `/start`.
+5. Настрой вебхук команд (один раз) — выполни в терминале, подставив токен
+   бота и значение `WEBHOOK_SECRET`:
+
+   ```bash
+   curl "https://api.telegram.org/bot<ТОКЕН>/setWebhook?url=https://<адрес>/api/webhook&secret_token=<СЕКРЕТ>"
+   ```
+
+   Проверить настройку можно через
+   `https://api.telegram.org/bot<ТОКЕН>/getWebhookInfo`. После этого бот
+   отвечает правилами на `/rule`, `/rules` и `/start`.
 
 ### Хостинг в подкаталоге
 
