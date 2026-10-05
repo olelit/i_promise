@@ -38,6 +38,16 @@ function handleAbandon(): void {
   confirming.value = false
   emit('abandon')
 }
+
+function handleComplete(): void {
+  confirming.value = false
+  emit('complete')
+}
+
+function handleExtend(): void {
+  confirming.value = false
+  emit('extend')
+}
 </script>
 
 <template>
@@ -46,8 +56,8 @@ function handleAbandon(): void {
       <p class="description">{{ task.description }}</p>
       <TaskProgress :task="task" :now="now" />
       <div class="actions">
-        <button class="primary" type="button" @click="emit('complete')">{{ m(messages.done) }}</button>
-        <button class="secondary" type="button" @click="emit('extend')">{{ m(messages.extend) }}</button>
+        <button class="primary" type="button" @click="handleComplete">{{ m(messages.done) }}</button>
+        <button class="secondary" type="button" @click="handleExtend">{{ m(messages.extend) }}</button>
         <button class="danger" type="button" @click="handleAbandon">
           {{ confirming ? m(messages.abandonConfirm) : m(messages.abandon) }}
         </button>

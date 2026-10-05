@@ -423,6 +423,7 @@ onUnmounted(() => {
           {{ m(messages.skins) }}
         </button>
         <FeedButton
+          v-if="!away"
           :next-feed-ms="nextFeedMs"
           :block-reason="feedBlock"
           @feed="handleFeed"
