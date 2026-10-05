@@ -18,13 +18,13 @@ const label = computed(() =>
 
 <template>
   <span class="task-progress">
-    <div class="bar">
-      <div class="frame" :style="{ background: PALETTE.x }"></div>
-      <div class="bevel" :style="{ background: PALETTE.e }"></div>
-      <div class="track" :style="{ background: PALETTE.q }">
-        <div class="fill" :style="{ width: fillWidth, background: PALETTE.O }"></div>
-      </div>
-    </div>
+    <span class="bar">
+      <span class="frame" :style="{ background: PALETTE.x }"></span>
+      <span class="bevel" :style="{ background: PALETTE.e }"></span>
+      <span class="track" :style="{ background: PALETTE.q }">
+        <span class="fill" :style="{ width: fillWidth, background: PALETTE.O }"></span>
+      </span>
+    </span>
     <span class="label">{{ label }}</span>
   </span>
 </template>
@@ -38,6 +38,7 @@ const label = computed(() =>
 }
 
 .bar {
+  display: block;
   position: relative;
   width: 100%;
   height: 14px;
@@ -76,6 +77,7 @@ const label = computed(() =>
 }
 
 .fill {
+  display: block;
   height: 100%;
 }
 

@@ -227,10 +227,11 @@ function handleSetMood(mood: number): void {
 
 function handleTaskStart(input: { hours: number; description: string }): void {
   now.value = Date.now()
+  const hadTask = current.value.task !== null
   state.value = startTask(current.value, input, now.value)
   void saveState(state.value)
   createOpen.value = false
-  if (state.value.task !== null) {
+  if (!hadTask) {
     say('taskStart')
     checkMilestones(false)
   }
