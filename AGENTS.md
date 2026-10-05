@@ -12,6 +12,13 @@ The Telegram WebApp API is loaded via the script tag in `index.html`
 dependency. All Telegram API access must go through `src/telegram.ts`.
 All persistence must go through `src/storage.ts`.
 
+## Process
+
+- All implementation work goes through subagents: one implementer per task,
+  then a review subagent, before the next task.
+- Do not ask the user to review spec or plan documents; the design is
+  confirmed conversationally and work proceeds.
+
 ## Commits
 
 - Commit messages MUST be written in English only.

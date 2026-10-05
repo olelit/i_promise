@@ -9,10 +9,10 @@ export const FLOOR = { x: 0, y: 470, width: 400, height: 230 }
 export const BASEBOARD = { x: 0, y: 466, width: 400, height: 8 }
 export const DOOR_FRAME = { x: 204, y: 180, width: 184, height: 300 }
 export const DOOR_OPENING = { x: 216, y: 192, width: 160, height: 288 }
-export const WINDOW = { x: 16, y: 170, width: 80, height: 80 }
+export const WINDOW = { x: 16, y: 150, width: 96, height: 128 }
 export const RUG = { x: 60, y: 524, width: 280, height: 72 }
-export const SUN_POS = { x: 40, y: 194 }
-export const MOON_POS = { x: 42, y: 196 }
+export const SUN_POS = { x: 26, y: 160 }
+export const MOON_POS = { x: 28, y: 162 }
 export const TREE_POS = { x: 340, y: 320 }
 export const DOOR_LEAF_WIDTHS = [0, 52, 106, 160]
 export const DOOR_STEP_MS = 150
@@ -28,17 +28,17 @@ export const RUG_MAP: PixelMap = (() => {
 })()
 
 export const WINDOW_MAP: PixelMap = (() => {
-  const canvas = createCanvas(40, 40)
-  fillRect(canvas, 0, 0, 40, 40, 'D')
-  fillRect(canvas, 2, 2, 36, 36, 'B')
-  fillRect(canvas, 4, 4, 32, 32, 'K')
+  const canvas = createCanvas(48, 64)
+  fillRect(canvas, 0, 0, 48, 64, 'D')
+  fillRect(canvas, 2, 2, 44, 60, 'B')
+  fillRect(canvas, 4, 4, 40, 56, 'K')
   return toPixelMap(canvas)
 })()
 
 export const WINDOW_BARS_MAP: PixelMap = (() => {
-  const canvas = createCanvas(40, 40)
-  fillRect(canvas, 18, 4, 4, 32, 'B')
-  fillRect(canvas, 4, 18, 32, 4, 'B')
+  const canvas = createCanvas(48, 64)
+  fillRect(canvas, 22, 4, 4, 56, 'B')
+  fillRect(canvas, 4, 30, 40, 4, 'B')
   return toPixelMap(canvas)
 })()
 
