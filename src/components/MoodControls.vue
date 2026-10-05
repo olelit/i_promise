@@ -1,36 +1,7 @@
 <script setup lang="ts">
-import { computed } from 'vue'
 import { formatRemaining, m, messages } from '../i18n'
-import { getWebApp } from '../telegram'
 
-const props = defineProps<{
-  remainingMs: number | null
-  nextFeedMs: number | null
-  blockReason: 'cooldown' | 'full' | null
-}>()
-const emit = defineEmits<{ feed: []; feedBlocked: [reason: 'cooldown' | 'full'] }>()
-const webApp = getWebApp()
-
-const feedLabel = computed(() => {
-  if (props.blockReason === 'cooldown' && props.nextFeedMs !== null) {
-    return m(messages.feedCooldown)(formatRemaining(props.nextFeedMs))
-  }
-  if (props.blockReason === 'full') {
-    return m(messages.full)
-  }
-  return m(messages.feed)
-})
-
-function handleFeed(): void {
-  emit('feed')
-  webApp?.HapticFeedback.impactOccurred('light')
-}
-
-function handleWrapClick(): void {
-  if (props.blockReason !== null) {
-    emit('feedBlocked', props.blockReason)
-  }
-}
+defineProps<{ remainingMs: number | null }>()
 </script>
 
 <template>
@@ -38,11 +9,6 @@ function handleWrapClick(): void {
     <p v-if="remainingMs !== null" class="away">
       {{ m(messages.away)(formatRemaining(remainingMs)) }}
     </p>
-    <div v-else class="feed-wrap" @click="handleWrapClick">
-      <button class="feed" type="button" :disabled="blockReason !== null" @click.stop="handleFeed">
-        {{ feedLabel }}
-      </button>
-    </div>
   </section>
 </template>
 
@@ -63,25 +29,5 @@ function handleWrapClick(): void {
   color: var(--tg-text);
   font-size: 15px;
   text-align: center;
-}
-
-.feed-wrap {
-  display: inline-flex;
-}
-
-.feed {
-  padding: 12px 20px;
-  border: none;
-  border-radius: 10px;
-  background: var(--tg-button);
-  color: var(--tg-button-text);
-  font-size: 16px;
-  cursor: pointer;
-}
-
-.feed:disabled {
-  opacity: 0.5;
-  cursor: default;
-  pointer-events: none;
 }
 </style>

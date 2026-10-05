@@ -38,7 +38,9 @@ import MoodIndicator from './components/MoodIndicator.vue'
 import MoodControls from './components/MoodControls.vue'
 import SpeechBubble from './components/SpeechBubble.vue'
 import TaskCreateDialog from './components/TaskCreateDialog.vue'
-import TaskInfoDialog from './components/TaskInfoDialog.vue'
+import TasksDialog from './components/TasksDialog.vue'
+import TaskProgress from './components/TaskProgress.vue'
+import FeedButton from './components/FeedButton.vue'
 import SkinDialog from './components/SkinDialog.vue'
 import type { SkinId } from './tamagotchi'
 
@@ -48,7 +50,7 @@ const theme = ref<TelegramThemeParams>({})
 const state = ref<TamagotchiState>(createInitialState(Date.now()))
 const now = ref(Date.now())
 const createOpen = ref(false)
-const infoOpen = ref(false)
+const tasksOpen = ref(false)
 const ready = ref(false)
 const skinOpen = ref(false)
 const hasSecondaryButton =
@@ -237,14 +239,12 @@ function handleTaskComplete(): void {
   if (current.value.task === null) {
     state.value = current.value
     void saveState(state.value)
-    infoOpen.value = false
     say('overdue')
     checkMilestones(false)
     return
   }
   state.value = completeTask(current.value, now.value)
   void saveState(state.value)
-  infoOpen.value = false
   say('taskComplete')
   checkMilestones(false)
 }
@@ -254,7 +254,6 @@ function handleTaskExtend(): void {
   if (current.value.task === null) {
     state.value = current.value
     void saveState(state.value)
-    infoOpen.value = false
     say('overdue')
     checkMilestones(false)
     return
@@ -270,27 +269,26 @@ function handleTaskAbandon(): void {
   if (current.value.task === null) {
     state.value = current.value
     void saveState(state.value)
-    infoOpen.value = false
     say('overdue')
     checkMilestones(false)
     return
   }
   state.value = abandonTask(current.value, now.value)
   void saveState(state.value)
-  infoOpen.value = false
   say('taskAbandon')
   checkMilestones(false)
 }
 
+function handleNewTask(): void {
+  tasksOpen.value = false
+  createOpen.value = true
+}
+
 function handleMainButton(): void {
-  if (createOpen.value || infoOpen.value || skinOpen.value) {
+  if (createOpen.value || skinOpen.value || tasksOpen.value) {
     return
   }
-  if (task.value === null) {
-    createOpen.value = true
-  } else {
-    infoOpen.value = true
-  }
+  tasksOpen.value = true
 }
 
 function applyTheme(): void {
@@ -311,17 +309,11 @@ watchEffect(() => {
   if (!webApp) {
     return
   }
-  webApp.MainButton.setText(m(task.value === null ? messages.taskButton : messages.taskButtonActive))
-  if (createOpen.value || infoOpen.value || skinOpen.value) {
+  webApp.MainButton.setText(m(messages.tasks))
+  if (createOpen.value || skinOpen.value || tasksOpen.value) {
     webApp.MainButton.hide()
   } else {
     webApp.MainButton.show()
-  }
-})
-
-watch(task, (value) => {
-  if (value === null) {
-    infoOpen.value = false
   }
 })
 
@@ -395,6 +387,14 @@ onUnmounted(() => {
       {{ m(messages.banner) }}
     </div>
     <MoodIndicator :mood="current.mood" interactive @set-mood="handleSetMood" />
+    <button
+      v-if="task !== null"
+      class="task-progress-button"
+      type="button"
+      @click="tasksOpen = true"
+    >
+      <TaskProgress :task="task" :now="now" />
+    </button>
     <main class="content">
       <div class="pet-area">
         <div class="pet-wrap">
@@ -404,21 +404,15 @@ onUnmounted(() => {
           <SpeechBubble v-if="!bubbleOff" :message="phrase" />
         </div>
       </div>
-      <MoodControls
-        :remaining-ms="remainingMs"
-        :next-feed-ms="nextFeedMs"
-        :block-reason="feedBlock"
-        @feed="handleFeed"
-        @feed-blocked="handleFeedBlocked"
-      />
-      <div v-if="!inTelegram || !hasSecondaryButton" class="task-actions">
+      <MoodControls :remaining-ms="remainingMs" />
+      <div class="task-actions">
         <button
           v-if="!inTelegram"
           class="task-button"
           type="button"
-          @click="task === null ? (createOpen = true) : (infoOpen = true)"
+          @click="tasksOpen = true"
         >
-          {{ task === null ? m(messages.taskButton) : m(messages.taskButtonActive) }}
+          {{ m(messages.tasks) }}
         </button>
         <button
           v-if="!hasSecondaryButton"
@@ -428,19 +422,27 @@ onUnmounted(() => {
         >
           {{ m(messages.skins) }}
         </button>
+        <FeedButton
+          :next-feed-ms="nextFeedMs"
+          :block-reason="feedBlock"
+          @feed="handleFeed"
+          @feed-blocked="handleFeedBlocked"
+        />
       </div>
     </main>
     <RoomScene :away="away" :now="now" front :animate="ready" />
     <SkinDialog v-if="skinOpen" :selected="current.skin" @select="handleSkinSelect" @close="skinOpen = false" />
     <TaskCreateDialog v-if="createOpen" @start="handleTaskStart" @close="createOpen = false" />
-    <TaskInfoDialog
-      v-if="infoOpen && task !== null"
+    <TasksDialog
+      v-if="tasksOpen"
       :task="task"
       :now="now"
+      :history="current.history"
       @complete="handleTaskComplete"
       @extend="handleTaskExtend"
       @abandon="handleTaskAbandon"
-      @close="infoOpen = false"
+      @new-task="handleNewTask"
+      @close="tasksOpen = false"
     />
   </div>
 </template>
@@ -532,6 +534,18 @@ body {
   background: var(--tg-button);
   color: var(--tg-button-text);
   font-size: 16px;
+  cursor: pointer;
+}
+
+.task-progress-button {
+  display: block;
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
   cursor: pointer;
 }
 </style>
