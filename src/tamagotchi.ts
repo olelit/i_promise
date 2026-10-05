@@ -6,6 +6,16 @@ export interface TamagotchiTask {
   extensions: number
 }
 
+export type TaskStatus = 'done' | 'abandoned' | 'overdue'
+
+export interface TaskRecord {
+  description: string
+  hours: number
+  startedAt: number
+  finishedAt: number
+  status: TaskStatus
+}
+
 export type SkinId = 'classic' | 'sky' | 'rose'
 
 export const SKIN_IDS: readonly SkinId[] = ['classic', 'sky', 'rose']
@@ -22,6 +32,7 @@ export interface TamagotchiState {
   task: TamagotchiTask | null
   skin: SkinId
   rulesSent: boolean
+  history: TaskRecord[]
 }
 
 export const MOOD_MAX = 100
@@ -40,6 +51,9 @@ export const TASK_MOOD_BASE = 20
 export const TASK_MOOD_PER_HOUR = 10
 export const TASK_DESCRIPTION_MAX = 120
 export const EXTENSION_MS = 3_600_000
+export const HISTORY_MAX = 20
+export const TASK_MILESTONE_FRACTION = [0.5, 0.25]
+export const TASK_MILESTONE_SOON_MS = 600_000
 
 const HOUR_MS = 3_600_000
 
@@ -52,7 +66,37 @@ export function createInitialState(now: number): TamagotchiState {
     task: null,
     skin: 'classic',
     rulesSent: false,
+    history: [],
   }
+}
+
+function taskRecord(task: TamagotchiTask, finishedAt: number, status: TaskStatus): TaskRecord {
+  return {
+    description: task.description,
+    hours: task.hours,
+    startedAt: task.startedAt,
+    finishedAt,
+    status,
+  }
+}
+
+function withRecord(state: TamagotchiState, record: TaskRecord): TaskRecord[] {
+  return [record, ...state.history].slice(0, HISTORY_MAX)
+}
+
+export interface TaskTiming {
+  elapsed: number
+  total: number
+  remaining: number
+  overdue: number
+}
+
+export function taskTiming(task: TamagotchiTask, now: number): TaskTiming {
+  const total = Math.max(0, task.deadline - task.startedAt)
+  const elapsed = Math.min(total, Math.max(0, now - task.startedAt))
+  const remaining = Math.max(0, task.deadline - now)
+  const overdue = Math.max(0, now - task.deadline)
+  return { elapsed, total, remaining, overdue }
 }
 
 function decayRate(state: TamagotchiState): number {
@@ -72,6 +116,7 @@ export function applyDecay(state: TamagotchiState, now: number): TamagotchiState
       task: null,
       skin: state.skin,
       rulesSent: state.rulesSent,
+      history: withRecord(state, taskRecord(state.task, state.task.deadline, 'overdue')),
     }
   }
 
@@ -85,6 +130,7 @@ export function applyDecay(state: TamagotchiState, now: number): TamagotchiState
         task: state.task,
         skin: state.skin,
         rulesSent: state.rulesSent,
+        history: state.history,
       }
     }
     return state
@@ -102,6 +148,7 @@ export function applyDecay(state: TamagotchiState, now: number): TamagotchiState
       task: state.task,
       skin: state.skin,
       rulesSent: state.rulesSent,
+      history: state.history,
     }
   }
 
@@ -113,6 +160,7 @@ export function applyDecay(state: TamagotchiState, now: number): TamagotchiState
     task: state.task,
     skin: state.skin,
     rulesSent: state.rulesSent,
+    history: state.history,
   }
 }
 
@@ -152,6 +200,7 @@ export function feed(state: TamagotchiState, now: number): TamagotchiState {
     task: state.task,
     skin: state.skin,
     rulesSent: state.rulesSent,
+    history: state.history,
   }
 }
 
@@ -160,6 +209,9 @@ export function startTask(
   input: { hours: number; description: string },
   now: number,
 ): TamagotchiState {
+  if (state.task !== null) {
+    return state
+  }
   const hours = Math.min(TASK_MAX_HOURS, Math.max(TASK_MIN_HOURS, Math.round(input.hours)))
   const mood = Math.min(MOOD_MAX, Math.max(state.mood, TASK_MOOD_BASE + TASK_MOOD_PER_HOUR * hours))
   return {
@@ -176,11 +228,20 @@ export function startTask(
     },
     skin: state.skin,
     rulesSent: state.rulesSent,
+    history: state.history,
   }
 }
 
 export function completeTask(state: TamagotchiState, now: number): TamagotchiState {
-  return { ...state, lastSeen: now, task: null }
+  if (state.task === null) {
+    return state
+  }
+  return {
+    ...state,
+    lastSeen: now,
+    task: null,
+    history: withRecord(state, taskRecord(state.task, now, 'done')),
+  }
 }
 
 export function extendTask(state: TamagotchiState, now: number): TamagotchiState {
@@ -199,5 +260,14 @@ export function extendTask(state: TamagotchiState, now: number): TamagotchiState
 }
 
 export function abandonTask(state: TamagotchiState, now: number): TamagotchiState {
-  return { ...state, mood: 0, lastSeen: now, task: null }
+  if (state.task === null) {
+    return state
+  }
+  return {
+    ...state,
+    mood: 0,
+    lastSeen: now,
+    task: null,
+    history: withRecord(state, taskRecord(state.task, now, 'abandoned')),
+  }
 }

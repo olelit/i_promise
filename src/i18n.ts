@@ -70,6 +70,34 @@ export const messages = {
     ru: (hours: number, minutes: number) => `${hours} ч ${minutes} мин`,
     en: (hours: number, minutes: number) => `${hours} h ${minutes} min`,
   },
+  tasks: { ru: 'Задачи', en: 'Tasks' },
+  newTask: { ru: 'Новая задача', en: 'New task' },
+  noActiveTask: { ru: 'Нет активной задачи', en: 'No active task' },
+  historyTitle: { ru: 'История', en: 'History' },
+  historyEmpty: { ru: 'Пока нет завершённых задач', en: 'No finished tasks yet' },
+  statusDone: { ru: 'Выполнена', en: 'Done' },
+  statusAbandoned: { ru: 'Отказана', en: 'Abandoned' },
+  statusOverdue: { ru: 'Просрочена', en: 'Overdue' },
+  progressOf: {
+    ru: (done: string, total: string) => `${done} из ${total}`,
+    en: (done: string, total: string) => `${done} of ${total}`,
+  },
+  overdueFor: {
+    ru: (time: string) => `Просрочено на ${time}`,
+    en: (time: string) => `Overdue by ${time}`,
+  },
+  planLabel: {
+    ru: (hours: string) => `план ${hours}`,
+    en: (hours: string) => `plan ${hours}`,
+  },
+  factLabel: {
+    ru: (time: string) => `факт ${time}`,
+    en: (time: string) => `took ${time}`,
+  },
+  hoursShort: {
+    ru: (hours: number) => `${hours} ч`,
+    en: (hours: number) => `${hours} h`,
+  },
 }
 
 export const SKIN_NAMES: Record<SkinId, { ru: string; en: string }> = {
@@ -93,4 +121,30 @@ export function formatRemaining(ms: number): string {
     return m(messages.minutes)(rest)
   }
   return m(messages.hoursMinutes)(hours, rest)
+}
+
+export function formatDuration(ms: number): string {
+  const totalMinutes = Math.max(0, Math.round(ms / 60_000))
+  if (totalMinutes < 1) {
+    return m(messages.lessThanMinute)
+  }
+  const hours = Math.floor(totalMinutes / 60)
+  const rest = totalMinutes % 60
+  if (hours === 0) {
+    return m(messages.minutes)(rest)
+  }
+  if (rest === 0) {
+    return m(messages.hoursShort)(hours)
+  }
+  return m(messages.hoursMinutes)(hours, rest)
+}
+
+export function formatDateTime(ts: number): string {
+  const date = new Date(ts)
+  const pad = (value: number): string => String(value).padStart(2, '0')
+  const time = `${pad(date.getHours())}:${pad(date.getMinutes())}`
+  if (locale === 'ru') {
+    return `${pad(date.getDate())}.${pad(date.getMonth() + 1)} ${time}`
+  }
+  return `${date.getMonth() + 1}/${date.getDate()} ${time}`
 }
