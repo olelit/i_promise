@@ -43,6 +43,7 @@ function isValidRecord(value: unknown): value is TaskRecord {
     Number.isFinite(record.startedAt) &&
     typeof record.finishedAt === 'number' &&
     Number.isFinite(record.finishedAt) &&
+    record.finishedAt >= record.startedAt &&
     (record.status === 'done' || record.status === 'abandoned' || record.status === 'overdue')
   )
 }

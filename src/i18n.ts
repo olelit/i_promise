@@ -59,15 +59,11 @@ export const messages = {
   historyTitle: { ru: 'История', en: 'History' },
   historyEmpty: { ru: 'Пока нет завершённых задач', en: 'No finished tasks yet' },
   statusDone: { ru: 'Выполнена', en: 'Done' },
-  statusAbandoned: { ru: 'Отказана', en: 'Abandoned' },
+  statusAbandoned: { ru: 'Отменена', en: 'Abandoned' },
   statusOverdue: { ru: 'Просрочена', en: 'Overdue' },
   progressOf: {
     ru: (done: string, total: string) => `${done} из ${total}`,
     en: (done: string, total: string) => `${done} of ${total}`,
-  },
-  overdueFor: {
-    ru: (time: string) => `Просрочено на ${time}`,
-    en: (time: string) => `Overdue by ${time}`,
   },
   planLabel: {
     ru: (hours: string) => `план ${hours}`,

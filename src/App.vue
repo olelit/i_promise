@@ -230,8 +230,10 @@ function handleTaskStart(input: { hours: number; description: string }): void {
   state.value = startTask(current.value, input, now.value)
   void saveState(state.value)
   createOpen.value = false
-  say('taskStart')
-  checkMilestones(false)
+  if (state.value.task !== null) {
+    say('taskStart')
+    checkMilestones(false)
+  }
 }
 
 function handleTaskComplete(): void {
@@ -353,6 +355,7 @@ onMounted(async () => {
   now.value = Date.now()
   say('greeting')
   commitTransitions()
+  checkMilestones(false)
   await nextTick()
   ready.value = true
   void requestRules()
@@ -525,6 +528,8 @@ body {
 
 .task-actions {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 10px;
 }
 

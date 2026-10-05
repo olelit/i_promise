@@ -11,32 +11,27 @@ const fraction = computed(() =>
   timing.value.total === 0 ? 0 : Math.min(1, timing.value.elapsed / timing.value.total),
 )
 const fillWidth = computed(() => `${fraction.value * 100}%`)
-const fillColor = computed(() => (timing.value.overdue > 0 ? PALETTE.r : PALETTE.O))
 const label = computed(() =>
-  timing.value.overdue > 0
-    ? m(messages.overdueFor)(formatDuration(timing.value.overdue))
-    : m(messages.progressOf)(
-        formatDuration(timing.value.elapsed),
-        formatDuration(timing.value.total),
-      ),
+  m(messages.progressOf)(formatDuration(timing.value.elapsed), formatDuration(timing.value.total)),
 )
 </script>
 
 <template>
-  <div class="task-progress">
+  <span class="task-progress">
     <div class="bar">
       <div class="frame" :style="{ background: PALETTE.x }"></div>
       <div class="bevel" :style="{ background: PALETTE.e }"></div>
       <div class="track" :style="{ background: PALETTE.q }">
-        <div class="fill" :style="{ width: fillWidth, background: fillColor }"></div>
+        <div class="fill" :style="{ width: fillWidth, background: PALETTE.O }"></div>
       </div>
     </div>
-    <p class="label">{{ label }}</p>
-  </div>
+    <span class="label">{{ label }}</span>
+  </span>
 </template>
 
 <style scoped>
 .task-progress {
+  display: block;
   width: 100%;
   max-width: 300px;
   margin: 0 auto;
@@ -85,6 +80,7 @@ const label = computed(() =>
 }
 
 .label {
+  display: block;
   margin: 4px 0 0;
   font-size: 12px;
   text-align: center;
