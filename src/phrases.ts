@@ -10,6 +10,9 @@ export type PhraseEvent =
   | 'taskExtend'
   | 'taskAbandon'
   | 'overdue'
+  | 'taskHalf'
+  | 'taskQuarter'
+  | 'taskTenMinutes'
   | 'awayStart'
   | 'returned'
 
@@ -31,24 +34,36 @@ export const PHRASES: Record<PhraseEvent, Record<Locale, string[]>> = {
     en: ["I'm not hungry yet", 'Maybe later', 'I already ate today'],
   },
   taskStart: {
-    ru: ['Ого, задача! Я помогу!', 'Берусь!', 'Звучит серьёзно!'],
-    en: ['Whoa, a task! I will help!', "I'm on it!", 'Sounds serious!'],
+    ru: ['Понял, слежу за временем', 'Записал. Удачи!', 'Буду ждать'],
+    en: ['Got it, watching the clock', 'Noted. Good luck!', "I'll be waiting"],
   },
   taskComplete: {
-    ru: ['Ура, всё готово!', 'Мы справились!', 'Отличная работа!'],
-    en: ['Hooray, all done!', 'We did it!', 'Great job!'],
+    ru: ['Ты успел! Отлично', 'Готово. Молодец!', 'Справился!'],
+    en: ['You made it! Nice', 'Done. Well played!', 'You did it!'],
   },
   taskExtend: {
-    ru: ['Ещё часик? Ладно...', 'Хорошо, но я буду быстрее уставать', 'Время летит...'],
-    en: ['One more hour? Fine...', "Okay, but I'll get tired faster", 'Time flies...'],
+    ru: ['Продлил? Посмотрим', 'Время добавлено', 'Ещё час в запасе'],
+    en: ['Extended? We will see', 'Time added', 'One more hour'],
   },
   taskAbandon: {
-    ru: ['Эх... ладно', 'Ну вот...', 'Обидно'],
-    en: ['Oh well... fine', 'Aw man...', "That's a shame"],
+    ru: ['Жаль, но бывает', 'Ладно, отменили', 'В другой раз'],
+    en: ['Too bad, it happens', 'Okay, cancelled', 'Next time'],
   },
   overdue: {
-    ru: ['Время вышло... я расстроен', 'Ты обещал успеть...', 'Задача просрочена...'],
-    en: ["Time's up... I'm sad", 'You promised to make it...', 'The task is overdue...'],
+    ru: ['Время вышло...', 'Не успел...', 'Срок истёк'],
+    en: ['Time is up...', "You didn't make it...", 'The deadline passed'],
+  },
+  taskHalf: {
+    ru: ['Половина времени прошла', 'Уже половина срока', 'Время идёт: половина'],
+    en: ['Half the time is gone', 'Halfway through', 'Half the time left'],
+  },
+  taskQuarter: {
+    ru: ['Осталась четверть времени', 'Четверть срока — поторопись', 'Большая часть прошла'],
+    en: ['A quarter of the time left', 'Quarter left — hurry up', 'Most of the time is gone'],
+  },
+  taskTenMinutes: {
+    ru: ['Осталось 10 минут!', 'Десять минут — соберись', 'Совсем мало времени'],
+    en: ['10 minutes left!', 'Ten minutes — focus', 'Very little time left'],
   },
   awayStart: {
     ru: ['Я ухожу...', 'Мне грустно...', 'Оставь меня ненадолго'],

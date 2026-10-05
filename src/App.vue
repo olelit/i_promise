@@ -22,6 +22,9 @@ import {
   feedCooldownRemaining,
   MOOD_MIN,
   startTask,
+  TASK_MILESTONE_FRACTION,
+  TASK_MILESTONE_SOON_MS,
+  taskTiming,
   TICK_MS,
   type TamagotchiState,
 } from './tamagotchi'
@@ -65,6 +68,7 @@ const feedBlock = computed(() => {
   return reason === 'away' ? null : reason
 })
 const task = computed(() => current.value.task)
+const milestones = ref({ startedAt: 0, half: false, quarter: false, soon: false })
 
 const phrase = ref<{ text: string; id: number } | null>(null)
 let phraseId = 0
@@ -126,9 +130,36 @@ function commitTransitions(): void {
   }
 }
 
+function checkMilestones(announce: boolean): void {
+  const activeTask = current.value.task
+  if (activeTask === null) {
+    milestones.value = { startedAt: 0, half: false, quarter: false, soon: false }
+    return
+  }
+  const timing = taskTiming(activeTask, now.value)
+  const half = timing.remaining <= timing.total * TASK_MILESTONE_FRACTION[0]
+  const quarter = timing.remaining <= timing.total * TASK_MILESTONE_FRACTION[1]
+  const soon = timing.remaining <= TASK_MILESTONE_SOON_MS
+  if (milestones.value.startedAt !== activeTask.startedAt) {
+    milestones.value = { startedAt: activeTask.startedAt, half, quarter, soon }
+    return
+  }
+  if (announce) {
+    if (soon && !milestones.value.soon) {
+      say('taskTenMinutes')
+    } else if (quarter && !milestones.value.quarter) {
+      say('taskQuarter')
+    } else if (half && !milestones.value.half) {
+      say('taskHalf')
+    }
+  }
+  milestones.value = { startedAt: activeTask.startedAt, half, quarter, soon }
+}
+
 function tick(): void {
   now.value = Date.now()
   commitTransitions()
+  checkMilestones(true)
 }
 
 function handleFeed(): void {
@@ -198,6 +229,7 @@ function handleTaskStart(input: { hours: number; description: string }): void {
   void saveState(state.value)
   createOpen.value = false
   say('taskStart')
+  checkMilestones(false)
 }
 
 function handleTaskComplete(): void {
@@ -207,12 +239,14 @@ function handleTaskComplete(): void {
     void saveState(state.value)
     infoOpen.value = false
     say('overdue')
+    checkMilestones(false)
     return
   }
   state.value = completeTask(current.value, now.value)
   void saveState(state.value)
   infoOpen.value = false
   say('taskComplete')
+  checkMilestones(false)
 }
 
 function handleTaskExtend(): void {
@@ -222,11 +256,13 @@ function handleTaskExtend(): void {
     void saveState(state.value)
     infoOpen.value = false
     say('overdue')
+    checkMilestones(false)
     return
   }
   state.value = extendTask(current.value, now.value)
   void saveState(state.value)
   say('taskExtend')
+  checkMilestones(false)
 }
 
 function handleTaskAbandon(): void {
@@ -236,12 +272,14 @@ function handleTaskAbandon(): void {
     void saveState(state.value)
     infoOpen.value = false
     say('overdue')
+    checkMilestones(false)
     return
   }
   state.value = abandonTask(current.value, now.value)
   void saveState(state.value)
   infoOpen.value = false
   say('taskAbandon')
+  checkMilestones(false)
 }
 
 function handleMainButton(): void {
@@ -300,6 +338,7 @@ function handleVisibility(): void {
   }
   hiddenAt = null
   commitTransitions()
+  checkMilestones(true)
 }
 
 onMounted(async () => {
