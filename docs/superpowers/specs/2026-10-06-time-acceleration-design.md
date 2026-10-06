@@ -68,7 +68,7 @@ day/night cycle.
 ## Files
 
 - Modify: `src/tamagotchi.ts`, `src/storage.ts`, `src/i18n.ts`, `src/App.vue`,
-  `src/components/MoodIndicator.vue`, `README.MD`, `api/_rules.ts`
+  `src/components/MoodIndicator.vue`, `README.MD`, `api/_rules.ts`, `AGENTS.md`
 - Create: `src/components/TimeControls.vue`
 
 ## Verification
