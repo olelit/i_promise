@@ -9,7 +9,7 @@ export const RULES: Record<RulesLanguage, string> = {
     '• Задача сразу поднимает настроение (20 + 10 за каждый час), но пока она идёт, настроение падает быстрее.',
     '• «Выполнено» — настроение остаётся; «Отказаться» или просрочка — падает до 0.',
     '• На нуле персонаж отворачивается, при −100 уходит и вернётся через 2 часа.',
-    '• Полоску настроения можно перетаскивать, чтобы посмотреть состояния.',
+    '• Кнопки времени ⏸/1×/60×/600× ускоряют всё игровое время, чтобы посмотреть, как меняется настроение. При запуске скорость снова 1×.',
     '• Скины меняют палитру персонажа.',
   ].join('\n'),
   en: [
@@ -20,7 +20,7 @@ export const RULES: Record<RulesLanguage, string> = {
     '• A task raises mood at once (20 + 10 per hour), but while it runs mood drops faster.',
     '• "Done" keeps the mood; "Abandon" or an overdue task drops it to 0.',
     '• At zero the pet turns away; at −100 it leaves and comes back in 2 hours.',
-    '• Drag the mood bar to preview the states.',
+    '• The time buttons ⏸/1×/60×/600× speed up all game time so you can watch the mood change. The speed resets to 1× on each launch.',
     '• Skins change the pet palette.',
   ].join('\n'),
 }
