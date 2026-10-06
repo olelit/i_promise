@@ -4,8 +4,7 @@ import { MOOD_MAX, MOOD_MIN } from '../tamagotchi'
 import { PALETTE } from '../pixel/palette'
 import { m, messages } from '../i18n'
 
-const props = defineProps<{ mood: number; interactive?: boolean }>()
-const emit = defineEmits<{ setMood: [mood: number] }>()
+const props = defineProps<{ mood: number }>()
 
 const SEGMENTS = 20
 
@@ -19,10 +18,6 @@ const segments = computed(() =>
     return value < 0 ? PALETTE.r : value <= 50 ? PALETTE.S : PALETTE.T
   }),
 )
-
-function handleInput(event: Event): void {
-  emit('setMood', Number((event.target as HTMLInputElement).value))
-}
 </script>
 
 <template>
@@ -30,7 +25,6 @@ function handleInput(event: Event): void {
     <div
       class="meter"
       role="meter"
-      :aria-hidden="interactive ? 'true' : undefined"
       :aria-label="m(messages.mood)"
       :aria-valuemin="MOOD_MIN"
       :aria-valuemax="MOOD_MAX"
@@ -47,17 +41,6 @@ function handleInput(event: Event): void {
         ></span>
       </div>
     </div>
-    <input
-      v-if="interactive"
-      class="range"
-      type="range"
-      :min="MOOD_MIN"
-      :max="MOOD_MAX"
-      step="1"
-      :value="Math.round(mood)"
-      :aria-label="m(messages.mood)"
-      @input="handleInput"
-    />
   </div>
 </template>
 
@@ -111,23 +94,5 @@ function handleInput(event: Event): void {
 
 .segment {
   flex: 1;
-}
-
-.range {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  width: 100%;
-  height: 44px;
-  margin: 0;
-  transform: translateY(-50%);
-  opacity: 0;
-  cursor: pointer;
-}
-
-.meter-wrap:focus-within .meter {
-  outline: 2px solid var(--tg-button);
-  outline-offset: 2px;
 }
 </style>

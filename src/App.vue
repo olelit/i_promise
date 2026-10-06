@@ -12,7 +12,6 @@ import { getWebApp, isTelegram, type TelegramThemeParams } from './telegram'
 import {
   abandonTask,
   applyDecay,
-  AWAY_DURATION_MS,
   canFeed,
   completeTask,
   createInitialState,
@@ -103,17 +102,6 @@ watch(away, (value) => {
 })
 
 let timer: number | undefined
-let saveTimer: number | undefined
-
-function scheduleSave(): void {
-  if (saveTimer !== undefined) {
-    window.clearTimeout(saveTimer)
-  }
-  saveTimer = window.setTimeout(() => {
-    saveTimer = undefined
-    void saveState(state.value)
-  }, 300)
-}
 let hiddenAt: number | null = null
 
 function commitTransitions(): void {
@@ -208,20 +196,6 @@ async function requestRules(): Promise<void> {
     void saveState(state.value)
   } catch {
     // offline or the endpoint is unavailable — retry on the next launch
-  }
-}
-
-function handleSetMood(mood: number): void {
-  now.value = Date.now()
-  const before = current.value
-  const wasAway = before.awayUntil !== null
-  const awayUntil = mood <= MOOD_MIN ? (before.awayUntil ?? now.value + AWAY_DURATION_MS) : null
-  state.value = { ...before, mood, lastSeen: now.value, awayUntil }
-  scheduleSave()
-  if (!wasAway && awayUntil !== null) {
-    say('awayStart')
-  } else if (wasAway && awayUntil === null) {
-    say('returned')
   }
 }
 
@@ -373,10 +347,7 @@ onUnmounted(() => {
   if (timer !== undefined) {
     window.clearInterval(timer)
   }
-  if (saveTimer !== undefined) {
-    window.clearTimeout(saveTimer)
-    void saveState(state.value)
-  }
+  void saveState(state.value)
   if (bubbleOffTimer !== undefined) {
     window.clearTimeout(bubbleOffTimer)
   }
@@ -390,7 +361,7 @@ onUnmounted(() => {
     <div v-if="!inTelegram" class="banner">
       {{ m(messages.banner) }}
     </div>
-    <MoodIndicator :mood="current.mood" interactive @set-mood="handleSetMood" />
+    <MoodIndicator :mood="current.mood" />
     <button
       v-if="task !== null"
       class="task-progress-button"
