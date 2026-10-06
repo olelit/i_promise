@@ -48,4 +48,4 @@ All persistence must go through `src/storage.ts`.
   (answers `/rule`, `/rules` and `/start`); no other network calls. The bot
   token and the webhook secret live only in the `BOT_TOKEN` and
   `WEBHOOK_SECRET` environment variables on Vercel. Outside Telegram the app
-  runs in browser mode (localStorage + dev controls).
+  runs in browser mode (localStorage).
