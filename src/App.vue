@@ -80,10 +80,6 @@ const feedBlock = computed(() => {
 const task = computed(() => current.value.task)
 const milestones = ref({ startedAt: 0, half: false, quarter: false, soon: false })
 
-function gameNow(): number {
-  return Date.now() + state.value.clockOffset
-}
-
 function syncClock(force = false): void {
   const real = Date.now()
   const offset = advanceClockOffset(state.value.clockOffset, real - lastReal, speed.value)
@@ -195,7 +191,7 @@ function tick(): void {
 }
 
 function handleFeed(): void {
-  now.value = gameNow()
+  syncClock()
   if (!canFeed(current.value, now.value)) {
     return
   }
@@ -209,7 +205,7 @@ function handleFeedBlocked(reason: 'cooldown' | 'full'): void {
 }
 
 function handleSkinSelect(skin: SkinId): void {
-  now.value = gameNow()
+  syncClock()
   state.value = { ...current.value, skin, lastSeen: now.value }
   void saveState(state.value)
   skinOpen.value = false
@@ -233,7 +229,7 @@ async function requestRules(): Promise<void> {
     if (!response.ok) {
       return
     }
-    now.value = gameNow()
+    syncClock()
     state.value = { ...current.value, rulesSent: true, lastSeen: now.value }
     void saveState(state.value)
   } catch {
@@ -242,7 +238,7 @@ async function requestRules(): Promise<void> {
 }
 
 function handleTaskStart(input: { hours: number; description: string }): void {
-  now.value = gameNow()
+  syncClock()
   const hadTask = current.value.task !== null
   state.value = startTask(current.value, input, now.value)
   void saveState(state.value)
@@ -254,7 +250,7 @@ function handleTaskStart(input: { hours: number; description: string }): void {
 }
 
 function handleTaskComplete(): void {
-  now.value = gameNow()
+  syncClock()
   if (current.value.task === null) {
     state.value = current.value
     void saveState(state.value)
@@ -269,7 +265,7 @@ function handleTaskComplete(): void {
 }
 
 function handleTaskExtend(): void {
-  now.value = gameNow()
+  syncClock()
   if (current.value.task === null) {
     state.value = current.value
     void saveState(state.value)
@@ -284,7 +280,7 @@ function handleTaskExtend(): void {
 }
 
 function handleTaskAbandon(): void {
-  now.value = gameNow()
+  syncClock()
   if (current.value.task === null) {
     state.value = current.value
     void saveState(state.value)
@@ -369,7 +365,7 @@ onMounted(async () => {
   if (loaded) {
     state.value = loaded
   }
-  now.value = gameNow()
+  syncClock()
   say('greeting')
   commitTransitions()
   checkMilestones(false)
