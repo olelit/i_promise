@@ -34,6 +34,8 @@ export const messages = {
     en: (time: string) => `It ran away. Back in ${time}`,
   },
   mood: { ru: 'Настроение', en: 'Mood' },
+  time: { ru: 'Время', en: 'Time' },
+  timePause: { ru: 'Пауза', en: 'Pause' },
   newTaskTitle: { ru: 'Новая задача', en: 'New task' },
   hoursLabel: { ru: 'Сколько часов', en: 'Hours' },
   descriptionLabel: { ru: 'Краткое описание', en: 'Short description' },

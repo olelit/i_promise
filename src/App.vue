@@ -11,11 +11,14 @@ import {
 import { getWebApp, isTelegram, type TelegramThemeParams } from './telegram'
 import {
   abandonTask,
+  advanceClockOffset,
   applyDecay,
   canFeed,
   completeTask,
   createInitialState,
+  DEFAULT_TIME_SPEED,
   extendTask,
+  FAST_TICK_MS,
   feedBlockReason,
   feed as feedState,
   feedCooldownRemaining,
@@ -26,6 +29,7 @@ import {
   taskTiming,
   TICK_MS,
   type TamagotchiState,
+  type TimeSpeed,
 } from './tamagotchi'
 import { loadState, saveState } from './storage'
 import { m, messages } from './i18n'
@@ -40,6 +44,7 @@ import TaskCreateDialog from './components/TaskCreateDialog.vue'
 import TasksDialog from './components/TasksDialog.vue'
 import TaskProgress from './components/TaskProgress.vue'
 import FeedButton from './components/FeedButton.vue'
+import TimeControls from './components/TimeControls.vue'
 import SkinDialog from './components/SkinDialog.vue'
 import type { SkinId } from './tamagotchi'
 
@@ -48,6 +53,10 @@ const inTelegram = isTelegram()
 const theme = ref<TelegramThemeParams>({})
 const state = ref<TamagotchiState>(createInitialState(Date.now()))
 const now = ref(Date.now())
+const speed = ref<TimeSpeed>(DEFAULT_TIME_SPEED)
+const CLOCK_SAVE_MS = 5_000
+let lastReal = Date.now()
+let offsetSavedAt = 0
 const createOpen = ref(false)
 const tasksOpen = ref(false)
 const ready = ref(false)
@@ -70,6 +79,39 @@ const feedBlock = computed(() => {
 })
 const task = computed(() => current.value.task)
 const milestones = ref({ startedAt: 0, half: false, quarter: false, soon: false })
+
+function gameNow(): number {
+  return Date.now() + state.value.clockOffset
+}
+
+function syncClock(force = false): void {
+  const real = Date.now()
+  const offset = advanceClockOffset(state.value.clockOffset, real - lastReal, speed.value)
+  lastReal = real
+  if (offset !== state.value.clockOffset) {
+    state.value = { ...state.value, clockOffset: offset }
+  }
+  now.value = real + offset
+  if (force || (speed.value !== 1 && real - offsetSavedAt >= CLOCK_SAVE_MS)) {
+    offsetSavedAt = real
+    void saveState(state.value)
+  }
+}
+
+function restartTimer(): void {
+  if (timer !== undefined) {
+    window.clearInterval(timer)
+  }
+  timer = window.setInterval(tick, speed.value === 1 || speed.value === 0 ? TICK_MS : FAST_TICK_MS)
+}
+
+function handleSpeedSelect(next: TimeSpeed): void {
+  syncClock(true)
+  speed.value = next
+  lastReal = Date.now()
+  restartTimer()
+  webApp?.HapticFeedback.impactOccurred('light')
+}
 
 const phrase = ref<{ text: string; id: number } | null>(null)
 let phraseId = 0
@@ -147,13 +189,13 @@ function checkMilestones(announce: boolean): void {
 }
 
 function tick(): void {
-  now.value = Date.now()
+  syncClock()
   commitTransitions()
   checkMilestones(true)
 }
 
 function handleFeed(): void {
-  now.value = Date.now()
+  now.value = gameNow()
   if (!canFeed(current.value, now.value)) {
     return
   }
@@ -167,7 +209,7 @@ function handleFeedBlocked(reason: 'cooldown' | 'full'): void {
 }
 
 function handleSkinSelect(skin: SkinId): void {
-  now.value = Date.now()
+  now.value = gameNow()
   state.value = { ...current.value, skin, lastSeen: now.value }
   void saveState(state.value)
   skinOpen.value = false
@@ -191,7 +233,7 @@ async function requestRules(): Promise<void> {
     if (!response.ok) {
       return
     }
-    now.value = Date.now()
+    now.value = gameNow()
     state.value = { ...current.value, rulesSent: true, lastSeen: now.value }
     void saveState(state.value)
   } catch {
@@ -200,7 +242,7 @@ async function requestRules(): Promise<void> {
 }
 
 function handleTaskStart(input: { hours: number; description: string }): void {
-  now.value = Date.now()
+  now.value = gameNow()
   const hadTask = current.value.task !== null
   state.value = startTask(current.value, input, now.value)
   void saveState(state.value)
@@ -212,7 +254,7 @@ function handleTaskStart(input: { hours: number; description: string }): void {
 }
 
 function handleTaskComplete(): void {
-  now.value = Date.now()
+  now.value = gameNow()
   if (current.value.task === null) {
     state.value = current.value
     void saveState(state.value)
@@ -227,7 +269,7 @@ function handleTaskComplete(): void {
 }
 
 function handleTaskExtend(): void {
-  now.value = Date.now()
+  now.value = gameNow()
   if (current.value.task === null) {
     state.value = current.value
     void saveState(state.value)
@@ -242,7 +284,7 @@ function handleTaskExtend(): void {
 }
 
 function handleTaskAbandon(): void {
-  now.value = Date.now()
+  now.value = gameNow()
   if (current.value.task === null) {
     state.value = current.value
     void saveState(state.value)
@@ -295,7 +337,7 @@ watchEffect(() => {
 })
 
 function handleVisibility(): void {
-  now.value = Date.now()
+  syncClock(true)
   if (document.visibilityState === 'hidden') {
     commitTransitions()
     hiddenAt = Date.now()
@@ -327,14 +369,14 @@ onMounted(async () => {
   if (loaded) {
     state.value = loaded
   }
-  now.value = Date.now()
+  now.value = gameNow()
   say('greeting')
   commitTransitions()
   checkMilestones(false)
   await nextTick()
   ready.value = true
   void requestRules()
-  timer = window.setInterval(tick, TICK_MS)
+  restartTimer()
   document.addEventListener('visibilitychange', handleVisibility)
 })
 
@@ -347,7 +389,7 @@ onUnmounted(() => {
   if (timer !== undefined) {
     window.clearInterval(timer)
   }
-  void saveState(state.value)
+  syncClock(true)
   if (bubbleOffTimer !== undefined) {
     window.clearTimeout(bubbleOffTimer)
   }
@@ -404,6 +446,7 @@ onUnmounted(() => {
           @feed="handleFeed"
           @feed-blocked="handleFeedBlocked"
         />
+        <TimeControls :speed="speed" @select="handleSpeedSelect" />
       </div>
     </main>
     <RoomScene :away="away" :now="now" front :animate="ready" />
